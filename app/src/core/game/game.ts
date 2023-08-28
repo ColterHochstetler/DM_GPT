@@ -1,4 +1,6 @@
 import { RequestAgentReply, agentMessageReply } from "./openaiService";
+import { Chat, Message, Parameters, UserSubmittedMessage } from "../chat/types"
+import { YChatDoc } from '../chat/y-chat';
 
 //agents dont return, everything they do should be handled in postprocessMessage
 abstract class Agent<T> {
@@ -51,7 +53,13 @@ class SummaryAgentBase extends Agent<any> {
     }
 
 
-export function GameLoop () {
+export function GameLoop (messages:Message[] ) {
+    let compiledString = messages.map(message => {
+        const content = message.content || '';
+        const role = message.role || '';
+        return `${role}: ${content}`;
+    }).join(' ');
+
     console.log("GameLoop running");
     const summaryAgent = new SummaryAgentBase(); 
 
