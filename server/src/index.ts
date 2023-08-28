@@ -183,7 +183,7 @@ export default class ChatServer {
             }
         }
         
-        this.app.post('/chatapi/save-summaries', (req, res) => new SaveSummaryHandler (this, req, res));
+        this.app.post('/chatapi/save-summary', (req, res) => new SaveSummaryHandler (this, req, res));
 
         this.app.get('/chatapi/get-summaries', (req, res) => new GetSummariesHandler (this, req, res));
 

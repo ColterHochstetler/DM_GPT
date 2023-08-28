@@ -285,9 +285,14 @@ export class Backend extends EventEmitter {
         summary: string
     }) {
         console.log("summary api called by backend.ts")
-        const endpoint = '/chatapi/save-summaries';
+        const endpoint = '/chatapi/save-summary';
         return this.post(endpoint, summaryData);
         
+    }
+
+    async recallSummary(userID: string, chatID: string) {
+        const endpoint = `/chatapi/get-summaries?userID=${userID}&chatID=${chatID}`;
+        return this.get(endpoint);
     }
 
     //COMPLETENESS add function to get summaries from server
