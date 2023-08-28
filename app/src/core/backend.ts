@@ -290,5 +290,10 @@ export class Backend extends EventEmitter {
         
     }
 
+    async recallSummary(userID: string, chatID: string) {
+        const endpoint = `/chatapi/get-summaries?userID=${userID}&chatID=${chatID}`;
+        return this.get(endpoint);
+    }
+
     //COMPLETENESS add function to get summaries from server
 }
