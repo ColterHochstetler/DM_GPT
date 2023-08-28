@@ -17,8 +17,8 @@ export class SaveSummaryHandler extends RequestHandler {
         }
     }
 
-    public isProtected() {
-        return true; // or false, based on your requirements
+    public isProtected() { // 
+        return false; // or false, based on your requirements
     }
 }
 
@@ -39,6 +39,6 @@ export class GetSummariesHandler extends RequestHandler {
     }
 
     public isProtected() {
-        return true; // or false, based on your requirements
+        return false; // or false, based on your requirements
     }
 }

@@ -1,6 +1,6 @@
 import { RequestAgentReply, agentMessageReply } from "./openaiService";
 import { Chat, Message, Parameters, UserSubmittedMessage } from "../chat/types"
-import { YChatDoc } from '../chat/y-chat';
+import { backend } from "../backend";
 
 //agents dont return, everything they do should be handled in postprocessMessage
 abstract class Agent<T> {
@@ -45,10 +45,25 @@ class SummaryAgentBase extends Agent<any> {
             return "I am an API requesting that you summarize the following text, focusing on imporant moments between characters. The goal is to make it easy for a Dungeon Master to recall details important to the player to craft a compelling story: " + message;
         }
     
-        postprocessMessage(response: any): any {
-            const responseContent = response.choices[0].message?.content?.trim()
-            console.log('response postprocessing extracted message: ', responseContent)
-            //save summaries
+        async postprocessMessage(response: any): Promise<void> {
+            const responseContent = response.choices[0].message?.content?.trim();
+            console.log('response postprocessing extracted message: ', responseContent);
+    
+            // Assuming you have access to the backend instance and other required data
+            const summaryData = {
+                summaryID: 'someUniqueID', // Generate a unique ID for the summary
+                userID: 'currentUser',    // Use the current user's ID
+                chatID: 'currentChat',    // Use the current chat's ID
+                messageIDs: ['msg1', 'msg2'], // List of message IDs related to the summary
+                summary: responseContent  // The extracted summary content
+            };
+    
+            try {
+                await backend.current?.saveSummary(summaryData);
+                console.log('Summary saved successfully.');
+            } catch (error) {
+                console.error('Error saving summary:', error);
+            }
         }
 
     }
