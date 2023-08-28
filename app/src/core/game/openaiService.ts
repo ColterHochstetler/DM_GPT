@@ -30,7 +30,6 @@ export async function RequestAgentReply (
     const messages: string = myHistory + "USER: " + myUserprompt;
 
     const apiKey = getValidatedApiKey(parameters);
-    console.log('RequestAgentReply apiKey is: ', apiKey);
 
     let ajaxSettings: JQuery.AjaxSettings = {
         url: url,
