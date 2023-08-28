@@ -10,6 +10,7 @@ const tableNames = {
     messages: 'messages',
     shares: 'shares',
     yjsUpdates: 'updates',
+    summaries: 'summaries',
 };
 
 export default class KnexDatabaseAdapter extends Database {
@@ -63,6 +64,15 @@ export default class KnexDatabaseAdapter extends Database {
             table.binary('update');
             table.index('user_id');
         });
+
+        await this.createTableIfNotExists(tableNames.summaries, (table) => {
+            table.text('id').primary(); 
+            table.text('user_id'); 
+            table.text('chat_id'); // STABILITY: add foreign key here
+            table.text('message_ids'); 
+            table.text('summary'); 
+        });
+        
     }
 
     private async createTableIfNotExists(tableName: string, tableBuilderCallback: (tableBuilder: Knex.CreateTableBuilder) => any) {
@@ -138,6 +148,7 @@ export default class KnexDatabaseAdapter extends Database {
         await this.knex.transaction(async (trx) => {
             await trx(tableNames.chats).where({ id: chatID, user_id: userID }).delete();
             await trx(tableNames.messages).where({ chat_id: chatID, user_id: userID }).delete();
+            await trx(tableNames.summaries).where({ chat_id: chatID }).delete();
             await trx(tableNames.deletedChats)
                 .insert({ id: chatID, user_id: userID, deleted_at: new Date() });
         });
@@ -202,4 +213,27 @@ export default class KnexDatabaseAdapter extends Database {
                 update: Buffer.from(update),
             });
     }
+
+    public async saveSummary(summaryID: string, userID: string, chatID: string, messageIDs: string[], summary: string): Promise<void> {
+        await this.knex(tableNames.summaries).insert({
+            id: summaryID, // Use the provided summary ID
+            user_id: userID, 
+            chat_id: chatID, 
+            message_ids: JSON.stringify(messageIDs), 
+            summary
+        });
+    }
+    
+
+    public async getSummaries(userID: string, chatID: string): Promise<{ userID: string, chatID: string, messageIDs: string[], summary: string}[]> {
+        const rows = await this.knex(tableNames.summaries)
+            .where('user_id', userID) 
+            .andWhere('chat_id', chatID); 
+        for (let row of rows) {
+            row.messageIDs = JSON.parse(row.message_ids);
+        }
+        return rows;
+    }
+    
+    
 }

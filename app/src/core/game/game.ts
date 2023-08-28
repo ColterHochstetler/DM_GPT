@@ -48,6 +48,7 @@ class SummaryAgentBase extends Agent<any> {
         postprocessMessage(response: any): any {
             const responseContent = response.choices[0].message?.content?.trim()
             console.log('response postprocessing extracted message: ', responseContent)
+            //save summaries
         }
 
     }
