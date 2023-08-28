@@ -25,6 +25,7 @@ import SyncRequestHandler, { getNumUpdatesProcessedIn5Minutes } from './endpoint
 import LegacySyncRequestHandler from './endpoints/sync-legacy';
 import { getActiveUsersInLast5Minutes } from './endpoints/base';
 import { formatTime } from './utils';
+import { GetSummariesHandler, SaveSummaryHandler } from './endpoints/game-data';
 
 process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
@@ -182,6 +183,10 @@ export default class ChatServer {
             }
         }
         
+        this.app.post('/chatapi/save-summaries', (req, res) => new SaveSummaryHandler (this, req, res));
+
+        this.app.get('/chatapi/get-summaries', (req, res) => new GetSummariesHandler (this, req, res));
+
         setInterval(displayStatistics, 1000 * 60 * 5);
         setTimeout(displayStatistics, 1000 * 30);
     }

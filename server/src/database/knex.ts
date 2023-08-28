@@ -68,7 +68,7 @@ export default class KnexDatabaseAdapter extends Database {
         await this.createTableIfNotExists(tableNames.summaries, (table) => {
             table.text('id').primary(); 
             table.text('user_id'); 
-            table.text('chat_id'); // STABILITY: add foreign key here
+            table.text('chat_id'); // STABILITY: add foreign key stuff here
             table.text('message_ids'); 
             table.text('summary'); 
         });
