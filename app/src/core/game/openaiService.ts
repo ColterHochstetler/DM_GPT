@@ -1,12 +1,11 @@
 import $ from 'jquery';
 
-const openai_apikey = process.env.OPENAI_API_KEY
-interface IMessage {
+export interface agentMessage {
     role: string;
     content: string;
 }
 
-interface IResponse {
+export interface agentMessageReply {
     choices: {
         finish_reason: string;
         message: {
@@ -17,8 +16,7 @@ interface IResponse {
         total_tokens: number;
     };
 }
-
-async function doSend(
+export async function RequestAgentReply (
     myModel: string,
     mySystemprompt: string,
     myHistory: string,
@@ -26,7 +24,7 @@ async function doSend(
     max_tokens: number,
     temperature: number,
     openai_apikey: string
-): Promise<IResponse> {
+): Promise<agentMessageReply> {
     const url = 'https://api.openai.com/v1/chat/completions';
     const messages: string = myHistory + "USER: " + myUserprompt;
 
@@ -34,6 +32,9 @@ async function doSend(
         url: url,
         type: "POST",
         contentType: "application/json",
+        headers: {
+            "Authorization": `Bearer ${openai_apikey}`
+        },
         data: JSON.stringify({
             model: myModel,
             messages: [
@@ -49,16 +50,16 @@ async function doSend(
             max_tokens: max_tokens,
             n: 1,
             stop: null,
-            temperature: temperature,
-            beforeSend: function (xhr: JQuery.jqXHR) {
-                xhr.setRequestHeader("Authorization", `Bearer ${openai_apikey}`);
-            }
-        }),
+            temperature: temperature
+        })
     };
 
     try {
-        const response: IResponse = await $.ajax(ajaxSettings);
+        const response: agentMessageReply = await $.ajax(ajaxSettings);
+        console.log('response is: ', response);
+
         return response;
+        
     } catch (error) {
         console.error(error);
         throw new Error(JSON.stringify(error));

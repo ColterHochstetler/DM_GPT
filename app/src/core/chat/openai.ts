@@ -109,7 +109,7 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
             let error = event.data;
             try {
                 error = JSON.parse(error).error.message;
-            } catch (e) {}
+            } catch (e) { }
             emitter.emit('error', error);
         }
     });
