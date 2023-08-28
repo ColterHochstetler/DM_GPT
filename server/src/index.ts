@@ -187,6 +187,8 @@ export default class ChatServer {
 
         this.app.get('/chatapi/get-summaries', (req, res) => new GetSummariesHandler (this, req, res));
 
+        console.log('chat server initialized')
+
         setInterval(displayStatistics, 1000 * 60 * 5);
         setTimeout(displayStatistics, 1000 * 30);
     }
