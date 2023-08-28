@@ -1,5 +1,6 @@
 import $ from 'jquery';
-
+import { getValidatedApiKey } from '../chat/openai';
+import { Parameters } from '../chat/types';
 export interface agentMessage {
     role: string;
     content: string;
@@ -23,17 +24,20 @@ export async function RequestAgentReply (
     myUserprompt: string,
     max_tokens: number,
     temperature: number,
-    openai_apikey: string
+    parameters: Parameters
 ): Promise<agentMessageReply> {
     const url = 'https://api.openai.com/v1/chat/completions';
     const messages: string = myHistory + "USER: " + myUserprompt;
+
+    const apiKey = getValidatedApiKey(parameters);
+    console.log('RequestAgentReply apiKey is: ', apiKey);
 
     let ajaxSettings: JQuery.AjaxSettings = {
         url: url,
         type: "POST",
         contentType: "application/json",
         headers: {
-            "Authorization": `Bearer ${openai_apikey}`
+            "Authorization": `Bearer ${apiKey}`
         },
         data: JSON.stringify({
             model: myModel,

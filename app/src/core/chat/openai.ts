@@ -50,6 +50,18 @@ function parseResponseChunk(buffer: any): OpenAIResponseChunk {
     };
 }
 
+function determineProxyUsage(apiKey: string | undefined | null): boolean {
+    return shouldUseProxy(apiKey);
+}
+
+export function getValidatedApiKey(parameters: Parameters): string | null {
+    const useProxy = determineProxyUsage(parameters.apiKey);
+    if (!useProxy && !parameters.apiKey) {
+        throw new Error('No API key provided');
+    }
+    return parameters.apiKey || null;
+}
+
 export async function createChatCompletion(messages: OpenAIMessage[], parameters: Parameters): Promise<string> {
     const proxied = shouldUseProxy(parameters.apiKey);
     const endpoint = getEndpoint(proxied);
@@ -138,6 +150,10 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
         cancel: () => eventSource.close(),
     };
 }
+
+
+
+
 
 export const maxTokensByModel = {
     "gpt-3.5-turbo": 4096,

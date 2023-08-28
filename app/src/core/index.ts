@@ -156,7 +156,7 @@ export class ChatManager extends EventEmitter {
         const messages: Message[] = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);
         messages.push(message);
 
-        GameLoop(messages);
+        GameLoop(messages,userSubmittedMessage.requestedParameters);
 
         await this.getReply(messages, userSubmittedMessage.requestedParameters);
     }

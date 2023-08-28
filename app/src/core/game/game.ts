@@ -15,7 +15,7 @@ abstract class Agent<T> {
         userprompt: string,
         max_tokens: number,
         temperature: number,
-        openai_apikey: string,
+        parameters: Parameters
     ) {
         try {
             // Call the doSend function
@@ -26,7 +26,7 @@ abstract class Agent<T> {
                 this.preprocessMessage(userprompt), 
                 max_tokens, 
                 temperature, 
-                openai_apikey
+                parameters
             );
 
             this.postprocessMessage(reply)
@@ -69,7 +69,7 @@ class SummaryAgentBase extends Agent<any> {
     }
 
 
-export function GameLoop (messages:Message[] ) {
+export function GameLoop (messages:Message[], parameters: Parameters) {
     let compiledString = messages.map(message => {
         const content = message.content || '';
         const role = message.role || '';
@@ -87,5 +87,5 @@ export function GameLoop (messages:Message[] ) {
     const max_tokens = 500;
     const temperature = 1;
 
-    summaryAgent.sendAgentMessage(myModel, mySystemprompt, myHistory, myUserprompt, max_tokens, temperature, "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");
+    summaryAgent.sendAgentMessage(myModel, mySystemprompt, myHistory, myUserprompt, max_tokens, temperature, parameters);
 }
