@@ -215,14 +215,14 @@ export default class KnexDatabaseAdapter extends Database {
     }
 
     public async saveSummary(summaryID: string, userID: string, chatID: string, messageIDs: string[], summary: string): Promise<void> {
-        console.log("save summary api called by knex.ts")
+        console.log("save summary api called by knex.ts. Input parameters: ", summaryID, userID, chatID, messageIDs, summary)
         await this.knex(tableNames.summaries).insert({
             id: summaryID, // Use the provided summary ID
             user_id: userID, 
             chat_id: chatID, 
             message_ids: JSON.stringify(messageIDs), 
             summary
-        });
+        });  
     }
     
 

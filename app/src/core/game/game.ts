@@ -1,6 +1,7 @@
 import { RequestAgentReply, agentMessageReply } from "./openaiService";
 import { Chat, Message, Parameters, UserSubmittedMessage } from "../chat/types"
 import { backend } from "../backend";
+import { v4 as uuidv4 } from 'uuid';
 
 //agents dont return, everything they do should be handled in postprocessMessage
 abstract class Agent<T> {
@@ -51,7 +52,7 @@ class SummaryAgentBase extends Agent<any> {
     
             // Assuming you have access to the backend instance and other required data
             const summaryData = {
-                summaryID: 'someUniqueID', // Generate a unique ID for the summary
+                summaryID: uuidv4(), // Generate a unique ID for the summary
                 userID: 'currentUser',    // Use the current user's ID
                 chatID: 'currentChat',    // Use the current chat's ID
                 messageIDs: ['msg1', 'msg2'], // List of message IDs related to the summary

@@ -1,28 +1,7 @@
 import express from 'express';
 import RequestHandler from "./base";
 
-export class SaveSummaryHandler extends RequestHandler {
-    
-    async handler(req: express.Request, res: express.Response) {
-        try {
-            const { summaryID, userID, chatID, messageIDs, summary } = req.body;
-            await this.context.database.saveSummary(summaryID, userID, chatID, messageIDs, summary);
-            res.status(200).send({ message: 'Summary saved successfully.' });
-        } catch (error) {
-            if (error instanceof Error) {
-                res.status(500).send({ message: 'Error saving summaries.', error: error.message });
-            } else {
-                res.status(500).send({ message: 'Error saving summaries.', error: 'An unknown error occurred.' });
-            }
-        }
-    }
-
-    public isProtected() { // 
-        return false; // or false, based on your requirements
-    }
-}
-
-export class GetSummariesHandler extends RequestHandler {
+export default class GetSummariesHandler extends RequestHandler {
     
     async handler(req: express.Request, res: express.Response) {
         console.log("get summaries handler running")
@@ -50,6 +29,6 @@ export class GetSummariesHandler extends RequestHandler {
     }
 
     public isProtected() {
-        return false; // or false, based on your requirements
+        return true; // or false, based on your requirements
     }
 }

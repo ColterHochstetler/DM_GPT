@@ -116,6 +116,8 @@ export class Backend extends EventEmitter {
                 body: encoding.toUint8Array(encoder),
             });
 
+            console.log(endpoint + '/y-sync is the sync format')
+
             if (response.status === 429) {
                 this.rateLimitedUntil = getRateLimitResetTimeFromResponse(response);
             }
@@ -284,15 +286,13 @@ export class Backend extends EventEmitter {
         messageIDs: string[],
         summary: string
     }) {
-        console.log("summary api called by backend.ts")
-        const endpoint = '/chatapi/save-summary';
-        return this.post(endpoint, summaryData);
+        console.log("summary api called by backend.ts with payload: ", summaryData)
+        return this.post(endpoint + '/save-summary', summaryData);
         
     }
 
     async recallSummary(userID: string, chatID: string) {
-        const endpoint = `/chatapi/get-summaries?userID=${userID}&chatID=${chatID}`;
-        return this.get(endpoint);
+        return this.get(endpoint+'/get-summaries?userID=${userID}&chatID=${chatID}');
     }
 
     //COMPLETENESS add function to get summaries from server

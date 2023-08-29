@@ -59,10 +59,7 @@ export async function RequestAgentReply (
 
     try {
         const response: agentMessageReply = await $.ajax(ajaxSettings);
-        console.log('response is: ', response);
-
-        return response;
-        
+        return response;        
     } catch (error) {
         console.error(error);
         throw new Error(JSON.stringify(error));
