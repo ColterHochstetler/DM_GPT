@@ -1,14 +1,11 @@
-# Chat with GPT
+# DM_GPT!
 
-Chat with GPT is an open-source, unofficial ChatGPT app with extra features and more ways to customize your experience. It connects ChatGPT with ElevenLabs to give ChatGPT a realistic human voice.
+A project designed to automatically handle reminding an LLM about all the necessary context, characters, and stories, to make a consistent roleplaying experience. Coded by a complete novice. Built on: https://www.chatwithgpt.ai
 
-Try out the hosted version at: https://www.chatwithgpt.ai
 
-Or [self-host with Docker](#running-on-your-own-computer).
 
-Powered by the new ChatGPT API from OpenAI, this app has been developed using TypeScript + React. We welcome pull requests from the community!
-
-https://user-images.githubusercontent.com/127109874/223613258-0c4fef2e-1d05-43a1-ac38-e972dafc2f98.mp4
+About Chat with GPT
+https://www.chatwithgpt.ai https://github.com/cogentapps/chat-with-gpt
 
 ## Features
 
@@ -20,10 +17,7 @@ https://user-images.githubusercontent.com/127109874/223613258-0c4fef2e-1d05-43a1
 - 🎤 **Speech recognition** powered by OpenAI Whisper.
 - ✉ **Share** your favorite chat sessions online using public share URLs.
 - 📋 Easily **copy-and-paste** ChatGPT messages.
-- ✏️ Edit your messages
-- 🔁 Regenerate ChatGPT messages
 - 🖼 **Full markdown support** including code, tables, and math.
-- 🫰 Pay for only what you use with the ChatGPT API.
 
 ## Bring your own API keys
 
