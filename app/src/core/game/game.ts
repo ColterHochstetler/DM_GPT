@@ -1,8 +1,8 @@
 import { RequestAgentReply, agentMessageReply } from "./openaiService";
-import { Chat, Message, Parameters, UserSubmittedMessage } from "../chat/types"
+import { Chat, Message, Parameters, UserSubmittedMessage, tokenCount } from "../chat/types"
 import { backend, User } from "../backend";
 import { v4 as uuidv4 } from 'uuid';
-
+import { countTokensForMessages } from "../tokenizer";
 //agents dont return, everything they do should be handled in postprocessMessage
 abstract class Agent<T> {
 
@@ -76,32 +76,100 @@ class SummaryAgentBase extends Agent<any> {
 
     }
 
-//have it just pass along messages and parameters and let the preprocess do its thing
-export function GameLoop (messages:Message[], parameters: Parameters) {
+    export class Game { //FIGURE OUT HOW TO CONSTRUCT THIS
+        tokenThreshold: number = 8000;
+        summaryAgent: SummaryAgentBase; 
+        summaryAgentModel: string = "gpt-3.5-turbo-16k";
+        summaryAgentTokens: number = 10000;
+    
+        constructor() {
+            this.summaryAgent = new SummaryAgentBase();
+        }
+    
+
+        async run(messages: Message[], parameters: Parameters) {
+            console.log("GameLoop running");
+            
+            const currentTokenData = await backend.current?.getTokensSinceLastSummary(messages[messages.length - 1].chatID)
+    
+            if (currentTokenData?.tokenCount === undefined || currentTokenData?.tokenCount > this.tokenThreshold) {
+                console.log('token threshold met');
+                this.summaryAgent.sendAgentMessage(this.summaryAgentModel, this.summaryAgentTokens, parameters, messages);
+            } else {
+                console.log('token threshold not met');
+            }
+    
+
+    
+            const messagesTokenCount = countTokensForMessages(messages); //need to pick which message
+            backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, messagesTokenCount, messages[messages.length - 1].id);
+    
+    
+            const tokensSinceLastSummary = backend.current?.getTokensSinceLastSummary(messages[messages.length - 1].chatID)
+    
+            //dummy data
+    
+    
+            backend.current?.getSummaries(messages[messages.length - 1].chatID)
+            .then(result => {
+                console.log('main game get summaries result', result);
+                return result;  // If you want to continue the promise chain
+            })
+            .catch(error => {
+                console.error("Error fetching summaries:", error);
+            });
+    
+    
+        }
+    }     
 
 
-    console.log("GameLoop running");
-    const summaryAgent = new SummaryAgentBase(); 
-
-    backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, 1337)
+/* export function GameLoop() {
+    const { tokenThreshold, summaryAgent, summaryAgentModel, summaryAgentTokens } = initialize();
 
 
-    //dummy data
-    const summaryAgentModel = "gpt-3.5-turbo-16k";
-    const summaryAgentTokens = 10000;
+    function initialize() {
+        const summaryAgent = new SummaryAgentBase(); //put in init function? Or does each loop need its own instance?
+        const tokenThreshold = 10000; //find better place to put this, doesn't need to be declared every loop. Unless its made dynamic.
+        const summaryAgentModel = "gpt-3.5-turbo-16k";
+        const summaryAgentTokens = 10000;
+        return { tokenThreshold, summaryAgent, summaryAgentModel, summaryAgentTokens };
+    }
 
-    backend.current?.getSummaries(messages[messages.length - 1].chatID)
-    .then(result => {
-        console.log('main game get summaries result', result);
-        return result;  // If you want to continue the promise chain
-    })
-    .catch(error => {
-        console.error("Error fetching summaries:", error);
-    });
+    async function run (messages:Message[], parameters: Parameters) {
 
-    const tokensGotten = backend.current?.getTokensSinceLastSummary(messages[messages.length - 1].chatID)
+        console.log("GameLoop running");
 
-    console.log('tokens gotten by game: ', tokensGotten);
 
-    summaryAgent.sendAgentMessage(summaryAgentModel, summaryAgentTokens, parameters, messages);
-}
+        const currentTokenData = await backend.current?.getTokensSinceLastSummary(messages[messages.length - 1].chatID)
+
+        if (currentTokenData?.tokenCount === undefined || currentTokenData?.tokenCount > tokenThreshold) {
+            console.log('token threshold met');
+            summaryAgent.sendAgentMessage(summaryAgentModel, summaryAgentTokens, parameters, messages);
+        }
+
+
+
+        const messagesTokenCount = countTokensForMessages(messages); //need to pick which message
+        backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, messagesTokenCount, messages[messages.length - 1].id);
+
+
+        const tokensSinceLastSummary = backend.current?.getTokensSinceLastSummary(messages[messages.length - 1].chatID)
+
+        //dummy data
+
+
+        backend.current?.getSummaries(messages[messages.length - 1].chatID)
+        .then(result => {
+            console.log('main game get summaries result', result);
+            return result;  // If you want to continue the promise chain
+        })
+        .catch(error => {
+            console.error("Error fetching summaries:", error);
+        });
+
+        console.log('tokens gotten by game: ', tokensGotten);
+
+
+    }
+} */

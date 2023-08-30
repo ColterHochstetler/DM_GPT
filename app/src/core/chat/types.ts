@@ -5,6 +5,7 @@ export interface Parameters {
     apiKey?: string;
     initialSystemPrompt?: string;
     model: string;
+    maxTokens?: number;
 }
 
 export interface Message {
@@ -49,6 +50,11 @@ export interface Chat {
     deleted?: boolean;
 }
 
+export interface tokenCount {
+    tokenCount: number | undefined;
+    lastSummarizedMessageID: string | undefined;
+}
+
 export function serializeChat(chat: Chat): string {
     return JSON.stringify({
         ...chat,
@@ -61,3 +67,4 @@ export function deserializeChat(serialized: string) {
     chat.messages = new MessageTree(chat.messages);
     return chat as Chat;
 }
+

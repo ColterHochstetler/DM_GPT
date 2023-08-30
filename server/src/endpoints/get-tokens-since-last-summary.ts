@@ -17,9 +17,18 @@ export default class GetTokensSinceLastSummaryHandler extends RequestHandler {
         // Use the userID from the base class
         const userID = this.userID!;
     
-        const tokenCount = await this.context.database.getTokensSinceLastSummary(userID, chatID);
-        console.log("backend retrieved token count: ", tokenCount);
-        res.status(200).send({ tokenCount });
+        try {
+            const result = await this.context.database.getTokensSinceLastSummary(userID, chatID);
+            console.log("backend retrieved token count and last summarized message ID: ", result);
+            
+            res.status(200).send(result);  // This sends both tokenCount and lastSummarizedMessageID to the client
+        } catch (error) {
+            console.error("Error retrieving data: ", error);
+            res.status(500).send({ message: 'Failed to retrieve data.' });
+        }
     }
     
+    
 }
+
+
