@@ -39,11 +39,17 @@ class SummaryAgentBase extends Agent<any> {
         preprocessMessage(messages: Message[]): string {
             let messagesString = messages.map(message => {
                 const content = message.content || '';
-                const role = message.role || '';
+                let role = message.role || '';
+                if (role === 'assistant') {
+                    role = 'dm';
+                    console.log('replaced system with dm');
+                } else {
+                    role = 'player';
+                }
                 return `${role}: ${content}`;
             }).join(' ');
             
-            const agentPrompt = `I am an API requesting that you summarize the following text, focusing on imporant moments between characters. The goal is to make it easy for a Dungeon Master to recall details important to the player to craft a compelling story:`;
+            const agentPrompt = `Summarize the following text, focusing on imporant moments between characters. The goal is to make it easy for a Dungeon Master to recall details important to the player to craft a compelling story. DO NOT CONTINUE THE STORY, SUMMARIZE IT:`;
 
             console.log(agentPrompt + '/n/n' + messagesString);
 
