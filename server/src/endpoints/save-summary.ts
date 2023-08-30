@@ -12,8 +12,8 @@ export default class SaveSummaryHandler extends RequestHandler {
 
     }
 
-    public isProtected() { // 
+    public isProtected() { 
         console.log("Callback method of SaveSummaryHandler called");
-        return true; // or false, based on your requirements
+        return true; 
     }
 }

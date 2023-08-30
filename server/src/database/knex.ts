@@ -11,6 +11,7 @@ const tableNames = {
     shares: 'shares',
     yjsUpdates: 'updates',
     summaries: 'summaries',
+    tokenCount: 'token_count'
 };
 
 export default class KnexDatabaseAdapter extends Database {
@@ -71,6 +72,12 @@ export default class KnexDatabaseAdapter extends Database {
             table.text('chat_id'); // STABILITY: add foreign key stuff here
             table.text('message_ids'); 
             table.text('summary'); 
+        });
+
+        await this.createTableIfNotExists(tableNames.tokenCount, (table) => {
+            table.text('user_id');
+            table.text('chat_id').primary(); // STABILITY: add foreign key stuff here
+            table.integer('token_count'); 
         });
         
     }
@@ -217,7 +224,7 @@ export default class KnexDatabaseAdapter extends Database {
     public async saveSummary(summaryID: string, userID: string, chatID: string, messageIDs: string[], summary: string): Promise<void> {
         console.log("save summary api called by knex.ts. Input parameters: ", summaryID, userID, chatID, messageIDs, summary)
         await this.knex(tableNames.summaries).insert({
-            id: summaryID, // Use the provided summary ID
+            id: summaryID,
             user_id: userID, 
             chat_id: chatID, 
             message_ids: JSON.stringify(messageIDs), 
@@ -236,5 +243,24 @@ export default class KnexDatabaseAdapter extends Database {
         return rows;
     }
     
+    public async saveTokensSinceLastSummary(userID: string, chatID: string, tokenCount: number): Promise<void> {
+        console.log("save summary api called by knex.ts. Input parameters: ", userID, "token count: ", tokenCount)
+        await this.knex(tableNames.tokenCount).insert({
+            user_id: userID,
+            chat_id: chatID, 
+            token_count: tokenCount
+        });  
+    }
+    
+
+    public async getTokensSinceLastSummary(userID: string, chatID: string): Promise<number> {
+        const rows = await this.knex(tableNames.tokenCount)
+            .select('token_count')  // Select only the 'token_count' column
+            .where('user_id', userID) 
+            .andWhere('chat_id', chatID)
+            .first();  // Get the first matching row
+    
+            return rows.token_count;
+    }
     
 }

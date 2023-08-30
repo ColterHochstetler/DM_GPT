@@ -285,12 +285,22 @@ export class Backend extends EventEmitter {
     }) {
         console.log("summary api called by backend.ts with payload: ", summaryData)
         return this.post(endpoint + '/save-summary', summaryData);
-        
     }
 
     async getSummaries(chatID: string) {
         console.log("get summaries api called by backend.ts with chatID: ", chatID)
         return this.get(`${endpoint}/get-summaries?chatID=${chatID}`);
+    }
+
+    
+    async saveTokensSinceLastSummary(chatID: string, tokenCount: number) {
+        console.log("save tokens api called by backend.ts with token count: ", tokenCount)
+        return this.post(endpoint + '/save-tokens-since-last-summary', tokenCount);
+    }
+
+    async getTokensSinceLastSummary(chatID: string) {
+        console.log("get summaries api called by backend.ts with chatID: ", chatID)
+        return this.get(`${endpoint}/get-tokens-since-last-summary=${chatID}`);
     }
     
 

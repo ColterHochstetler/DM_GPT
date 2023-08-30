@@ -1,10 +1,10 @@
 import express from 'express';
 import RequestHandler from "./base";
 
-export default class GetSummariesHandler extends RequestHandler {
+export default class GetTokensSinceLastSummaryHandler extends RequestHandler {
     
     async handler(req: express.Request, res: express.Response) {
-        console.log("get summaries handler running");
+        console.log("get token count is running");
     
         // Validate that chatID is provided and is a string
         if (typeof req.query.chatID !== 'string') {
@@ -17,14 +17,9 @@ export default class GetSummariesHandler extends RequestHandler {
         // Use the userID from the base class
         const userID = this.userID!;
     
-        const summaries = await this.context.database.getSummaries(userID, chatID);
-        console.log("backend retrieved summaries: ", summaries);
-        res.status(200).send(summaries);
+        const tokenCount = await this.context.database.getTokensSinceLastSummary(userID, chatID);
+        console.log("backend retrieved tokon count: ", tokenCount);
+        res.status(200).send(tokenCount);
     }
-
-    public isProtected() { 
-        console.log("Callback method of SaveSummaryHandler called");
-        return true; 
-    }
+    
 }
-
