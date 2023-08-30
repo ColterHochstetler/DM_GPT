@@ -11,7 +11,7 @@ const tableNames = {
     shares: 'shares',
     yjsUpdates: 'updates',
     summaries: 'summaries',
-    tokenCount: 'token_count'
+    tokenCount: 'tokenCount'
 };
 
 export default class KnexDatabaseAdapter extends Database {
@@ -78,6 +78,7 @@ export default class KnexDatabaseAdapter extends Database {
             table.text('user_id');
             table.text('chat_id'); // STABILITY: add foreign key stuff here
             table.integer('token_count'); 
+            table.text('last_summarized_message_id');
         });
         
     }
@@ -242,40 +243,63 @@ export default class KnexDatabaseAdapter extends Database {
         }
         return rows;
     }
-    
-    public async saveTokensSinceLastSummary(userID: string, chatID: string, tokenCount: number): Promise<void> {
+
+    public async saveTokensSinceLastSummary(userID: string, chatID: string, tokenCount: number, lastSummarizedMessageID?: string | null): Promise<void> {
         const existingRecord = await this.knex(tableNames.tokenCount)
             .where('user_id', userID)
             .andWhere('chat_id', chatID)
             .first();
         
+        const data: {
+            user_id: string;
+            chat_id: string;
+            token_count: number;
+            last_summarized_message_id?: string;
+        } = {
+            user_id: userID,
+            chat_id: chatID,
+            token_count: tokenCount,
+        };
+    
+        // Adjust the conditional to check for both existence and non-nullity of lastSummarizedMessageID
+        if (lastSummarizedMessageID !== undefined && lastSummarizedMessageID !== null) {
+            data.last_summarized_message_id = lastSummarizedMessageID;
+        }
+    
         if (existingRecord) {
             // Update the existing record's token_count
             await this.knex(tableNames.tokenCount)
                 .where('user_id', userID)
                 .andWhere('chat_id', chatID)
-                .update({
-                    token_count: tokenCount
-                });
+                .update(data);
         } else {
             // Insert a new record
-            await this.knex(tableNames.tokenCount).insert({
-                user_id: userID,
-                chat_id: chatID,
-                token_count: tokenCount
-            });
+            await this.knex(tableNames.tokenCount).insert(data);
         }  
-    }
+    }  
     
 
-    public async getTokensSinceLastSummary(userID: string, chatID: string): Promise<number> {
-        const rows = await this.knex(tableNames.tokenCount)
-            .select('token_count')  // Select only the 'token_count' column
-            .where('user_id', userID) 
+    public async getTokensSinceLastSummary(userID: string, chatID: string): Promise<{ tokenCount: number | undefined, lastSummarizedMessageID: string | undefined}> {
+        const row = await this.knex(tableNames.tokenCount)
+            .select('token_count', 'last_summarized_message_id')  // Select both columns
+            .where('user_id', userID)
             .andWhere('chat_id', chatID)
             .first();  // Get the first matching row
     
-            return rows.token_count;
+        // Check if there's no matching row
+        if (!row) {
+            return {
+                tokenCount: undefined, 
+                lastSummarizedMessageID: undefined
+            };
+        }
+    
+        return {
+            tokenCount: row.token_count,
+            lastSummarizedMessageID: row.last_summarized_message_id
+        };
     }
+    
+    
     
 }

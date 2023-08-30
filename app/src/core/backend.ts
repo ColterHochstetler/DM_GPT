@@ -7,6 +7,7 @@ import { AsyncLoop } from "./utils/async-loop";
 import { ChatManager } from '.';
 import { getRateLimitResetTimeFromResponse } from './utils';
 import { importChat } from './chat/chat-persistance';
+import { tokenCount } from './chat/types';
 
 const endpoint = '/chatapi';
 
@@ -291,23 +292,36 @@ export class Backend extends EventEmitter {
     }
 
     
-    async saveTokensSinceLastSummary(chatID: string, tokenCount: number) {
+    async saveTokensSinceLastSummary(chatID: string, tokenCount: number, lastSummarizedMessageID?: string) {
         console.log("save tokens api called by backend.ts with chatid | token count: ",chatID, ' | ', tokenCount);
     
         const data = {
             chatID: chatID,
-            tokenCount: tokenCount
+            tokenCount: tokenCount,
+            lastSummarizedMessageID: lastSummarizedMessageID || null
         };
     
         return this.post(endpoint + '/save-tokens-since-last-summary', data);
     }
     
-    async getTokensSinceLastSummary(chatID: string) {
-        console.log("get tokens called ", chatID)
-        return this.get(`${endpoint}/get-tokens-since-last-summary?chatID=${chatID}
-        `);
+    
+    async getTokensSinceLastSummary(chatID: string): Promise<tokenCount> {
+        console.log("get tokens called ", chatID);
+        const reply = await this.get(`${endpoint}/get-tokens-since-last-summary?chatID=${chatID}`);
+    
+        if (!reply.tokenCount || typeof reply.tokenCount !== 'number' || !reply.lastSummarizedMessageID || typeof reply.lastSummarizedMessageID !== 'string') {
+            return {
+                tokenCount: undefined,
+                lastSummarizedMessageID: undefined
+            };
+        }
+    
+        return {
+            tokenCount: reply.tokenCount,
+            lastSummarizedMessageID: reply.lastSummarizedMessageID
+        };
     }
     
-
-    //COMPLETENESS add function to get summaries from server
+    
+    
 }
