@@ -116,6 +116,8 @@ export class Backend extends EventEmitter {
                 body: encoding.toUint8Array(encoder),
             });
 
+            console.log(endpoint + '/y-sync is the sync format')
+
             if (response.status === 429) {
                 this.rateLimitedUntil = getRateLimitResetTimeFromResponse(response);
             }
@@ -211,7 +213,7 @@ export class Backend extends EventEmitter {
         window.location.href = endpoint + '/logout';
     }
 
-    async shareChat(chat: Chat): Promise<string | null> {
+    async shareChat(chat: Chat): Promise<string | null> { //COMPLETENESS modify to send summaries of game data too
         try {
             const { id } = await this.post(endpoint + '/share', {
                 ...chat,
@@ -226,7 +228,7 @@ export class Backend extends EventEmitter {
         return null;
     }
 
-    async getSharedChat(id: string): Promise<Chat | null> {
+    async getSharedChat(id: string): Promise<Chat | null> { //COMPLETENESS modify to recieve summaries of game data too
         const format = process.env.REACT_APP_SHARE_URL || (endpoint + '/share/:id');
         const url = format.replace(':id', id);
         try {
@@ -276,4 +278,22 @@ export class Backend extends EventEmitter {
         }
         return response.json();
     }
+
+    async saveSummary(summaryData: {
+        summaryID: string,
+        userID: string,
+        chatID: string,
+        messageIDs: string[],
+        summary: string
+    }) {
+        console.log("summary api called by backend.ts with payload: ", summaryData)
+        return this.post(endpoint + '/save-summary', summaryData);
+        
+    }
+
+    async recallSummary(userID: string, chatID: string) {
+        return this.get(endpoint+'/get-summaries?userID=${userID}&chatID=${chatID}');
+    }
+
+    //COMPLETENESS add function to get summaries from server
 }

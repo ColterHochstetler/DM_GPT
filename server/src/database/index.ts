@@ -22,6 +22,9 @@ export default abstract class Database {
     public abstract setTitle(userID: string, chatID: string, title: string): Promise<void>;
     public abstract deleteChat(userID: string, chatID: string): Promise<any>;
     public abstract getDeletedChatIDs(userID: string): Promise<string[]>;
+    public abstract saveSummary(summaryID: string, userID: string, chatID: string, messageIDs: string[], summary: string): Promise<void>;
+    public abstract getSummaries(userID: string, chatID: string): Promise<{ userID: string, chatID: string, messageIDs: string[], summary: string}[]>;
+
 
     protected abstract loadYDoc(userID: string): Promise<Doc>;
     public abstract saveYUpdate(userID: string, update: Uint8Array): Promise<void>;

@@ -12,6 +12,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { isProxySupported } from "./chat/openai";
 import { audioContext, resetAudioContext } from "./tts/audio-file-player";
 
+
 export interface Context {
     authenticated: boolean;
     sessionExpired: boolean;
@@ -114,29 +115,15 @@ export function useCreateAppContext(): Context {
             }
         }
 
-        // if (chatManager.has(id)) {
-            // chatManager.sendMessage({
-            //     chatID: id,
-            //     content: message.trim(),
-            //     requestedParameters: {
-            //         ...parameters,
-            //         apiKey: openaiApiKey,
-            //     },
-            //     parentID: currentChat.leaf?.id,
-            // });
-        // } else {
-        //     await chatManager.createChat(id);
-
-            chatManager.sendMessage({
-                chatID: id,
-                content: message.trim(),
-                requestedParameters: {
-                    ...parameters,
-                    apiKey: openaiApiKey,
-                },
-                parentID: currentChat.leaf?.id,
-            });
-        // }
+        chatManager.sendMessage({
+            chatID: id,
+            content: message.trim(),
+            requestedParameters: {
+                ...parameters,
+                apiKey: openaiApiKey,
+            },
+            parentID: currentChat.leaf?.id,
+        });
 
         return id;
     }, [dispatch, id, currentChat.leaf, isShare]);
