@@ -9,9 +9,7 @@ export function getActiveUsersInLast5Minutes() {
 
 export default abstract class RequestHandler {
     constructor(public context: ChatServer, private req: express.Request, private res: express.Response) {
-        console.log(`Constructing handler starting: ${this.constructor.name} for request ${req.method} ${req.url}`);
         this.callback().then(() => {});
-        console.log(`Constructed handler exiting: ${this.constructor.name}`);
     }
 
     public async callback() {

@@ -1,13 +1,13 @@
 import { RequestAgentReply, agentMessageReply } from "./openaiService";
 import { Chat, Message, Parameters, UserSubmittedMessage } from "../chat/types"
-import { backend } from "../backend";
+import { backend, User } from "../backend";
 import { v4 as uuidv4 } from 'uuid';
 
 //agents dont return, everything they do should be handled in postprocessMessage
 abstract class Agent<T> {
 
     abstract preprocessMessage(messages: Message[]): string;
-    abstract postprocessMessage(response: any, initiatingMessage: Message): any;
+    abstract postprocessMessage(response: any, initiatingMessage: Message, parameters): any;
 
     async sendAgentMessage(
         model: string,
@@ -24,7 +24,7 @@ abstract class Agent<T> {
                 parameters
             );
 
-            this.postprocessMessage(reply, messages[messages.length - 1]);
+            this.postprocessMessage(reply, messages[messages.length - 1], parameters);
 
         } catch (error) {
             console.error("Error calling RequestAgentReply for OpenAI API:", error);
@@ -56,25 +56,23 @@ class SummaryAgentBase extends Agent<any> {
             return agentPrompt + '/n/n' + messagesString;
         }
     
-        async postprocessMessage(response: any, initiatingMessage: Message): Promise<void> {
+        async postprocessMessage(response: any, initiatingMessage: Message, parameters:Parameters): Promise<void> {
             const responseContent = response.choices[0].message?.content?.trim();
             console.log('response postprocessing extracted message: ', responseContent);
     
             // Assuming you have access to the backend instance and other required data
             const summaryData = {
                 summaryID: uuidv4(), // Generate a unique ID for the summary
-                userID: 'currentUser',    // Use the current user's ID
-                chatID: 'currentChat',    // Use the current chat's ID
+                chatID: initiatingMessage.chatID,    // Use the current chat's ID
                 messageIDs: ['msg1', 'msg2'], // List of message IDs related to the summary
                 summary: responseContent  // The extracted summary content
             };
     
-            try {
-                await backend.current?.saveSummary(summaryData);
-                console.log('Summary saved successfully.');
-            } catch (error) {
-                console.error('Error saving summary:', error);
-            }
+            await backend.current?.saveSummary(summaryData);
+
+            const retrievedData = await backend.current?.getSummaries(initiatingMessage.chatID);
+        
+            console.log('retrieved data: ', retrievedData);
         }
 
     }
@@ -89,6 +87,17 @@ export function GameLoop (messages:Message[], parameters: Parameters) {
     //dummy data
     const summaryAgentModel = "gpt-3.5-turbo-16k";
     const summaryAgentTokens = 10000;
+
+    backend.current?.getSummaries(messages[messages.length - 1].chatID)
+    .then(result => {
+        console.log('main game get summaries result', result);
+        return result;  // If you want to continue the promise chain
+    })
+    .catch(error => {
+        console.error("Error fetching summaries:", error);
+    });
+
+    
 
     summaryAgent.sendAgentMessage(summaryAgentModel, summaryAgentTokens, parameters, messages);
 }

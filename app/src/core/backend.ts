@@ -116,8 +116,6 @@ export class Backend extends EventEmitter {
                 body: encoding.toUint8Array(encoder),
             });
 
-            console.log(endpoint + '/y-sync is the sync format')
-
             if (response.status === 429) {
                 this.rateLimitedUntil = getRateLimitResetTimeFromResponse(response);
             }
@@ -281,7 +279,6 @@ export class Backend extends EventEmitter {
 
     async saveSummary(summaryData: {
         summaryID: string,
-        userID: string,
         chatID: string,
         messageIDs: string[],
         summary: string
@@ -291,9 +288,11 @@ export class Backend extends EventEmitter {
         
     }
 
-    async recallSummary(userID: string, chatID: string) {
-        return this.get(endpoint+'/get-summaries?userID=${userID}&chatID=${chatID}');
+    async getSummaries(chatID: string) {
+        console.log("get summaries api called by backend.ts with chatID: ", chatID)
+        return this.get(`${endpoint}/get-summaries?chatID=${chatID}`);
     }
+    
 
     //COMPLETENESS add function to get summaries from server
 }
