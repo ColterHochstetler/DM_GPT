@@ -19,15 +19,11 @@ export interface agentMessageReply {
 }
 export async function RequestAgentReply (
     myModel: string,
-    mySystemprompt: string,
-    myHistory: string,
-    myUserprompt: string,
+    message: string,
     max_tokens: number,
-    temperature: number,
     parameters: Parameters
 ): Promise<agentMessageReply> {
     const url = 'https://api.openai.com/v1/chat/completions';
-    const messages: string = myHistory + "USER: " + myUserprompt;
 
     const apiKey = getValidatedApiKey(parameters);
 
@@ -42,18 +38,14 @@ export async function RequestAgentReply (
             model: myModel,
             messages: [
                 {
-                    role: "system",
-                    content: mySystemprompt
-                },
-                {
                     role: "user",
-                    content: messages
+                    content: message
                 }
             ],
             max_tokens: max_tokens,
             n: 1,
             stop: null,
-            temperature: temperature
+            temperature: parameters.temperature,
         })
     };
 
@@ -65,3 +57,4 @@ export async function RequestAgentReply (
         throw new Error(JSON.stringify(error));
     }
 }
+

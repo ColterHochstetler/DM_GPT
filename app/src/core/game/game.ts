@@ -6,31 +6,25 @@ import { v4 as uuidv4 } from 'uuid';
 //agents dont return, everything they do should be handled in postprocessMessage
 abstract class Agent<T> {
 
-    abstract preprocessMessage(message: string): string;
-    abstract postprocessMessage(response: any): any;
+    abstract preprocessMessage(messages: Message[]): string;
+    abstract postprocessMessage(response: any, initiatingMessage: Message): any;
 
     async sendAgentMessage(
         model: string,
-        systemprompt: string,
-        history: string,
-        userprompt: string,
         max_tokens: number,
-        temperature: number,
-        parameters: Parameters
+        parameters: Parameters,
+        messages: Message[]
     ) {
         try {
             // Call the doSend function
             const reply = await RequestAgentReply( //need to change to work with createChatCompletion
                 model, 
-                systemprompt, 
-                history, 
-                this.preprocessMessage(userprompt), 
+                this.preprocessMessage(messages), 
                 max_tokens, 
-                temperature, 
                 parameters
             );
 
-            this.postprocessMessage(reply)
+            this.postprocessMessage(reply, messages[messages.length - 1]);
 
         } catch (error) {
             console.error("Error calling RequestAgentReply for OpenAI API:", error);
@@ -42,11 +36,21 @@ abstract class Agent<T> {
 
 class SummaryAgentBase extends Agent<any> {
     
-        preprocessMessage(message: string): string {
-            return "I am an API requesting that you summarize the following text, focusing on imporant moments between characters. The goal is to make it easy for a Dungeon Master to recall details important to the player to craft a compelling story: " + message;
+        preprocessMessage(messages: Message[]): string {
+            let messagesString = messages.map(message => {
+                const content = message.content || '';
+                const role = message.role || '';
+                return `${role}: ${content}`;
+            }).join(' ');
+            
+            const agentPrompt = `I am an API requesting that you summarize the following text, focusing on imporant moments between characters. The goal is to make it easy for a Dungeon Master to recall details important to the player to craft a compelling story:`;
+
+            console.log(agentPrompt + '/n/n' + messagesString);
+
+            return agentPrompt + '/n/n' + messagesString;
         }
     
-        async postprocessMessage(response: any): Promise<void> {
+        async postprocessMessage(response: any, initiatingMessage: Message): Promise<void> {
             const responseContent = response.choices[0].message?.content?.trim();
             console.log('response postprocessing extracted message: ', responseContent);
     
@@ -69,24 +73,16 @@ class SummaryAgentBase extends Agent<any> {
 
     }
 
-
+//have it just pass along messages and parameters and let the preprocess do its thing
 export function GameLoop (messages:Message[], parameters: Parameters) {
-    let compiledString = messages.map(message => {
-        const content = message.content || '';
-        const role = message.role || '';
-        return `${role}: ${content}`;
-    }).join(' ');
+
 
     console.log("GameLoop running");
     const summaryAgent = new SummaryAgentBase(); 
 
     //dummy data
-    const myModel = "gpt-4";
-    const mySystemprompt = "This is a system prompt.";
-    const myHistory = '';
-    const myUserprompt = "I drop the man some coin, I'm looking to make a friend.";
-    const max_tokens = 500;
-    const temperature = 1;
+    const summaryAgentModel = "gpt-3.5-turbo-16k";
+    const summaryAgentTokens = 10000;
 
-    summaryAgent.sendAgentMessage(myModel, mySystemprompt, myHistory, myUserprompt, max_tokens, temperature, parameters);
+    summaryAgent.sendAgentMessage(summaryAgentModel, summaryAgentTokens, parameters, messages);
 }
