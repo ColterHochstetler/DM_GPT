@@ -18,7 +18,6 @@ export default class GetSummariesHandler extends RequestHandler {
         const userID = this.userID!;
     
         const summaries = await this.context.database.getSummaries(userID, chatID);
-        console.log("backend retrieved summaries: ", summaries);
         res.status(200).send(summaries);
     }
 

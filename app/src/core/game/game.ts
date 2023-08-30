@@ -42,7 +42,6 @@ class SummaryAgentBase extends Agent<any> {
                 let role = message.role || '';
                 if (role === 'assistant') {
                     role = 'dm';
-                    console.log('replaced system with dm');
                 } else {
                     role = 'player';
                 }
@@ -84,6 +83,9 @@ export function GameLoop (messages:Message[], parameters: Parameters) {
     console.log("GameLoop running");
     const summaryAgent = new SummaryAgentBase(); 
 
+    backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, 1337)
+
+
     //dummy data
     const summaryAgentModel = "gpt-3.5-turbo-16k";
     const summaryAgentTokens = 10000;
@@ -97,7 +99,9 @@ export function GameLoop (messages:Message[], parameters: Parameters) {
         console.error("Error fetching summaries:", error);
     });
 
-    
+    const tokensGotten = backend.current?.getTokensSinceLastSummary(messages[messages.length - 1].chatID)
+
+    console.log('tokens gotten by game: ', tokensGotten);
 
     summaryAgent.sendAgentMessage(summaryAgentModel, summaryAgentTokens, parameters, messages);
 }

@@ -18,8 +18,8 @@ export default class GetTokensSinceLastSummaryHandler extends RequestHandler {
         const userID = this.userID!;
     
         const tokenCount = await this.context.database.getTokensSinceLastSummary(userID, chatID);
-        console.log("backend retrieved tokon count: ", tokenCount);
-        res.status(200).send(tokenCount);
+        console.log("backend retrieved token count: ", tokenCount);
+        res.status(200).send({ tokenCount });
     }
     
 }

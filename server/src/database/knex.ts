@@ -76,7 +76,7 @@ export default class KnexDatabaseAdapter extends Database {
 
         await this.createTableIfNotExists(tableNames.tokenCount, (table) => {
             table.text('user_id');
-            table.text('chat_id').primary(); // STABILITY: add foreign key stuff here
+            table.text('chat_id'); // STABILITY: add foreign key stuff here
             table.integer('token_count'); 
         });
         
@@ -244,12 +244,27 @@ export default class KnexDatabaseAdapter extends Database {
     }
     
     public async saveTokensSinceLastSummary(userID: string, chatID: string, tokenCount: number): Promise<void> {
-        console.log("save summary api called by knex.ts. Input parameters: ", userID, "token count: ", tokenCount)
-        await this.knex(tableNames.tokenCount).insert({
-            user_id: userID,
-            chat_id: chatID, 
-            token_count: tokenCount
-        });  
+        const existingRecord = await this.knex(tableNames.tokenCount)
+            .where('user_id', userID)
+            .andWhere('chat_id', chatID)
+            .first();
+        
+        if (existingRecord) {
+            // Update the existing record's token_count
+            await this.knex(tableNames.tokenCount)
+                .where('user_id', userID)
+                .andWhere('chat_id', chatID)
+                .update({
+                    token_count: tokenCount
+                });
+        } else {
+            // Insert a new record
+            await this.knex(tableNames.tokenCount).insert({
+                user_id: userID,
+                chat_id: chatID,
+                token_count: tokenCount
+            });
+        }  
     }
     
 

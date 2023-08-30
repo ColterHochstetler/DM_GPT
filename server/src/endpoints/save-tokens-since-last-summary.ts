@@ -4,11 +4,12 @@ import RequestHandler from "./base";
 export default class SaveTokensSinceLastSummaryHandler extends RequestHandler {
     
     async handler(req: express.Request, res: express.Response) {
-        console.log("save tokens handler running")
+        console.log("Request body:", req.body);
+
 
         const { chatID, tokenCount, } = req.body;
         await this.context.database.saveTokensSinceLastSummary(this.userID!, chatID, tokenCount);
-        //res.status(200).send({ message: 'Summary saved successfully.' });
+        res.status(200).send({ message: 'Tokens saved successfully.' });
 
     }
 

@@ -27,7 +27,8 @@ import { getActiveUsersInLast5Minutes } from './endpoints/base';
 import { formatTime } from './utils';
 import SaveSummaryHandler from './endpoints/save-summary';
 import GetSummariesHandler from './endpoints/get-summaries';
-
+import SaveTokensSinceLastSummaryHandler from './endpoints/save-tokens-since-last-summary';
+import GetTokensSinceLastSummaryHandler from './endpoints/get-tokens-since-last-summary';
 
 process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
@@ -191,6 +192,11 @@ export default class ChatServer {
         this.app.post('/chatapi/save-summary', (req, res) => new SaveSummaryHandler(this, req, res));
 
         this.app.get('/chatapi/get-summaries', (req, res) => new GetSummariesHandler(this, req, res));
+
+        this.app.post('/chatapi/save-tokens-since-last-summary', (req, res) => new SaveTokensSinceLastSummaryHandler(this, req, res));
+
+        this.app.get('/chatapi/get-tokens-since-last-summary', (req, res) => new GetTokensSinceLastSummaryHandler(this, req, res));
+
 
         console.log('chat server initialized')
 
