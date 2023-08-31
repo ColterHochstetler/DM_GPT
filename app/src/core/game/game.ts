@@ -6,7 +6,7 @@ import { countTokensForMessages } from "../tokenizer";
 //agents dont return, everything they do should be handled in postprocessMessage
 abstract class Agent<T> {
 
-    abstract preprocessMessage(messages: Message[]): string;
+    abstract preprocessMessage(messages: Message[]): Promise<string> ;
     abstract postprocessMessage(response: any, initiatingMessage: Message, parameters): any;
 
     async sendAgentMessage(
@@ -15,11 +15,12 @@ abstract class Agent<T> {
         parameters: Parameters,
         messages: Message[]
     ) {
+        const processedMessage = await this.preprocessMessage(messages);
         try {
             // Call the doSend function
             const reply = await RequestAgentReply( //need to change to work with createChatCompletion
                 model, 
-                this.preprocessMessage(messages), 
+                processedMessage, 
                 max_tokens, 
                 parameters
             );
@@ -36,23 +37,29 @@ abstract class Agent<T> {
 
 class SummaryAgentBase extends Agent<any> {
     
-        preprocessMessage(messages: Message[]): string {
+        async preprocessMessage(messages: Message[]): Promise<string> {
             let messagesString = messages.map(message => {
                 const content = message.content || '';
                 let role = message.role || '';
                 if (role === 'assistant') {
-                    role = 'dm';
+                    role = 'DM writes';
                 } else {
-                    role = 'player';
+                    role = 'Player responds';
                 }
                 return `${role}: ${content}`;
             }).join(' ');
             
-            const agentPrompt = `Summarize the following text, focusing on imporant moments between characters. The goal is to make it easy for a Dungeon Master to recall details important to the player to craft a compelling story. DO NOT CONTINUE THE STORY, SUMMARIZE IT:`;
+            const agentPrompt = `Your job is to summarize interactions between a dungeon master (DM) and a player. Here are some guidelines:  1) do not continue the conversation. Your job is to summarize. 2) Focus on summarizing things that are likely to be important to the player or help the DM tell a consistent story.  3) Keep important information about characters relationships and their way of communicating to each other.  To help maintain conistency, I've provided summaries. Do not summarize these, only the text after "SUMMARIZE THIS:" should be summarized.`;
 
-            console.log(agentPrompt + '/n/n' + messagesString);
+            const retrievedData = await backend.current?.getSummaries(messages[messages.length - 1].chatID);
 
-            return agentPrompt + '/n/n' + messagesString;
+            const combinedSummary = retrievedData.slice(-3).map(data => data.summary).join(' ');
+
+            const processedMessage = agentPrompt + '\n\n' + combinedSummary + '\n\nSUMMARIZE THIS: ' + messagesString;
+
+            console.log(processedMessage);
+
+            return processedMessage;
         }
     
         async postprocessMessage(response: any, initiatingMessage: Message, parameters:Parameters): Promise<void> {
@@ -79,7 +86,7 @@ class SummaryAgentBase extends Agent<any> {
     export class Game { 
         tokenThreshold: number = 500;
         summaryAgent: SummaryAgentBase; 
-        summaryAgentModel: string = "gpt-3.5-turbo";
+        summaryAgentModel: string = "gpt-3.5-turbo-16k";
         summaryAgentReplyTokens: number = 800;
     
         constructor() {
@@ -88,20 +95,19 @@ class SummaryAgentBase extends Agent<any> {
     
 
         async runLoop(messages: Message[], parameters: Parameters) {
-            console.log("********Game.run running");
+            console.log("********Game.runLoop called********");
             const retrievedTokenData = await backend.current?.getTokensSinceLastSummary(messages[messages.length - 1].chatID)
             
             // Get the most recent messages since last summarized message
             const recentMessages: Message[] = [];
-            const lastSummarizedID = retrievedTokenData?.lastSummarizedMessageID;
+            const lastMessageSummarizedID = retrievedTokenData?.lastSummarizedMessageID;
             let loopCounter = 0;
 
             for (let i = messages.length - 1; i >= 0 && loopCounter < 10; i--) {
                 const message = messages[i];
-                console.log ('vvv loop messageID for loop count below vvv: ', message.id)
 
-                if (message.id === lastSummarizedID) {
-                    console.log('last summarized ID matched: ', lastSummarizedID)
+                if (message.id === lastMessageSummarizedID) {
+                    console.log('last summarized ID matched: ', lastMessageSummarizedID)
                     break; // Stop the loop if the current message matches the last summarized ID
                 }
 
@@ -118,7 +124,7 @@ class SummaryAgentBase extends Agent<any> {
                 //get existing summaries and instruct it to continue summarization.
                 backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, 0, messages[messages.length - 1].id); //need to get valid response before setting to 0
                 console.log('Token threshold met, new save id: ', messages[messages.length - 1].id);
-                this.summaryAgent.sendAgentMessage(this.summaryAgentModel, this.summaryAgentReplyTokens, parameters, messages);
+                this.summaryAgent.sendAgentMessage(this.summaryAgentModel, this.summaryAgentReplyTokens, parameters, recentMessages);
             } else {
                 backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, totalTokensSinceLastSummary, retrievedTokenData?.lastSummarizedMessageID);
 
