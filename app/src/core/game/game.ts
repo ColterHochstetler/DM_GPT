@@ -12,7 +12,7 @@ import { SummaryAgentBase } from "./agents";
             this.summaryAgent = new SummaryAgentBase();
         }
     
-        
+
         async runLoop(messages: Message[], parameters: Parameters) {
             console.log("********Game.runLoop called********");
             const retrievedTokenData = await backend.current?.getTokensSinceLastSummary(messages[messages.length - 1].chatID)
@@ -44,9 +44,8 @@ import { SummaryAgentBase } from "./agents";
             if (totalTokensSinceLastSummary === undefined || totalTokensSinceLastSummary > this.summaryTokenThreshold) {
                 backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, 0, messages[messages.length - 1].id); //need to get valid response before setting to 0
                 console.log('Token threshold met, new save id: ', messages[messages.length - 1].id);
-
+                
                 this.summaryAgent.sendAgentMessage(this.summaryAgentModel, parameters, recentMessages);
-
             } else {
                 backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, totalTokensSinceLastSummary, retrievedTokenData?.lastSummarizedMessageID);
 

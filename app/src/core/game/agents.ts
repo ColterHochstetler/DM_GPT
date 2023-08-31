@@ -71,12 +71,11 @@ export class SummaryAgentBase extends Agent<any> {
             const responseContent = response.choices[0].message?.content?.trim();
             console.log('postprocessMessage called with message:', responseContent);
     
-            // Assuming you have access to the backend instance and other required data
             const summaryData = {
                 summaryID: uuidv4(),
                 chatID: initiatingMessage.chatID, 
-                messageIDs: ['msgID1', 'msgID2'], // List of message IDs related to the summary
-                summary: responseContent  // The extracted summary content
+                messageIDs: ['msgID1', 'msgID2'], // COMPLETE List of message IDs related to the summary
+                summary: responseContent 
             };
     
             await backend.current?.saveSummary(summaryData);
