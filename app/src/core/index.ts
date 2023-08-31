@@ -33,8 +33,6 @@ export class ChatManager extends EventEmitter {
 
         this.setMaxListeners(1000);
 
-        console.log('initializing chat manager');
-
         this.doc = this.attachYDoc('anonymous');
 
         loadSavedChatsFromPreviousVersion(this.doc)
@@ -156,7 +154,7 @@ export class ChatManager extends EventEmitter {
         const messages: Message[] = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);
         messages.push(message);
 
-        game.run(messages,userSubmittedMessage.requestedParameters);
+        game.runLoop(messages,userSubmittedMessage.requestedParameters);
 
         await this.getReply(messages, userSubmittedMessage.requestedParameters);
     }

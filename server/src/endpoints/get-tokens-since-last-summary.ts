@@ -4,7 +4,6 @@ import RequestHandler from "./base";
 export default class GetTokensSinceLastSummaryHandler extends RequestHandler {
     
     async handler(req: express.Request, res: express.Response) {
-        console.log("get token count is running");
     
         // Validate that chatID is provided and is a string
         if (typeof req.query.chatID !== 'string') {
@@ -19,7 +18,7 @@ export default class GetTokensSinceLastSummaryHandler extends RequestHandler {
     
         try {
             const result = await this.context.database.getTokensSinceLastSummary(userID, chatID);
-            console.log("backend retrieved token count and last summarized message ID: ", result);
+            console.log("GetTokensSinceLastSummaryHandler got: ", result);
             
             res.status(200).send(result);  // This sends both tokenCount and lastSummarizedMessageID to the client
         } catch (error) {

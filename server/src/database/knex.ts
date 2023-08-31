@@ -223,7 +223,7 @@ export default class KnexDatabaseAdapter extends Database {
     }
 
     public async saveSummary(summaryID: string, userID: string, chatID: string, messageIDs: string[], summary: string): Promise<void> {
-        console.log("save summary api called by knex.ts. Input parameters: ", summaryID, userID, chatID, messageIDs, summary)
+        console.log("saveSummary in knex.ts called.")
         await this.knex(tableNames.summaries).insert({
             id: summaryID,
             user_id: userID, 
@@ -249,7 +249,7 @@ export default class KnexDatabaseAdapter extends Database {
             .where('user_id', userID)
             .andWhere('chat_id', chatID)
             .first();
-        
+        console.log("saveTokensSinceLastSummary in knex called")
         const data: {
             user_id: string;
             chat_id: string;
@@ -260,7 +260,7 @@ export default class KnexDatabaseAdapter extends Database {
             chat_id: chatID,
             token_count: tokenCount,
         };
-    
+
         // Adjust the conditional to check for both existence and non-nullity of lastSummarizedMessageID
         if (lastSummarizedMessageID !== undefined && lastSummarizedMessageID !== null) {
             data.last_summarized_message_id = lastSummarizedMessageID;
@@ -268,11 +268,13 @@ export default class KnexDatabaseAdapter extends Database {
     
         if (existingRecord) {
             // Update the existing record's token_count
+            console.log("saveTokensSinceLastSummary existing record found")
             await this.knex(tableNames.tokenCount)
                 .where('user_id', userID)
                 .andWhere('chat_id', chatID)
                 .update(data);
         } else {
+            console.log("saveTokensSinceLastSummary existing record not found, inserting")
             // Insert a new record
             await this.knex(tableNames.tokenCount).insert(data);
         }  
@@ -293,6 +295,7 @@ export default class KnexDatabaseAdapter extends Database {
                 lastSummarizedMessageID: undefined
             };
         }
+        console.log("row found: ", row)
     
         return {
             tokenCount: row.token_count,

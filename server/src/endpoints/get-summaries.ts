@@ -4,7 +4,6 @@ import RequestHandler from "./base";
 export default class GetSummariesHandler extends RequestHandler {
     
     async handler(req: express.Request, res: express.Response) {
-        console.log("get summaries handler running");
     
         // Validate that chatID is provided and is a string
         if (typeof req.query.chatID !== 'string') {
@@ -22,7 +21,6 @@ export default class GetSummariesHandler extends RequestHandler {
     }
 
     public isProtected() { 
-        console.log("Callback method of SaveSummaryHandler called");
         return true; 
     }
 }

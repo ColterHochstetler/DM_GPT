@@ -293,8 +293,7 @@ export class Backend extends EventEmitter {
 
     
     async saveTokensSinceLastSummary(chatID: string, tokenCount: number, lastSummarizedMessageID?: string) {
-        console.log("save tokens api called by backend.ts with chatid | token count: ",chatID, ' | ', tokenCount);
-    
+        console.log("save tokens api called by backend.ts, token count: ", tokenCount)
         const data = {
             chatID: chatID,
             tokenCount: tokenCount,
@@ -306,15 +305,8 @@ export class Backend extends EventEmitter {
     
     
     async getTokensSinceLastSummary(chatID: string): Promise<tokenCount> {
-        console.log("get tokens called ", chatID);
         const reply = await this.get(`${endpoint}/get-tokens-since-last-summary?chatID=${chatID}`);
-    
-        if (!reply.tokenCount || typeof reply.tokenCount !== 'number' || !reply.lastSummarizedMessageID || typeof reply.lastSummarizedMessageID !== 'string') {
-            return {
-                tokenCount: undefined,
-                lastSummarizedMessageID: undefined
-            };
-        }
+        console.log("getTokensSinceLastSummary reply from server:", reply);
     
         return {
             tokenCount: reply.tokenCount,
