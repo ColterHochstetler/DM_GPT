@@ -1,7 +1,7 @@
-import { RequestAgentReply, agentMessageReply } from "./openaiService";
 import { backend } from "../backend";
-import { Message, Parameters} from "../chat/types"
+import { Message, Parameters, OpenAIMessage, getOpenAIMessageFromMessage} from "../chat/types"
 import { v4 as uuidv4 } from 'uuid';
+import { createChatCompletion } from "../chat/openai";
 
 //agents dont return, everything they do should be handled in postprocessMessage
 abstract class Agent<T> {
@@ -21,12 +21,14 @@ abstract class Agent<T> {
 
         try {
             // Call the doSend function
-            const reply = await RequestAgentReply( //need to change to work with createChatCompletion
-                model, 
-                preprocessedMessage, 
-                max_tokens, 
-                setParameters
-            );
+
+            const openAIMessage: OpenAIMessage = {
+                role: 'user',  // or whatever role you want to set
+                content: preprocessedMessage
+            };
+            
+            const mutatedMessages = messages.map(m => getOpenAIMessageFromMessage(m));
+            const reply = await createChatCompletion(mutatedMessages, setParameters);
 
             this.postprocessMessage(reply, messages[messages.length - 1], parameters);
 
@@ -61,21 +63,20 @@ export class SummaryAgentBase extends Agent<any> {
     
 
         async setParametersAndMaxTokens(parameters: Parameters): Promise<{parameters: Parameters, maxTokens: number}> {
-            const maxReplyTokens = 800;
+            const maxReplyTokens = 500;
             parameters.temperature = 0.2;
             return {parameters: parameters, maxTokens: maxReplyTokens};
         }
 
 
-        async postprocessMessage(response: any, initiatingMessage: Message, parameters:Parameters): Promise<void> {
-            const responseContent = response.choices[0].message?.content?.trim();
-            console.log('postprocessMessage called with message:', responseContent);
+        async postprocessMessage(response: string, initiatingMessage: Message, parameters:Parameters): Promise<void> {
+            console.log('++++++++postprocessMessage called with message:', response);
     
             const summaryData = {
                 summaryID: uuidv4(),
                 chatID: initiatingMessage.chatID, 
                 messageIDs: ['msgID1', 'msgID2'], // COMPLETE List of message IDs related to the summary
-                summary: responseContent 
+                summary: response 
             };
     
             await backend.current?.saveSummary(summaryData);
@@ -86,3 +87,63 @@ export class SummaryAgentBase extends Agent<any> {
         }
 
     }
+
+ /*    chatManager.sendMessage({
+        chatID: id,
+        content: message.trim(),
+        requestedParameters: {
+            ...parameters,
+            apiKey: openaiApiKey,
+        },
+        parentID: currentChat.leaf?.id,
+    }, game);
+     */
+export class NarrativeAgentBase extends Agent<any> {
+    
+    async preprocessMessage(messages: Message[]): Promise<string> {
+
+        let messagesString = messages.map(message => {
+            const content = message.content || '';
+            let role = message.role || '';
+            if (role === 'assistant') {
+                role = 'DM writes';
+            } else {
+                role = 'Player responds';
+            }
+            return `${role}: ${content}`;
+        }).join(' ');
+        
+        //process prompt
+        const agentPrompt = `Your jobs is to continue the narrative as dungeon master.`;
+        const retrievedData = await backend.current?.getSummaries(messages[messages.length - 1].chatID);
+        const combinedSummary = retrievedData.slice(-3).map(data => data.summary).join(' ');
+        return agentPrompt + '\n\n' + combinedSummary + '\n\nSUMMARIZE THIS: ' + messagesString;
+    }
+
+
+    async setParametersAndMaxTokens(parameters: Parameters): Promise<{parameters: Parameters, maxTokens: number}> {
+        const maxReplyTokens = 500;
+        parameters.temperature = 0.2;
+        return {parameters: parameters, maxTokens: maxReplyTokens};
+    }
+
+
+    async postprocessMessage(response: any, initiatingMessage: Message, parameters:Parameters): Promise<void> {
+        const responseContent = response.choices[0].message?.content?.trim();
+        console.log('postprocessMessage called with message:', responseContent);
+
+        const summaryData = {
+            summaryID: uuidv4(),
+            chatID: initiatingMessage.chatID, 
+            messageIDs: ['msgID1', 'msgID2'], // COMPLETE List of message IDs related to the summary
+            summary: responseContent 
+        };
+
+        await backend.current?.saveSummary(summaryData);
+
+        const retrievedData = await backend.current?.getSummaries(initiatingMessage.chatID);
+    
+        console.log('postprocessMessage retrieved summaries: ', retrievedData);
+    }
+
+}

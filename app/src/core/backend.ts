@@ -288,7 +288,10 @@ export class Backend extends EventEmitter {
     }
 
     async getSummaries(chatID: string) {
-        return this.get(`${endpoint}/get-summaries?chatID=${chatID}`);
+        const summaries = await this.get(`${endpoint}/get-summaries?chatID=${chatID}`);
+        console.log("summaries from server:", summaries);
+        return summaries;
+
     }
 
     
