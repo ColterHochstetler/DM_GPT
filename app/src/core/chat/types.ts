@@ -54,6 +54,13 @@ export interface tokenCount {
     tokenCount: number | undefined;
     lastSummarizedMessageID: string | undefined;
 }
+    
+export interface summary {
+    summaryID: string;
+    chatID: string;
+    messageIDs: string[];
+    summary: string;
+}
 
 export function serializeChat(chat: Chat): string {
     return JSON.stringify({
@@ -67,4 +74,5 @@ export function deserializeChat(serialized: string) {
     chat.messages = new MessageTree(chat.messages);
     return chat as Chat;
 }
+
 

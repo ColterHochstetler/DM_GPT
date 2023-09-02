@@ -1,12 +1,12 @@
 import { backend } from "../backend";
-import { Message, Parameters, OpenAIMessage, getOpenAIMessageFromMessage} from "../chat/types"
+import { Message, Parameters, OpenAIMessage, getOpenAIMessageFromMessage, Summary} from "../chat/types"
 import { v4 as uuidv4 } from 'uuid';
 import { createChatCompletion } from "../chat/openai";
 
 //agents dont return, everything they do should be handled in postprocessMessage
 abstract class Agent<T> {
 
-    abstract preprocessMessage(messages: Message[]): Promise<Message[]>;
+    abstract preprocessMessage(messages: Message[], summaries: Summary[]): Promise<Message[]>;
     abstract setParameters(parameters: Parameters): Promise<Parameters> ;
     abstract postprocessMessage(response: any, initiatingMessage: Message, parameters: Parameters): any;
 
@@ -14,9 +14,10 @@ abstract class Agent<T> {
     async sendAgentMessage(
         model: string,
         parameters: Parameters,
+        summaries: Summary[],
         messages: Message[]
     ) {
-        const preprocessedMessage = await this.preprocessMessage(messages);
+        const preprocessedMessage = await this.preprocessMessage(messages, summaries);
         const setParameters = await this.setParameters(parameters);
 
 
@@ -38,7 +39,7 @@ abstract class Agent<T> {
 
 export class SummaryAgentBase extends Agent<any> {
     
-        async preprocessMessage(messages: Message[]): Promise<Message[]> {
+        async preprocessMessage(messages: Message[], summaries: Summary[]): Promise<Message[]> {
         const chatID = messages[messages.length - 1].chatID;
         const date = Date.now();
 
@@ -55,9 +56,8 @@ export class SummaryAgentBase extends Agent<any> {
         }).join(' ');
     
         // Process prompt
-        const retrievedSummaries = await backend.current?.getSummaries(messages[messages.length - 1].chatID);
-        const summariesString = retrievedSummaries.slice(-3).map(data => data.summary).join(' ');
-        const combinedHistory = 'PREVIOUS SUMMARIES (for context):' + summariesString + '\n\n RECENT MESSAGES (to summarize): ' + messagesString;
+        const recentSummaries: string = summaries.slice(-3).map(data => data.summary).join(' ');
+        const combinedHistory = 'PREVIOUS SUMMARIES (for context):' + recentSummaries + '\n\n RECENT MESSAGES (to summarize): ' + messagesString;
         
         //Static prompt components
         const systemMessage = "You ONLY EVER SUMMARIZE. You NEVER CONTINUE THE STORY. Guidlines to Summarize: 1) Focus on summarizing things that are likely to be important to the player or help the DM tell a consistent story.  2) Keep important information about characters relationships and their way of communicating to each other. 3) Note when something has changed relative to previous summaries."
