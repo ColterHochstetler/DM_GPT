@@ -5,7 +5,7 @@ import { SummaryAgentBase } from "./agents";
 
     export class Game { 
         summaryAgent: SummaryAgentBase; 
-        summaryTokenThreshold: number = 700;
+        summaryTokenThreshold: number = 400;
         summaryAgentModel: string = "gpt-3.5-turbo-16k";
     
         constructor() {
@@ -26,8 +26,8 @@ import { SummaryAgentBase } from "./agents";
                 const message = messages[i];
 
                 if (message.id === lastMessageSummarizedID) {
-                    console.log('last summarized ID matched: ', lastMessageSummarizedID)
-                    break; // Stop the loop if the current message matches the last summarized ID
+                    console.log('////last summarized ID matched: ', lastMessageSummarizedID)
+                    break;
                 }
 
                 recentMessages.push(message);
