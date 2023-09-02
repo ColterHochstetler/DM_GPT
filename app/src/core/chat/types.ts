@@ -55,7 +55,7 @@ export interface tokenCount {
     lastSummarizedMessageID: string | undefined;
 }
     
-export interface summary {
+export interface Summary {
     summaryID: string;
     chatID: string;
     messageIDs: string[];

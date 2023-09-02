@@ -281,7 +281,7 @@ export class Backend extends EventEmitter {
         return this.post(endpoint + '/save-summary', summary);
     }
 
-    async getSummaries(chatID: string) {
+    async getSummaries(chatID: string): Promise<Summary[]> {
         const summaries = await this.get(`${endpoint}/get-summaries?chatID=${chatID}`);
         console.log("summaries from server:", summaries);
         return summaries;

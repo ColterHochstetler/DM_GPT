@@ -1,4 +1,4 @@
-import { Chat, Message, Parameters, UserSubmittedMessage, tokenCount } from "../chat/types"
+import { Chat, Message, Parameters, UserSubmittedMessage, tokenCount, Summary } from "../chat/types"
 import { backend, User } from "../backend";
 import { countTokensForMessages } from "../tokenizer";
 import { SummaryAgentBase } from "./agents";
@@ -42,9 +42,9 @@ import { SummaryAgentBase } from "./agents";
             const totalTokensSinceLastSummary = countTokensForMessages(recentMessages) + (retrievedTokenData?.tokenCount || 0);
 
             if (totalTokensSinceLastSummary === undefined || totalTokensSinceLastSummary > this.summaryTokenThreshold) {
-                const retrievedSummaries = await backend.current?.getSummaries(messages[messages.length - 1].chatID);
-                
-                backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, 0, messages[messages.length - 1].id); //need to get valid response before setting to 0
+                const retrievedSummaries: Summary[] = await backend.current?.getSummaries(messages[messages.length - 1].chatID) ?? []; //COMPLETE: develop proper way of recieving undefined, like throwing an error and allowing retry.
+
+                backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, 0, messages[messages.length - 1].id);
                 console.log('Token threshold met, new save id: ', messages[messages.length - 1].id);
 
                 this.summaryAgent.sendAgentMessage(this.summaryAgentModel, parameters, retrievedSummaries, recentMessages);

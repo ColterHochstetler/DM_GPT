@@ -235,13 +235,18 @@ export default class KnexDatabaseAdapter extends Database {
     
 
     public async getSummaries(userID: string, chatID: string): Promise<{ userID: string, chatID: string, messageIDs: string[], summary: string}[]> {
-        const rows = await this.knex(tableNames.summaries)
-            .where('user_id', userID) 
-            .andWhere('chat_id', chatID); 
-        for (let row of rows) {
-            row.messageIDs = JSON.parse(row.message_ids);
+        try {
+            const rows = await this.knex(tableNames.summaries)
+                .where('user_id', userID) 
+                .andWhere('chat_id', chatID);
+            for (let row of rows) {
+                row.messageIDs = JSON.parse(row.message_ids);
+            }
+            return rows;
+        } catch (error) {
+            console.error("Error fetching summaries:", error);
+            throw new Error("Unable to fetch summaries due to an internal error");
         }
-        return rows;
     }
 
     public async saveTokensSinceLastSummary(userID: string, chatID: string, tokenCount: number, lastSummarizedMessageID?: string | null): Promise<void> {
