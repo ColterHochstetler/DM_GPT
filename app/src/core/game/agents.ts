@@ -104,7 +104,7 @@ export class SummaryAgentBase extends Agent<any> {
         async postprocessMessage(response: string, initiatingMessage: Message, parameters:Parameters): Promise<void> {
             console.log('++++++++postprocessMessage called with message:', response);
     
-            const summaryData = {
+            const summaryData: Summary = {
                 summaryID: uuidv4(),
                 chatID: initiatingMessage.chatID, 
                 messageIDs: ['msgID1', 'msgID2'], // COMPLETE List of message IDs related to the summary

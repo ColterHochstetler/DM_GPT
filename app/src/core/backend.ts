@@ -2,12 +2,11 @@ import EventEmitter from 'events';
 import * as Y from 'yjs';
 import { encode, decode } from '@msgpack/msgpack';
 import { MessageTree } from './chat/message-tree';
-import { Chat } from './chat/types';
+import { tokenCount, Chat, Summary } from './chat/types';
 import { AsyncLoop } from "./utils/async-loop";
 import { ChatManager } from '.';
 import { getRateLimitResetTimeFromResponse } from './utils';
 import { importChat } from './chat/chat-persistance';
-import { tokenCount } from './chat/types';
 
 const endpoint = '/chatapi';
 
@@ -278,13 +277,8 @@ export class Backend extends EventEmitter {
         return response.json();
     }
 
-    async saveSummary(summaryData: {
-        summaryID: string,
-        chatID: string,
-        messageIDs: string[],
-        summary: string
-    }) {
-        return this.post(endpoint + '/save-summary', summaryData);
+    async saveSummary(summary: Summary) {
+        return this.post(endpoint + '/save-summary', summary);
     }
 
     async getSummaries(chatID: string) {
