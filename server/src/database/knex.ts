@@ -11,6 +11,7 @@ const tableNames = {
     shares: 'shares',
     yjsUpdates: 'updates',
     summaries: 'summaries',
+    tokenCount: 'tokenCount'
 };
 
 export default class KnexDatabaseAdapter extends Database {
@@ -71,6 +72,13 @@ export default class KnexDatabaseAdapter extends Database {
             table.text('chat_id'); // STABILITY: add foreign key stuff here
             table.text('message_ids'); 
             table.text('summary'); 
+        });
+
+        await this.createTableIfNotExists(tableNames.tokenCount, (table) => {
+            table.text('user_id');
+            table.text('chat_id'); // STABILITY: add foreign key stuff here
+            table.integer('token_count'); 
+            table.text('last_summarized_message_id');
         });
         
     }
@@ -215,9 +223,9 @@ export default class KnexDatabaseAdapter extends Database {
     }
 
     public async saveSummary(summaryID: string, userID: string, chatID: string, messageIDs: string[], summary: string): Promise<void> {
-        console.log("save summary api called by knex.ts. Input parameters: ", summaryID, userID, chatID, messageIDs, summary)
+        console.log("saveSummary in knex.ts called.")
         await this.knex(tableNames.summaries).insert({
-            id: summaryID, // Use the provided summary ID
+            id: summaryID,
             user_id: userID, 
             chat_id: chatID, 
             message_ids: JSON.stringify(messageIDs), 
@@ -227,14 +235,79 @@ export default class KnexDatabaseAdapter extends Database {
     
 
     public async getSummaries(userID: string, chatID: string): Promise<{ userID: string, chatID: string, messageIDs: string[], summary: string}[]> {
-        const rows = await this.knex(tableNames.summaries)
-            .where('user_id', userID) 
-            .andWhere('chat_id', chatID); 
-        for (let row of rows) {
-            row.messageIDs = JSON.parse(row.message_ids);
+        try {
+            const rows = await this.knex(tableNames.summaries)
+                .where('user_id', userID) 
+                .andWhere('chat_id', chatID);
+            for (let row of rows) {
+                row.messageIDs = JSON.parse(row.message_ids);
+            }
+            return rows;
+        } catch (error) {
+            console.error("Error fetching summaries:", error);
+            throw new Error("Unable to fetch summaries due to an internal error");
         }
-        return rows;
     }
+
+    public async saveTokensSinceLastSummary(userID: string, chatID: string, tokenCount: number, lastSummarizedMessageID?: string | null): Promise<void> {
+        const existingRecord = await this.knex(tableNames.tokenCount)
+            .where('user_id', userID)
+            .andWhere('chat_id', chatID)
+            .first();
+        console.log("saveTokensSinceLastSummary in knex called")
+        const data: {
+            user_id: string;
+            chat_id: string;
+            token_count: number;
+            last_summarized_message_id?: string;
+        } = {
+            user_id: userID,
+            chat_id: chatID,
+            token_count: tokenCount,
+        };
+
+        // Adjust the conditional to check for both existence and non-nullity of lastSummarizedMessageID
+        if (lastSummarizedMessageID !== undefined && lastSummarizedMessageID !== null) {
+            data.last_summarized_message_id = lastSummarizedMessageID;
+        }
+    
+        if (existingRecord) {
+            // Update the existing record's token_count
+            console.log("saveTokensSinceLastSummary existing record found")
+            await this.knex(tableNames.tokenCount)
+                .where('user_id', userID)
+                .andWhere('chat_id', chatID)
+                .update(data);
+        } else {
+            console.log("saveTokensSinceLastSummary existing record not found, inserting")
+            // Insert a new record
+            await this.knex(tableNames.tokenCount).insert(data);
+        }  
+    }  
+    
+
+    public async getTokensSinceLastSummary(userID: string, chatID: string): Promise<{ tokenCount: number | undefined, lastSummarizedMessageID: string | undefined}> {
+        const row = await this.knex(tableNames.tokenCount)
+            .select('token_count', 'last_summarized_message_id')  // Select both columns
+            .where('user_id', userID)
+            .andWhere('chat_id', chatID)
+            .first();  // Get the first matching row
+    
+        // Check if there's no matching row
+        if (!row) {
+            return {
+                tokenCount: undefined, 
+                lastSummarizedMessageID: undefined
+            };
+        }
+        console.log("row found: ", row)
+    
+        return {
+            tokenCount: row.token_count,
+            lastSummarizedMessageID: row.last_summarized_message_id
+        };
+    }
+    
     
     
 }

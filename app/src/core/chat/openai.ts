@@ -70,6 +70,16 @@ export async function createChatCompletion(messages: OpenAIMessage[], parameters
         throw new Error('No API key provided');
     }
 
+    const requestBody = {
+        "model": parameters.model,
+        "messages": messages,
+        "temperature": parameters.temperature
+    };
+
+    if (parameters.maxTokens) {
+        requestBody["max_tokens"] = parameters.maxTokens;
+    }
+
     const response = await fetch(endpoint + '/v1/chat/completions', {
         method: "POST",
         headers: {
@@ -77,17 +87,14 @@ export async function createChatCompletion(messages: OpenAIMessage[], parameters
             'Authorization': !proxied ? `Bearer ${parameters.apiKey}` : '',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            "model": parameters.model,
-            "messages": messages,
-            "temperature": parameters.temperature,
-        }),
+        body: JSON.stringify(requestBody),
     });
 
     const data = await response.json();
 
     return data.choices[0].message?.content?.trim() || '';
 }
+
 
 export async function createStreamingChatCompletion(messages: OpenAIMessage[], parameters: Parameters) {
     const emitter = new EventEmitter();

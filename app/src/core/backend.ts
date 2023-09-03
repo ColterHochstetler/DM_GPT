@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import * as Y from 'yjs';
 import { encode, decode } from '@msgpack/msgpack';
 import { MessageTree } from './chat/message-tree';
-import { Chat } from './chat/types';
+import { tokenCount, Chat, Summary } from './chat/types';
 import { AsyncLoop } from "./utils/async-loop";
 import { ChatManager } from '.';
 import { getRateLimitResetTimeFromResponse } from './utils';
@@ -115,8 +115,6 @@ export class Backend extends EventEmitter {
                 },
                 body: encoding.toUint8Array(encoder),
             });
-
-            console.log(endpoint + '/y-sync is the sync format')
 
             if (response.status === 429) {
                 this.rateLimitedUntil = getRateLimitResetTimeFromResponse(response);
@@ -279,21 +277,40 @@ export class Backend extends EventEmitter {
         return response.json();
     }
 
-    async saveSummary(summaryData: {
-        summaryID: string,
-        userID: string,
-        chatID: string,
-        messageIDs: string[],
-        summary: string
-    }) {
-        console.log("summary api called by backend.ts with payload: ", summaryData)
-        return this.post(endpoint + '/save-summary', summaryData);
-        
+    async saveSummary(summary: Summary) {
+        return this.post(endpoint + '/save-summary', summary);
     }
 
-    async recallSummary(userID: string, chatID: string) {
-        return this.get(endpoint+'/get-summaries?userID=${userID}&chatID=${chatID}');
+    async getSummaries(chatID: string): Promise<Summary[]> {
+        const summaries = await this.get(`${endpoint}/get-summaries?chatID=${chatID}`);
+        console.log("summaries from server:", summaries);
+        return summaries;
+
     }
 
-    //COMPLETENESS add function to get summaries from server
+    
+    async saveTokensSinceLastSummary(chatID: string, tokenCount: number, lastSummarizedMessageID?: string) {
+        console.log("save tokens api called by backend.ts, token count: ", tokenCount)
+        const data = {
+            chatID: chatID,
+            tokenCount: tokenCount,
+            lastSummarizedMessageID: lastSummarizedMessageID || null
+        };
+    
+        return this.post(endpoint + '/save-tokens-since-last-summary', data);
+    }
+    
+    
+    async getTokensSinceLastSummary(chatID: string): Promise<tokenCount> {
+        const reply = await this.get(`${endpoint}/get-tokens-since-last-summary?chatID=${chatID}`);
+        console.log("getTokensSinceLastSummary reply from server:", reply);
+    
+        return {
+            tokenCount: reply.tokenCount,
+            lastSummarizedMessageID: reply.lastSummarizedMessageID
+        };
+    }
+    
+    
+    
 }

@@ -13,7 +13,7 @@ import { Option } from './options/option';
 import { pluginMetadata } from './plugins/metadata';
 import { pluginRunner } from "./plugins/plugin-runner";
 import { createBasicPluginContext } from './plugins/plugin-context';
-import { GameLoop } from "./game/game";
+import { Game } from './game/game';
 
 export const channel = new BroadcastChannel('chats');
 
@@ -32,8 +32,6 @@ export class ChatManager extends EventEmitter {
         super();
 
         this.setMaxListeners(1000);
-
-        console.log('initializing chat manager');
 
         this.doc = this.attachYDoc('anonymous');
 
@@ -134,7 +132,7 @@ export class ChatManager extends EventEmitter {
         }
     }
 
-    public async sendMessage(userSubmittedMessage: UserSubmittedMessage) {
+    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, game: Game) {
         const chat = this.doc.getYChat(userSubmittedMessage.chatID);
 
         if (!chat) {
@@ -156,7 +154,7 @@ export class ChatManager extends EventEmitter {
         const messages: Message[] = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);
         messages.push(message);
 
-        GameLoop(messages,userSubmittedMessage.requestedParameters);
+        game.runLoop(messages,userSubmittedMessage.requestedParameters);
 
         await this.getReply(messages, userSubmittedMessage.requestedParameters);
     }
