@@ -5,6 +5,8 @@ import { config } from '../config';
 
 const tableNames = {
     authentication: 'authentication',
+    campaigns: 'campaigns',
+    storyElements: 'story_elements',
     chats: 'chats',
     deletedChats: 'deleted_chats',
     messages: 'messages',
@@ -34,7 +36,24 @@ export default class KnexDatabaseAdapter extends Database {
             table.binary('salt');
         });
 
-        await this.createTableIfNotExists(tableNames.chats, (table) => {
+        await this.createTableIfNotExists(tableNames.campaigns, (table) => {
+            table.text('id').primary();
+            table.text('user_id');
+            table.text('title');
+            table.text('description');
+        });
+
+        await this.createTableIfNotExists(tableNames.storyElements, (table) => {
+            table.text('id').primary();
+            table.text('user_id');
+            table.text('campaign_id');
+            table.text('type');
+            table.text('name');
+            table.text('description');
+            table.json('associations').defaultTo('[]');
+        });
+
+        await this.createTableIfNotExists(tableNames.chats, (table) => { //"scenes"
             table.text('id').primary();
             table.text('user_id');
             table.text('title');
