@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import * as Y from 'yjs';
 import { encode, decode } from '@msgpack/msgpack';
 import { MessageTree } from './chat/message-tree';
-import { tokenCount, Chat, Summary } from './chat/types';
+import { tokenCount, Chat, SummaryMinimal, SummaryDetailed } from './chat/types';
 import { AsyncLoop } from "./utils/async-loop";
 import { ChatManager } from '.';
 import { getRateLimitResetTimeFromResponse } from './utils';
@@ -277,22 +277,20 @@ export class Backend extends EventEmitter {
         return response.json();
     }
 
-    async saveSummary(summary: Summary) {
+    async saveSummary(summary: SummaryDetailed) {
         return this.post(endpoint + '/save-summary', summary);
     }
 
-    async getSummaries(chatID: string): Promise<Summary[]> {
-        const summaries = await this.get(`${endpoint}/get-summaries?chatID=${chatID}`);
+    async getSummaries(campaignID: string, chatID: string): Promise<SummaryMinimal[]> {
+        const summaries = await this.get(`${endpoint}/get-summaries?chatID=${chatID}&campaignID=${campaignID}`);
         console.log("summaries from server:", summaries);
         return summaries;
-
     }
-
     
-    async saveTokensSinceLastSummary(chatID: string, tokenCount: number, lastSummarizedMessageID?: string) {
-        console.log("save tokens api called by backend.ts, token count: ", tokenCount)
+    async saveTokensSinceLastSummary(chatID: string, campaignID: string, tokenCount: number, lastSummarizedMessageID?: string) {
         const data = {
             chatID: chatID,
+            campaignID: campaignID,
             tokenCount: tokenCount,
             lastSummarizedMessageID: lastSummarizedMessageID || null
         };
@@ -301,8 +299,8 @@ export class Backend extends EventEmitter {
     }
     
     
-    async getTokensSinceLastSummary(chatID: string): Promise<tokenCount> {
-        const reply = await this.get(`${endpoint}/get-tokens-since-last-summary?chatID=${chatID}`);
+    async getTokensSinceLastSummary(campaignID: string, chatID: string): Promise<tokenCount> {
+        const reply = await this.get(`${endpoint}/get-tokens-since-last-summary?chatID=${chatID}&campaignID=${campaignID}`);
         console.log("getTokensSinceLastSummary reply from server:", reply);
     
         return {

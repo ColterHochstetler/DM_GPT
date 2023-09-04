@@ -5,8 +5,8 @@ export default class SaveTokensSinceLastSummaryHandler extends RequestHandler {
     
     async handler(req: express.Request, res: express.Response) {
 
-        const { chatID, tokenCount, lastSummarizedMessageID } = req.body;
-        await this.context.database.saveTokensSinceLastSummary(this.userID!, chatID, tokenCount, lastSummarizedMessageID);
+        const { chatID, campaignID, tokenCount, lastSummarizedMessageID } = req.body;
+        await this.context.database.saveTokensSinceLastSummary(this.userID!, campaignID, chatID, tokenCount, lastSummarizedMessageID);
         res.status(200).send({ message: 'Tokens saved successfully.' });
 
     }

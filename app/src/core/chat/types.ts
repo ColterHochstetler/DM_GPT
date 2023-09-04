@@ -1,3 +1,4 @@
+import { type } from "os";
 import { MessageTree } from "./message-tree";
 
 export interface Parameters {
@@ -54,12 +55,23 @@ export interface tokenCount {
     tokenCount: number | undefined;
     lastSummarizedMessageID: string | undefined;
 }
-    
-export interface Summary {
+
+export interface SummaryMinimal {
     summaryID: string;
+    summary: string;
+}
+    
+export type SummaryDetailed = SummaryMinimal & {
+    campaignID: string;
     chatID: string;
     messageIDs: string[];
-    summary: string;
+}
+
+export interface Campaign {
+    id: string;
+    title: string;
+    description: string;
+    data: string;
 }
 
 export function serializeChat(chat: Chat): string {

@@ -257,7 +257,6 @@ export default class KnexDatabaseAdapter extends Database {
     }
 
     public async saveSummary(summaryID: string, userID: string, campaignID: string, chatID: string, messageIDs: string[], summary: string): Promise<void> {
-        console.log("saveSummary in knex.ts called.")
         await this.knex(tableNames.summaries).insert({
             id: summaryID,
             user_id: userID, 
@@ -268,10 +267,11 @@ export default class KnexDatabaseAdapter extends Database {
     }
     
 
-    public async getSummaries(userID: string, chatID: string): Promise<{ userID: string, chatID: string, messageIDs: string[], summary: string}[]> {
+    public async getSummaries(userID: string, campaignIDp: string, chatID: string): Promise<{chatID: string, messageIDs: string[], summary: string}[]> {
         try {
             const rows = await this.knex(tableNames.summaries)
-                .where('user_id', userID) 
+                .where('user_id', userID)
+                .andWhere('campaign_id', campaignIDp) 
                 .andWhere('chat_id', chatID);
             for (let row of rows) {
                 row.messageIDs = JSON.parse(row.message_ids);
@@ -286,43 +286,45 @@ export default class KnexDatabaseAdapter extends Database {
     public async saveTokensSinceLastSummary(userID: string, campaignID: string, chatID: string, tokenCount: number, lastSummarizedMessageID?: string | null): Promise<void> {
         const existingRecord = await this.knex(tableNames.tokenCount)
             .where('user_id', userID)
+            .andWhere('campaign_id', campaignID)
             .andWhere('chat_id', chatID)
             .first();
-        console.log("saveTokensSinceLastSummary in knex called")
+        
         const data: {
             user_id: string;
+            campaign_id: string;
             chat_id: string;
             token_count: number;
             last_summarized_message_id?: string;
         } = {
             user_id: userID,
+            campaign_id: campaignID,
             chat_id: chatID,
             token_count: tokenCount,
         };
-
-        // Adjust the conditional to check for both existence and non-nullity of lastSummarizedMessageID
+    
         if (lastSummarizedMessageID !== undefined && lastSummarizedMessageID !== null) {
             data.last_summarized_message_id = lastSummarizedMessageID;
         }
-    
+        
         if (existingRecord) {
-            // Update the existing record's token_count
             console.log("saveTokensSinceLastSummary existing record found")
             await this.knex(tableNames.tokenCount)
                 .where('user_id', userID)
+                .andWhere('campaign_id', campaignID)
                 .andWhere('chat_id', chatID)
                 .update(data);
         } else {
             console.log("saveTokensSinceLastSummary existing record not found, inserting")
-            // Insert a new record
             await this.knex(tableNames.tokenCount).insert(data);
         }  
-    }  
+    }
     
 
     public async getTokensSinceLastSummary(userID: string, campaignID: string, chatID: string): Promise<{ tokenCount: number | undefined, lastSummarizedMessageID: string | undefined}> {
         const row = await this.knex(tableNames.tokenCount)
             .where('user_id', userID)
+            .andWhere('campaign_id', campaignID)
             .andWhere('chat_id', chatID)
             .first();  // Get the first matching row
     

@@ -1,4 +1,4 @@
-import { Chat, Message, Parameters, UserSubmittedMessage, tokenCount, Summary } from "../chat/types"
+import { Chat, Message, Parameters, UserSubmittedMessage, tokenCount, SummaryMinimal, SummaryDetailed } from "../chat/types"
 import { backend, User } from "../backend";
 import { countTokensForMessages } from "../tokenizer";
 import { SummaryAgentBase } from "./agents";
@@ -7,6 +7,8 @@ import { SummaryAgentBase } from "./agents";
         summaryAgent: SummaryAgentBase; 
         summaryTokenThreshold: number = 400;
         summaryAgentModel: string = "gpt-3.5-turbo-16k";
+
+        campaignID: string = "Test campaignID"; //hardcoded for now, need to figure out where to store this variable to update/pass on front end
     
         constructor() {
             this.summaryAgent = new SummaryAgentBase();
@@ -15,7 +17,7 @@ import { SummaryAgentBase } from "./agents";
 
         async runLoop(messages: Message[], parameters: Parameters) {
             console.log("********Game.runLoop called********");
-            const retrievedTokenData = await backend.current?.getTokensSinceLastSummary(messages[messages.length - 1].chatID)
+            const retrievedTokenData = await backend.current?.getTokensSinceLastSummary(this.campaignID, messages[messages.length - 1].chatID)
             
             // Get the most recent messages since last summarized message
             let recentMessages: Message[] = [];
@@ -42,14 +44,14 @@ import { SummaryAgentBase } from "./agents";
             const totalTokensSinceLastSummary = countTokensForMessages(recentMessages) + (retrievedTokenData?.tokenCount || 0);
 
             if (totalTokensSinceLastSummary === undefined || totalTokensSinceLastSummary > this.summaryTokenThreshold) {
-                const retrievedSummaries: Summary[] = await backend.current?.getSummaries(messages[messages.length - 1].chatID) ?? []; //COMPLETE: develop proper way of recieving undefined, like throwing an error and allowing retry.
+                const retrievedSummaries: SummaryMinimal[] = await backend.current?.getSummaries(this.campaignID, messages[messages.length - 1].chatID) ?? []; //COMPLETE: develop proper way of recieving undefined, like throwing an error and allowing retry.
 
-                backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, 0, messages[messages.length - 1].id);
+                backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, this.campaignID, 0, messages[messages.length - 1].id);
                 console.log('Token threshold met, new save id: ', messages[messages.length - 1].id);
 
-                this.summaryAgent.sendAgentMessage(this.summaryAgentModel, parameters, retrievedSummaries, recentMessages);
+                this.summaryAgent.sendAgentMessage(parameters, retrievedSummaries, recentMessages, this.campaignID);
             } else {
-                backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, totalTokensSinceLastSummary, retrievedTokenData?.lastSummarizedMessageID);
+                backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, this.campaignID, totalTokensSinceLastSummary, retrievedTokenData?.lastSummarizedMessageID);
 
             }
     

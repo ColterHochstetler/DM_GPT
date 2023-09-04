@@ -24,7 +24,7 @@ export default abstract class Database {
     public abstract getDeletedChatIDs(userID: string): Promise<string[]>;
 
     public abstract saveSummary(summaryID: string, userID: string, campaignID: string, chatID: string, messageIDs: string[], summary: string): Promise<void>;
-    public abstract getSummaries(userID: string, chatID: string): Promise<{ userID: string, chatID: string, messageIDs: string[], summary: string}[]>;
+    public abstract getSummaries(userID: string, campaignID: string, chatID: string): Promise<{ chatID: string, messageIDs: string[], summary: string}[]>;
     public abstract saveTokensSinceLastSummary(userID: string, campaignID: string, chatID: string, tokenCount: number, lastSummarizedMessageID?: string): Promise<void>;
     public abstract getTokensSinceLastSummary(userID: string, campaignID: string, chatID: string): Promise<{tokenCount: number | undefined, lastSummarizedMessageID: string | undefined}>;
 
