@@ -12,12 +12,13 @@ export default class GetTokensSinceLastSummaryHandler extends RequestHandler {
         }
     
         const chatID = req.query.chatID;
+        const campaignID = req.query.campaignID;
     
         // Use the userID from the base class
         const userID = this.userID!;
     
         try {
-            const result = await this.context.database.getTokensSinceLastSummary(userID, chatID);
+            const result = await this.context.database.getTokensSinceLastSummary(userID, campaignID, chatID);
             console.log("GetTokensSinceLastSummaryHandler got: ", result);
             
             res.status(200).send(result);  // This sends both tokenCount and lastSummarizedMessageID to the client

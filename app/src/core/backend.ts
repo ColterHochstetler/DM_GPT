@@ -241,7 +241,7 @@ export class Backend extends EventEmitter {
         return null;
     }
 
-    async deleteChat(id: string) {
+    async deleteChatAndRelatedData(id: string) {
         if (!this.isAuthenticated) {
             return;
         }

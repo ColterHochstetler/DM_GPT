@@ -216,7 +216,7 @@ export class ChatManager extends EventEmitter {
         return this.doc.getChatIDs().map(id => this.get(id));
     }
 
-    public deleteChat(id: string, broadcast = true) {
+    public deleteChatAndRelatedData(id: string, broadcast = true) {
         this.doc.delete(id);
         this.search.delete(id);
     }
