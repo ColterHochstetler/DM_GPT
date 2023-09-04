@@ -91,8 +91,8 @@ function ChatListItem(props: { chat: any, onClick: any, selected: boolean }) {
             },
             onConfirm: async () => {
                 try {
-                    await backend.current?.deleteChat(c.chatID);
-                    context.chat.deleteChat(c.chatID);
+                    await backend.current?.deleteChatAndRelatedData(c.chatID);
+                    context.chat.deleteChatAndRelatedData(c.chatID);
                     navigate('/');
                 } catch (e) {
                     console.error(e);

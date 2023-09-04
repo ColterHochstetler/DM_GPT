@@ -11,7 +11,7 @@ import Database from './database/index';
 import KnexDatabaseAdapter from './database/knex';
 import GetShareRequestHandler from './endpoints/get-share';
 import HealthRequestHandler from './endpoints/health';
-import DeleteChatRequestHandler from './endpoints/delete-chat';
+import deleteChatAndRelatedDataRequestHandler from './endpoints/delete-chat';
 import ElevenLabsTTSProxyRequestHandler from './endpoints/service-proxies/elevenlabs/text-to-speech';
 import ElevenLabsVoicesProxyRequestHandler from './endpoints/service-proxies/elevenlabs/voices';
 import OpenAIProxyRequestHandler from './endpoints/service-proxies/openai';
@@ -96,7 +96,7 @@ export default class ChatServer {
             max: config.rateLimit.max,
         }));
         
-        this.app.post('/chatapi/delete', (req, res) => new DeleteChatRequestHandler(this, req, res));
+        this.app.post('/chatapi/delete', (req, res) => new deleteChatAndRelatedDataRequestHandler(this, req, res));
         this.app.get('/chatapi/share/:id', (req, res) => new GetShareRequestHandler(this, req, res));
         this.app.post('/chatapi/share', (req, res) => new ShareRequestHandler(this, req, res));
 

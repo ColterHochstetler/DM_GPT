@@ -5,6 +5,8 @@ import { config } from '../config';
 
 const tableNames = {
     authentication: 'authentication',
+    campaigns: 'campaigns',
+    storyElements: 'story_elements',
     chats: 'chats',
     deletedChats: 'deleted_chats',
     messages: 'messages',
@@ -21,7 +23,7 @@ export default class KnexDatabaseAdapter extends Database {
         super();
     }
 
-    public async initialize() {
+    public async initialize() { //STABILITY: add foreign key stuff here
         console.log(`Initializing database adapter for ${this.knexConfig.client}.`);
         await this.createTables();
     }
@@ -34,9 +36,32 @@ export default class KnexDatabaseAdapter extends Database {
             table.binary('salt');
         });
 
-        await this.createTableIfNotExists(tableNames.chats, (table) => {
+        await this.createTableIfNotExists(tableNames.campaigns, (table) => {
             table.text('id').primary();
             table.text('user_id');
+            table.text('title');
+            table.text('description');
+            table.text('data');
+
+            table.index('user_id');
+        });
+
+        await this.createTableIfNotExists(tableNames.storyElements, (table) => {
+            table.text('id').primary();
+            table.text('user_id');
+            table.text('campaign_id');
+            table.text('type');
+            table.text('name');
+            table.text('description');
+            table.json('associations').defaultTo('[]');
+
+            table.index('user_id');
+        });
+
+        await this.createTableIfNotExists(tableNames.chats, (table) => { //"scenes"
+            table.text('id').primary();
+            table.text('user_id');
+            table.text('campaign_id');
             table.text('title');
         });
 
@@ -63,22 +88,30 @@ export default class KnexDatabaseAdapter extends Database {
             table.increments('id').primary();
             table.text('user_id');
             table.binary('update');
+
             table.index('user_id');
         });
 
         await this.createTableIfNotExists(tableNames.summaries, (table) => {
             table.text('id').primary(); 
             table.text('user_id'); 
-            table.text('chat_id'); // STABILITY: add foreign key stuff here
+            table.text('campaign_id');
+            table.text('chat_id');
             table.text('message_ids'); 
             table.text('summary'); 
+            
+
+            table.index('user_id');
         });
 
         await this.createTableIfNotExists(tableNames.tokenCount, (table) => {
             table.text('user_id');
-            table.text('chat_id'); // STABILITY: add foreign key stuff here
+            table.text('campaign_id');
+            table.text('chat_id');
             table.integer('token_count'); 
             table.text('last_summarized_message_id');
+
+            table.index('user_id');
         });
         
     }
@@ -152,11 +185,12 @@ export default class KnexDatabaseAdapter extends Database {
         // deprecated
     }
 
-    public async deleteChat(userID: string, chatID: string): Promise<any> {
+    public async deleteChatAndRelatedData(userID: string, chatID: string): Promise<any> {
         await this.knex.transaction(async (trx) => {
             await trx(tableNames.chats).where({ id: chatID, user_id: userID }).delete();
             await trx(tableNames.messages).where({ chat_id: chatID, user_id: userID }).delete();
             await trx(tableNames.summaries).where({ chat_id: chatID }).delete();
+            await trx(tableNames.tokenCount).where({ chat_id: chatID }).delete();
             await trx(tableNames.deletedChats)
                 .insert({ id: chatID, user_id: userID, deleted_at: new Date() });
         });
@@ -222,8 +256,7 @@ export default class KnexDatabaseAdapter extends Database {
             });
     }
 
-    public async saveSummary(summaryID: string, userID: string, chatID: string, messageIDs: string[], summary: string): Promise<void> {
-        console.log("saveSummary in knex.ts called.")
+    public async saveSummary(summaryID: string, userID: string, campaignID: string, chatID: string, messageIDs: string[], summary: string): Promise<void> {
         await this.knex(tableNames.summaries).insert({
             id: summaryID,
             user_id: userID, 
@@ -234,10 +267,11 @@ export default class KnexDatabaseAdapter extends Database {
     }
     
 
-    public async getSummaries(userID: string, chatID: string): Promise<{ userID: string, chatID: string, messageIDs: string[], summary: string}[]> {
+    public async getSummaries(userID: string, campaignIDp: string, chatID: string): Promise<{chatID: string, messageIDs: string[], summary: string}[]> {
         try {
             const rows = await this.knex(tableNames.summaries)
-                .where('user_id', userID) 
+                .where('user_id', userID)
+                .andWhere('campaign_id', campaignIDp) 
                 .andWhere('chat_id', chatID);
             for (let row of rows) {
                 row.messageIDs = JSON.parse(row.message_ids);
@@ -249,47 +283,48 @@ export default class KnexDatabaseAdapter extends Database {
         }
     }
 
-    public async saveTokensSinceLastSummary(userID: string, chatID: string, tokenCount: number, lastSummarizedMessageID?: string | null): Promise<void> {
+    public async saveTokensSinceLastSummary(userID: string, campaignID: string, chatID: string, tokenCount: number, lastSummarizedMessageID?: string | null): Promise<void> {
         const existingRecord = await this.knex(tableNames.tokenCount)
             .where('user_id', userID)
+            .andWhere('campaign_id', campaignID)
             .andWhere('chat_id', chatID)
             .first();
-        console.log("saveTokensSinceLastSummary in knex called")
+        
         const data: {
             user_id: string;
+            campaign_id: string;
             chat_id: string;
             token_count: number;
             last_summarized_message_id?: string;
         } = {
             user_id: userID,
+            campaign_id: campaignID,
             chat_id: chatID,
             token_count: tokenCount,
         };
-
-        // Adjust the conditional to check for both existence and non-nullity of lastSummarizedMessageID
+    
         if (lastSummarizedMessageID !== undefined && lastSummarizedMessageID !== null) {
             data.last_summarized_message_id = lastSummarizedMessageID;
         }
-    
+        
         if (existingRecord) {
-            // Update the existing record's token_count
             console.log("saveTokensSinceLastSummary existing record found")
             await this.knex(tableNames.tokenCount)
                 .where('user_id', userID)
+                .andWhere('campaign_id', campaignID)
                 .andWhere('chat_id', chatID)
                 .update(data);
         } else {
             console.log("saveTokensSinceLastSummary existing record not found, inserting")
-            // Insert a new record
             await this.knex(tableNames.tokenCount).insert(data);
         }  
-    }  
+    }
     
 
-    public async getTokensSinceLastSummary(userID: string, chatID: string): Promise<{ tokenCount: number | undefined, lastSummarizedMessageID: string | undefined}> {
+    public async getTokensSinceLastSummary(userID: string, campaignID: string, chatID: string): Promise<{ tokenCount: number | undefined, lastSummarizedMessageID: string | undefined}> {
         const row = await this.knex(tableNames.tokenCount)
-            .select('token_count', 'last_summarized_message_id')  // Select both columns
             .where('user_id', userID)
+            .andWhere('campaign_id', campaignID)
             .andWhere('chat_id', chatID)
             .first();  // Get the first matching row
     
@@ -308,6 +343,69 @@ export default class KnexDatabaseAdapter extends Database {
         };
     }
     
+    public async saveCampaign(userID: string, campaignID: string, title: string, description: string): Promise<void> {
+        await this.knex(tableNames.campaigns).insert({
+            id: campaignID,
+            user_id: userID,
+            title,
+            description,
+            data: JSON.stringify({}),
+        });
+    }
+
+    public async getCampaigns(userID: string): Promise<{ id: string; title: string; description: string }[]> {
+        const rows = await this.knex(tableNames.campaigns)
+            .where('user_id', userID)
+            .select();
+        return rows.map((row: any) => ({
+            id: row.id,
+            title: row.title,
+            description: row.description,
+        }));
+    }
+
+    public async getCampaign(userID: string, campaignID: string): Promise<{ id: string; title: string; description: string; data: string }> {
+        const row = await this.knex(tableNames.campaigns)
+            .where('user_id', userID)
+            .andWhere('id', campaignID)
+            .first();
+        if (!row) {
+            throw new Error('campaign not found');
+        }
+        return {
+            id: row.id,
+            title: row.title,
+            description: row.description,
+            data: row.data,
+        };
+    }
+
+    public async deleteCampaign(userID: string, campaignID: string): Promise<void> {
+        // TODO: delete all chats, messages, etc. associated with this campaign
+        await this.knex(tableNames.campaigns)
+            .where('user_id', userID)
+            .andWhere('id', campaignID)
+            .delete();
+
+        await this.knex(tableNames.storyElements)
+            .where('user_id', userID)
+            .andWhere('campaign_id', campaignID)
+            .delete();
+
+        await this.knex(tableNames.summaries)
+            .where('user_id', userID)
+            .andWhere('campaign_id', campaignID)
+            .delete();
+        
+ /*        const chatsToDelete: string[] = await this.knex(tableNames.chats)
+            .where('user_id', userID)
+            .andWhere('campaign_id', campaignID)
+
+        for (let chatID of chatsToDelete) {
+            await this.deleteChatAndRelatedData(userID, chatID);
+        }   */ 
+
+    }
     
     
 }
