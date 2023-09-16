@@ -1,4 +1,4 @@
-import { Chat, Message, Parameters, UserSubmittedMessage, tokenCount, SummaryMinimal, SummaryDetailed } from "../chat/types"
+import { Chat, Message, Parameters, UserSubmittedMessage, TokenCount, SummaryMinimal, SummaryDetailed } from "../chat/types"
 import { backend, User } from "../backend";
 import { countTokensForMessages } from "../tokenizer";
 import { SummaryAgentBase } from "./agents";

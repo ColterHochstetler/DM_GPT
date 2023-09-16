@@ -408,7 +408,7 @@ export default class KnexDatabaseAdapter extends Database {
 
     }
 
-    public async saveStoryElement(userID: string, campaignID: string, storyElementID: string, type: string, name: string, description: string, associations: string[]): Promise<void> {
+    public async saveStoryElement(userID: string, campaignID: string, storyElementID: string, type: string, name: string, description: string, details: string[], associations: string[]): Promise<void> {
         try {
             const existingElement = await this.knex(tableNames.storyElements)
                 .where('id', storyElementID)
@@ -424,6 +424,7 @@ export default class KnexDatabaseAdapter extends Database {
                         type: type,
                         name: name,
                         description: description,
+                        details: JSON.stringify(details),
                         associations: JSON.stringify(associations)
                     });
             } else {
@@ -436,6 +437,7 @@ export default class KnexDatabaseAdapter extends Database {
                         type: type,
                         name: name,
                         description: description,
+                        details: JSON.stringify(details),
                         associations: JSON.stringify(associations)
                     });
             }
@@ -446,7 +448,7 @@ export default class KnexDatabaseAdapter extends Database {
     }
     
     
-    public async getStoryElements(userID: string, campaignID: string): Promise<{id: string, userID: string, campaignID: string, type: string, name: string, description: string, associations: any[]}[]> {
+    public async getStoryElements(userID: string, campaignID: string): Promise<{campaignID: string, id: string, type: string, name: string, description: string, details: any, associations: any[]}[]> {
         try {
             const rows = await this.knex(tableNames.storyElements)
                 .where('user_id', userID)
@@ -454,6 +456,7 @@ export default class KnexDatabaseAdapter extends Database {
             
             for (let row of rows) {
                 row.associations = JSON.parse(row.associations);
+                row.details = JSON.parse(row.details); // Parse the details column
             }
             
             return rows;
@@ -462,6 +465,7 @@ export default class KnexDatabaseAdapter extends Database {
             throw new Error("Unable to fetch story elements due to an internal error");
         }
     }
+    
     
     
 }

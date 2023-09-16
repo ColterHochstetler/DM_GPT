@@ -51,7 +51,7 @@ export interface Chat {
     deleted?: boolean;
 }
 
-export interface tokenCount {
+export interface TokenCount {
     tokenCount: number | undefined;
     lastSummarizedMessageID: string | undefined;
 }
@@ -65,6 +65,16 @@ export type SummaryDetailed = SummaryMinimal & {
     campaignID: string;
     chatID: string;
     messageIDs: string[];
+}
+
+export interface StoryElement {
+    campaignID: string;
+    id: string;
+    type: string;
+    name: string;
+    description: string;
+    details: string[];
+    associations: string[];
 }
 
 export interface Campaign {
