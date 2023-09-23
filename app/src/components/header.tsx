@@ -28,6 +28,8 @@ const Banner = styled.div`
 `;
 
 const HeaderContainer = styled.div`
+    width: 40vw;
+    margin: 0 auto; 
     display: flex;
     flex-shrink: 0;
     align-items: center;
@@ -194,7 +196,7 @@ export default function Header(props: HeaderProps) {
         ['c', onNewChat],
     ]);
 
-    const header = (<>
+    return (<>
         {context.sessionExpired && <Banner onClick={signIn}>
             You have been signed out. Click here to sign back in.
         </Banner>}
@@ -202,7 +204,7 @@ export default function Header(props: HeaderProps) {
             <Helmet>
                 <title>
                     {props.title ? `${props.title} - ` : ''}
-                    {intl.formatMessage({ defaultMessage: "Chat with GPT - Unofficial ChatGPT app", description: "HTML title tag" })}
+                    {intl.formatMessage({ defaultMessage: "DM GPT - A character rich TTRPG experience with an AI as your DM", description: "HTML title tag" })}
                 </title>
             </Helmet>
             {!sidebarOpen && <Burger opened={sidebarOpen} onClick={onBurgerClick} aria-label={burgerLabel} transitionDuration={0} />}
@@ -236,7 +238,6 @@ export default function Header(props: HeaderProps) {
         </HeaderContainer>
     </>);
 
-    return header;
 }
 
 function SubHeaderMenuItem(props: { item: MenuItem }) {
