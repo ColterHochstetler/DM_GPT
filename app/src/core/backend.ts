@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import * as Y from 'yjs';
 import { encode, decode } from '@msgpack/msgpack';
 import { MessageTree } from './chat/message-tree';
-import { tokenCount, Chat, SummaryMinimal, SummaryDetailed } from './chat/types';
+import { TokenCount, Chat, SummaryMinimal, SummaryDetailed, StoryElement} from './chat/types';
 import { AsyncLoop } from "./utils/async-loop";
 import { ChatManager } from '.';
 import { getRateLimitResetTimeFromResponse } from './utils';
@@ -297,9 +297,8 @@ export class Backend extends EventEmitter {
     
         return this.post(endpoint + '/save-tokens-since-last-summary', data);
     }
-    
-    
-    async getTokensSinceLastSummary(campaignID: string, chatID: string): Promise<tokenCount> {
+        
+    async getTokensSinceLastSummary(campaignID: string, chatID: string): Promise<TokenCount> {
         const reply = await this.get(`${endpoint}/get-tokens-since-last-summary?chatID=${chatID}&campaignID=${campaignID}`);
         console.log("getTokensSinceLastSummary reply from server:", reply);
     
@@ -308,7 +307,15 @@ export class Backend extends EventEmitter {
             lastSummarizedMessageID: reply.lastSummarizedMessageID
         };
     }
+
+    async saveStoryElement(storyElement: StoryElement) {
+        return this.post(endpoint + '/save-story-element', storyElement);
+    }
     
-    
-    
+    async getStoryElements(campaignID: string): Promise<StoryElement[]> {
+        const storyElements = await this.get(`${endpoint}/get-story-elements?campaignID=${campaignID}`);
+        console.log("story elements from server:", storyElements);
+        return storyElements;
+    }
+
 }

@@ -259,7 +259,8 @@ export default class KnexDatabaseAdapter extends Database {
     public async saveSummary(summaryID: string, userID: string, campaignID: string, chatID: string, messageIDs: string[], summary: string): Promise<void> {
         await this.knex(tableNames.summaries).insert({
             id: summaryID,
-            user_id: userID, 
+            user_id: userID,
+            campaign_id: campaignID,
             chat_id: chatID, 
             message_ids: JSON.stringify(messageIDs), 
             summary
@@ -267,11 +268,11 @@ export default class KnexDatabaseAdapter extends Database {
     }
     
 
-    public async getSummaries(userID: string, campaignIDp: string, chatID: string): Promise<{chatID: string, messageIDs: string[], summary: string}[]> {
+    public async getSummaries(userID: string, campaignID: string, chatID: string): Promise<{chatID: string, messageIDs: string[], summary: string}[]> {
         try {
             const rows = await this.knex(tableNames.summaries)
                 .where('user_id', userID)
-                .andWhere('campaign_id', campaignIDp) 
+                .andWhere('campaign_id', campaignID) 
                 .andWhere('chat_id', chatID);
             for (let row of rows) {
                 row.messageIDs = JSON.parse(row.message_ids);
@@ -406,6 +407,65 @@ export default class KnexDatabaseAdapter extends Database {
         }   */ 
 
     }
+
+    public async saveStoryElement(userID: string, campaignID: string, storyElementID: string, type: string, name: string, description: string, details: string[], associations: string[]): Promise<void> {
+        try {
+            const existingElement = await this.knex(tableNames.storyElements)
+                .where('id', storyElementID)
+                .first();
+    
+            if (existingElement) {
+                // Update existing story element
+                await this.knex(tableNames.storyElements)
+                    .where('id', storyElementID)
+                    .update({
+                        user_id: userID,
+                        campaign_id: campaignID,
+                        type: type,
+                        name: name,
+                        description: description,
+                        details: JSON.stringify(details),
+                        associations: JSON.stringify(associations)
+                    });
+            } else {
+                // Insert new story element
+                await this.knex(tableNames.storyElements)
+                    .insert({
+                        id: storyElementID,
+                        user_id: userID,
+                        campaign_id: campaignID,
+                        type: type,
+                        name: name,
+                        description: description,
+                        details: JSON.stringify(details),
+                        associations: JSON.stringify(associations)
+                    });
+            }
+        } catch (error) {
+            console.error("Error saving story element:", error);
+            throw new Error("Unable to save story element due to an internal error");
+        }
+    }
+    
+    
+    public async getStoryElements(userID: string, campaignID: string): Promise<{campaignID: string, id: string, type: string, name: string, description: string, details: any, associations: any[]}[]> {
+        try {
+            const rows = await this.knex(tableNames.storyElements)
+                .where('user_id', userID)
+                .andWhere('campaign_id', campaignID);
+            
+            for (let row of rows) {
+                row.associations = JSON.parse(row.associations);
+                row.details = JSON.parse(row.details); // Parse the details column
+            }
+            
+            return rows;
+        } catch (error) {
+            console.error("Error fetching story elements:", error);
+            throw new Error("Unable to fetch story elements due to an internal error");
+        }
+    }
+    
     
     
 }

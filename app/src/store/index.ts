@@ -15,6 +15,7 @@ import messageReducer from './message';
 import settingsUIReducer from './settings-ui';
 import sidebarReducer from './sidebar';
 import uiReducer from './ui';
+import campaignReducer from './campaign-slice';
 
 const persistConfig = {
   key: 'root',
@@ -33,6 +34,7 @@ const persistMessageConfig = {
 
 const store = configureStore({
   reducer: {
+    campaign: campaignReducer,
     message: persistReducer<ReturnType<typeof messageReducer>>(persistMessageConfig, messageReducer),
     ui: uiReducer,
     settingsUI: settingsUIReducer,

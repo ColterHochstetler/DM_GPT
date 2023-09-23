@@ -33,6 +33,9 @@ export default abstract class Database {
     public abstract getCampaign(userID: string, campaignID: string): Promise<{id: string, title: string, description: string, data: string}>;
     public abstract deleteCampaign(userID: string, campaignID: string): Promise<void>;
 
+    public abstract saveStoryElement(userID: string, campaignID: string, storyElementID: string, type: string, name: string, description: string, details: string[], associations: string[]): Promise<void>;
+    public abstract getStoryElements(userID: string, campaignID: string): Promise<{id: string, type: string, name: string, description: string, details: string[], associations: string[]}[]>;
+
     protected abstract loadYDoc(userID: string): Promise<Doc>;
     public abstract saveYUpdate(userID: string, update: Uint8Array): Promise<void>;
 
