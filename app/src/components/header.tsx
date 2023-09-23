@@ -14,6 +14,8 @@ import { selectSidebarOpen, toggleSidebar } from '../store/sidebar';
 import { openLoginModal, openSignupModal } from '../store/ui';
 import { useOption } from '../core/options/use-option';
 import { useHotkeys } from '@mantine/hooks';
+import { setTitle, selectTitle } from '../store/title';
+import { RenameModal } from './rename-modal';
 
 const Banner = styled.div`
     background: rgba(224, 49, 49, 0.2);
@@ -150,8 +152,12 @@ export default function Header(props: HeaderProps) {
     const dispatch = useAppDispatch();
     const intl = useIntl();
 
+    const [renderCount, forceUpdate] = useState(0); // testing only
+
     const sidebarOpen = useAppSelector(selectSidebarOpen);
     const onBurgerClick = useCallback(() => dispatch(toggleSidebar()), [dispatch]);
+
+    const title = useAppSelector(selectTitle);
 
     const burgerLabel = sidebarOpen
         ? intl.formatMessage({ defaultMessage: "Close sidebar" })
@@ -202,6 +208,14 @@ export default function Header(props: HeaderProps) {
             {!sidebarOpen && <Burger opened={sidebarOpen} onClick={onBurgerClick} aria-label={burgerLabel} transitionDuration={0} />}
             {context.isHome && <h2>{intl.formatMessage({ defaultMessage: "Chat with GPT", description: "app name" })}</h2>}
             <div className="spacer" />
+            <h2>{title}</h2>
+            <RenameModal 
+                currentTitle={title} 
+                onUpdateTitle={(newTitle) => {
+                    dispatch(setTitle(newTitle));
+                    forceUpdate(renderCount + 1);  // This will force a re-render
+                }} 
+            />
             <HeaderButton icon="search" onClick={spotlight.openSpotlight} />
             <HeaderButton icon="gear" onClick={openSettings} />
             {backend.current && !props.share && props.canShare && typeof navigator.share !== 'undefined' && <HeaderButton icon="share" onClick={props.onShare}>
@@ -217,7 +231,7 @@ export default function Header(props: HeaderProps) {
                 </HeaderButton>
             )}
             <HeaderButton icon="plus" onClick={onNewChat} loading={loading} variant="light">
-                <FormattedMessage defaultMessage="New Chat" description="Label for the button used to start a new chat session" />
+                <FormattedMessage defaultMessage="New" description="Label for the button used to start a new chat session" />
             </HeaderButton>
         </HeaderContainer>
     </>), [sidebarOpen, onBurgerClick, props.title, props.share, props.canShare, props.onShare, openSettings, onNewChat, 

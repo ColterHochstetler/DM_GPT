@@ -16,6 +16,7 @@ import settingsUIReducer from './settings-ui';
 import sidebarReducer from './sidebar';
 import uiReducer from './ui';
 import campaignReducer from './campaign-slice';
+import titleReducer from './title'
 
 const persistConfig = {
   key: 'root',
@@ -32,6 +33,11 @@ const persistMessageConfig = {
   storage,
 }
 
+const persistTitleConfig = {
+  key: 'title',
+  storage,
+};
+
 const store = configureStore({
   reducer: {
     campaign: campaignReducer,
@@ -39,6 +45,7 @@ const store = configureStore({
     ui: uiReducer,
     settingsUI: settingsUIReducer,
     sidebar: persistReducer<ReturnType<typeof sidebarReducer>>(persistSidebarConfig, sidebarReducer),
+    title: persistReducer<ReturnType<typeof titleReducer>>(persistTitleConfig, titleReducer),
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
