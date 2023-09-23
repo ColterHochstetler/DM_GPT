@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@mantine/core": "^7.0.0",
     "@types/jquery": "^3.5.17",
     "jquery": "^3.7.0"
   }
