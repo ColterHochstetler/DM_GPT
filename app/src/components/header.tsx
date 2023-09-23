@@ -194,7 +194,7 @@ export default function Header(props: HeaderProps) {
         ['c', onNewChat],
     ]);
 
-    const header = useMemo(() => (<>
+    const header = (<>
         {context.sessionExpired && <Banner onClick={signIn}>
             You have been signed out. Click here to sign back in.
         </Banner>}
@@ -234,8 +234,7 @@ export default function Header(props: HeaderProps) {
                 <FormattedMessage defaultMessage="New" description="Label for the button used to start a new chat session" />
             </HeaderButton>
         </HeaderContainer>
-    </>), [sidebarOpen, onBurgerClick, props.title, props.share, props.canShare, props.onShare, openSettings, onNewChat, 
-        loading, context.authenticated, context.sessionExpired, context.isHome, context.isShare, spotlight.openSpotlight, signIn, signUp]);
+    </>);
 
     return header;
 }
