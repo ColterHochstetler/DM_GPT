@@ -2,26 +2,37 @@ import React from 'react';
 import TabContainer, {TabProps} from '../sidebar/tab-container';
 
 type SidePanelProps = {
-    tabs: TabProps[];
-  };
+  tabs: TabProps[];
+  position: 'left' | 'right';
+};
 
-const SidePanel: React.FC<SidePanelProps> = ({ tabs }) => {
+
+const SidePanel: React.FC<SidePanelProps> = ({ tabs, position }) => {
     const sidePanelStyle: React.CSSProperties = {
-        width: '30vw', // 30% of the viewport width
+        width: 'auto',
         height: '100vh', // full height
         overflowY: 'auto', // add scrolling if content overflows
         position: 'fixed',
         top: 0,
-        left: 0, // for the left side panel
-        // right: 0, // uncomment for the right side panel
+        paddingTop: '1rem',
+        paddingBottom: '1rem',
+        paddingLeft: '1.8rem',
+        paddingRight: 'rem',
     };
 
+    // Adjust the position based on the prop
+    if (position === 'left') {
+        sidePanelStyle.left = 0;
+    } else if (position === 'right') {
+        sidePanelStyle.right = 0;
+    }
+
     return (
-    <div className="side-panel" style={sidePanelStyle}>
-        <TabContainer tabs={tabs} />
-      </div>
+        <div className="side-panel" style={sidePanelStyle}>
+            <TabContainer tabs={tabs} />
+        </div>
     );
-  };
+};
 
+export default SidePanel;
 
-  export default SidePanel;

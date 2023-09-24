@@ -92,7 +92,7 @@ export function Page(props: {
 
     return <SpotlightProvider {...spotlightProps}>
         <Container>
-            <SidePanel tabs={rightTabs} />
+            <SidePanel tabs={leftTabs} position="left" />
             <Main key={props.id}>
                 <Header share={props.headerProps?.share}
                     canShare={props.headerProps?.canShare}
@@ -107,7 +107,7 @@ export function Page(props: {
                 <CreateAccountModal />
                 <InstallUpdateNotification />
             </Main>
-            <SidePanel tabs={rightTabs} />
+            <SidePanel tabs={rightTabs} position="right" />
         </Container>
     </SpotlightProvider>;
 }
