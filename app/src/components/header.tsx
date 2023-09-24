@@ -28,8 +28,8 @@ const Banner = styled.div`
 `;
 
 const HeaderContainer = styled.div`
-    width: 40vw;
-    margin: 0 auto; 
+    width: 90%;
+    margin: 0 auto;
     display: flex;
     flex-shrink: 0;
     align-items: center;
