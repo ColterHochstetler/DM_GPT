@@ -208,7 +208,9 @@ export default function Header(props: HeaderProps) {
                 </title>
             </Helmet>
             {!sidebarOpen && <Burger opened={sidebarOpen} onClick={onBurgerClick} aria-label={burgerLabel} transitionDuration={0} />}
-            {context.isHome && <h2>{intl.formatMessage({ defaultMessage: "Chat with GPT", description: "app name" })}</h2>}
+            <HeaderButton icon="plus" onClick={onNewChat} loading={loading} variant="light">
+                <FormattedMessage defaultMessage="New" description="Label for the button used to start a new chat session" />
+            </HeaderButton>
             <div className="spacer" />
             <h2>{title}</h2>
             <RenameModal 
@@ -218,11 +220,7 @@ export default function Header(props: HeaderProps) {
                     forceUpdate(renderCount + 1);  // This will force a re-render
                 }} 
             />
-            <HeaderButton icon="search" onClick={spotlight.openSpotlight} />
-            <HeaderButton icon="gear" onClick={openSettings} />
-            {backend.current && !props.share && props.canShare && typeof navigator.share !== 'undefined' && <HeaderButton icon="share" onClick={props.onShare}>
-                <FormattedMessage defaultMessage="Share" description="Label for the button used to create a public share URL for a chat log" />
-            </HeaderButton>}
+            <div className="spacer" />
             {backend.current && !context.authenticated && (
                 <HeaderButton onClick={localStorage.getItem('registered') ? signIn : signUp}>
                     <FormattedMessage defaultMessage="Sign in <h>to sync</h>"
@@ -232,9 +230,13 @@ export default function Header(props: HeaderProps) {
                         }} />
                 </HeaderButton>
             )}
-            <HeaderButton icon="plus" onClick={onNewChat} loading={loading} variant="light">
-                <FormattedMessage defaultMessage="New" description="Label for the button used to start a new chat session" />
-            </HeaderButton>
+            <HeaderButton icon="search" onClick={spotlight.openSpotlight} />
+            <HeaderButton icon="gear" onClick={openSettings} />
+            {backend.current && !props.share && props.canShare && typeof navigator.share !== 'undefined' && <HeaderButton icon="share" onClick={props.onShare}>
+                <FormattedMessage defaultMessage="Share" description="Label for the button used to create a public share URL for a chat log" />
+            </HeaderButton>}
+
+
         </HeaderContainer>
     </>);
 

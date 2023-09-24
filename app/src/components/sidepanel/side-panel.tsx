@@ -1,5 +1,5 @@
 import React from 'react';
-import TabContainer, {TabProps} from '../sidebar/tab-container';
+import TabContainer, {TabProps} from './tab-container';
 
 type SidePanelProps = {
   tabs: TabProps[];
