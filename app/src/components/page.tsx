@@ -8,6 +8,7 @@ import { InstallUpdateNotification } from './pwa-notifications';
 import SettingsDrawer from './settings';
 import Sidebar from './sidebar';
 import AudioControls from './tts-controls';
+import SidePanel from './sidepanel/side-panel';
 
 const Container = styled.div`
     position: absolute;
@@ -68,6 +69,19 @@ const Main = styled.div`
     }
 `;
 
+const leftTabs = [
+    { name: 'Scenes', content: <div>List of Scenes</div>, value: 'Scenes' },
+    { name: 'Journal', content: <div>Journal Entries</div>, value: 'Journal' },
+    { name: 'Characters', content: <div>List of Characters</div>, value: 'Characters' },
+  ];
+  
+  const rightTabs = [
+    { name: 'Character Sheet', content: <div>List of Scenes</div>, value: 'Character Sheet' },
+    { name: 'Inventory', content: <div>Journal Entries</div>, value: 'Inventory' },
+    { name: 'Help', content: <div>List of Characters</div>, value: 'Help' },
+  ];
+  
+
 export function Page(props: {
     id: string;
     headerProps?: HeaderProps;
@@ -78,7 +92,7 @@ export function Page(props: {
 
     return <SpotlightProvider {...spotlightProps}>
         <Container>
-            <Sidebar />
+            <SidePanel tabs={rightTabs} />
             <Main key={props.id}>
                 <Header share={props.headerProps?.share}
                     canShare={props.headerProps?.canShare}
@@ -93,6 +107,7 @@ export function Page(props: {
                 <CreateAccountModal />
                 <InstallUpdateNotification />
             </Main>
+            <SidePanel tabs={rightTabs} />
         </Container>
     </SpotlightProvider>;
 }
