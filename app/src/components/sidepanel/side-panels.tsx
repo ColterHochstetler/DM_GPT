@@ -1,4 +1,5 @@
 import { Tabs } from '@mantine/core';
+import ChatHistory from './chat-history';
 
 
 export function LeftPanel() {
@@ -11,6 +12,9 @@ export function LeftPanel() {
                 <Tabs.Tab value="journal">Journal</Tabs.Tab>
                 <Tabs.Tab value="characters">Characters</Tabs.Tab>
             </Tabs.List>
+            <Tabs.Panel value="scenes">
+                    <ChatHistory />
+            </Tabs.Panel>
             </Tabs>
         </div>
       );
