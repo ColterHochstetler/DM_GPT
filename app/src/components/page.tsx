@@ -12,35 +12,37 @@ import { LeftPanel, RightPanel } from './sidepanel/side-panels';
 import styled from '@emotion/styled';
 
 const Container = styled.div`
-    display: flex;
-    width: 100vw;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 26.4% 1fr 26.4%; 
+    gap: 1.75%;
+    width: 100%;
     height: 100vh;
+    padding: 10px 25px; 
+    box-sizing: border-box; 
 `;
 
+
+
 const StyledLeftPanel = styled(LeftPanel)`
-    width-min: 20vw;
-    flex: 3;
+    box-sizing: border-box;
 `;
 
 const StyledRightPanel = styled(RightPanel)`
-    width-min: 20vw;
-    flex: 3;
+    box-sizing: border-box; 
 `;
 
 const Main = styled.div`
-    flex-grow: 4;
     display: flex;
     flex-direction: column;
     overflow: scroll;
+    box-sizing: border-box;
 
     @media (min-height: 30em) {
         overflow: hidden;
     }
 `;
 
-const PaddedContainer = styled.div`
-    padding: 16px; // Adjust the padding value as per your requirements
-`;
 
 export function Page(props: {
     id: string;
@@ -53,9 +55,7 @@ export function Page(props: {
     return (
         <SpotlightProvider {...spotlightProps}>
             <Container> 
-                <PaddedContainer>
-                    <StyledLeftPanel />
-                </PaddedContainer>
+                <StyledLeftPanel />
                 <Main key={props.id}>
                     <Header share={props.headerProps?.share}
                         canShare={props.headerProps?.canShare}
@@ -68,10 +68,8 @@ export function Page(props: {
                     <LoginModal />
                     <CreateAccountModal />
                     <InstallUpdateNotification />
-                </Main>
-                <PaddedContainer>   
-                    <StyledRightPanel />
-                </PaddedContainer>
+                </Main> 
+                <StyledRightPanel />
             </Container>
         </SpotlightProvider>
     );

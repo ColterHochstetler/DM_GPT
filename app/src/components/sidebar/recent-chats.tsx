@@ -8,8 +8,6 @@ import { toggleSidebar } from '../../store/sidebar';
 import { ActionIcon, Button, Loader, Menu, TextInput, Textarea } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { backend } from '../../core/backend';
-import { RenameModal } from '../rename-modal';
-
 
 const Container = styled.div`
     margin: calc(1.618rem - 1rem);

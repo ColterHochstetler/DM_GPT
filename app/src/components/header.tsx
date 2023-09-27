@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import Helmet from 'react-helmet';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSpotlight } from '@mantine/spotlight';
-import { Burger, Button, ButtonProps } from '@mantine/core';
+import { Burger, Button, ButtonProps, Textarea} from '@mantine/core';
 import { useCallback, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../core/context';
@@ -15,7 +15,8 @@ import { openLoginModal, openSignupModal } from '../store/ui';
 import { useOption } from '../core/options/use-option';
 import { useHotkeys } from '@mantine/hooks';
 import { setTitle, selectTitle } from '../store/title';
-import { RenameModal } from './rename-modal';
+import { useModals } from '@mantine/modals';
+//import { RenameModal } from './rename-modal';
 
 const Banner = styled.div`
     background: rgba(224, 49, 49, 0.2);
@@ -28,13 +29,13 @@ const Banner = styled.div`
 `;
 
 const HeaderContainer = styled.div`
-    width: 90%;
+    width: 100%;
     margin: 0 auto;
     display: flex;
     flex-shrink: 0;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 2rem;
     min-height: 2.618rem;
     background: rgba(0, 0, 0, 0.0);
     font-family: "Work Sans", sans-serif;
@@ -125,6 +126,49 @@ const SubHeaderContainer = styled.div`
     }
 `;
 
+export const RenameModal = ({ currentTitle, onUpdateTitle }) => {
+    const modals = useModals();
+
+    const onRename = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        modals.openModal({
+            title: "Rename",
+            children: <div>
+                <Textarea
+                    id="rename-title"
+                    defaultValue={currentTitle}
+                    maxLength={500}
+                    autosize
+                    required />
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                    <HeaderButton 
+                        onClick={() => {
+                            const title = document.querySelector<HTMLInputElement>('#rename-title')?.value?.trim();
+                            if (title && title !== currentTitle) {
+                                onUpdateTitle(title);
+                            }
+                            modals.closeAll();
+                        }}
+                    >
+                        Save changes
+                    </HeaderButton>
+                </div>
+            </div>,
+        });
+    }, [currentTitle, onUpdateTitle]);
+
+    return (
+        <HeaderButton 
+            icon="edit" 
+            onClick={onRename}
+        />
+    );
+};
+
+
+
 function HeaderButton(props: ButtonProps & { icon?: string, onClick?: any, children?: any }) {
     return (
         <Button size='xs'
@@ -137,6 +181,8 @@ function HeaderButton(props: ButtonProps & { icon?: string, onClick?: any, child
         </Button>
     )
 }
+
+
 
 export interface HeaderProps {
     title?: any;
@@ -212,7 +258,7 @@ export default function Header(props: HeaderProps) {
                 <FormattedMessage defaultMessage="New" description="Label for the button used to start a new chat session" />
             </HeaderButton>
             <div className="spacer" />
-            <h2>{title}</h2>
+            <h1>{title}</h1>
             <RenameModal 
                 currentTitle={title} 
                 onUpdateTitle={(newTitle) => {
@@ -223,18 +269,22 @@ export default function Header(props: HeaderProps) {
             <div className="spacer" />
             {backend.current && !context.authenticated && (
                 <HeaderButton onClick={localStorage.getItem('registered') ? signIn : signUp}>
-                    <FormattedMessage defaultMessage="Sign in <h>to sync</h>"
-                        description="Label for sign in button, which indicates that the purpose of signing in is to sync your data between devices. Less important text inside <h> tags is hidden on small screens."
-                        values={{
-                            h: (chunks: any) => <span className="hide-on-mobile">{chunks}</span>
-                        }} />
-                </HeaderButton>
+                <span 
+                    className="material-symbols-outlined" 
+                    style={{ fontSize: '16px' }} 
+                    aria-label="Login Button"
+                >
+                    login
+                </span>
+            </HeaderButton>
+            
+
             )}
             <HeaderButton icon="search" onClick={spotlight.openSpotlight} />
             <HeaderButton icon="gear" onClick={openSettings} />
-            {backend.current && !props.share && props.canShare && typeof navigator.share !== 'undefined' && <HeaderButton icon="share" onClick={props.onShare}>
+{/*             {backend.current && !props.share && props.canShare && typeof navigator.share !== 'undefined' && <HeaderButton icon="share" onClick={props.onShare}>
                 <FormattedMessage defaultMessage="Share" description="Label for the button used to create a public share URL for a chat log" />
-            </HeaderButton>}
+            </HeaderButton>} */}
 
 
         </HeaderContainer>
