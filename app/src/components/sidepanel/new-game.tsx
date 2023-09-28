@@ -7,12 +7,15 @@ type StepContainerProps = {
 };
 
 const StepContainer = styled.div<StepContainerProps>`
+    display: flex; 
+    flex-direction: column;
+    flex-grow: 1; 
+    min-height: 150px;
     padding: 1rem;
     border-radius: 0.25rem;
     margin-bottom: 1rem;
-    background-color: ${props => props.isCompleted ? '#d4edda' : '#ffffff14'};
+    background-color: ${props => props.isCompleted ? '#4ea03971' : '#ffffff14'};
 `;
-
 
 const StepTitle = styled.h1`
     display: flex;
@@ -23,6 +26,7 @@ const StepTitle = styled.h1`
 const StepDescription = styled.p`
     margin-bottom: 1rem;
     color: #ffffff;
+    font-size: 0.8rem;
 `;
 
 type CharacterCounterProps = {
@@ -31,10 +35,11 @@ type CharacterCounterProps = {
 
 const CharacterCounter = styled.span<CharacterCounterProps>`
     margin-right: 1rem;
-    color: ${props => props.isValid ? 'green' : 'red'};
+    color: ${props => props.isValid ? '#02ff29b4' : '#ff02028b'};
+    font-size: 0.8rem;
 `;
 
-function NewGameStep({ title, description, isActive, minChars, maxChars, stepStatus, onUpdateStep }) {
+function NewGameStep({ title, description, placeholder, isActive, minChars, maxChars, stepStatus, onUpdateStep }) {
     const isValidLength = (value) => value.length >= minChars && value.length <= maxChars;
 
     return (
@@ -51,6 +56,8 @@ function NewGameStep({ title, description, isActive, minChars, maxChars, stepSta
             <Collapse in={isActive}>
                 <StepDescription>{description}</StepDescription>
                 <Textarea
+                    size="lg"
+                    placeholder={placeholder}
                     value={stepStatus.value}
                     onChange={(e) => onUpdateStep(e.target.value)}
                     disabled={!isActive}
@@ -78,8 +85,8 @@ function NewGameStep({ title, description, isActive, minChars, maxChars, stepSta
 
 export default function NewGame() {
     const initialStepsData = [
-        { title: 'Step 1', description: 'Description for step 1', minChars: 10, maxChars: 100 },
-        { title: 'Step 2', description: 'Description for step 2', minChars: 5, maxChars: 50 },
+        { title: 'Step 1', description: 'Description for step 1. Must be greater than 15 characters long.', placeholder:'Step 1 placeholder', minChars: 10, maxChars: 100 },
+        { title: 'Step 2', description: 'Description for step 2', placeholder:'Step 2 placeholder', minChars: 5, maxChars: 50 },
         // ... Add more steps as needed
     ];
 
@@ -121,18 +128,17 @@ export default function NewGame() {
                 </div>
             ) : (
                 initialStepsData.map((step, index) => (
-                    stepsStatus[index].status !== 'pending' && (
-                        <NewGameStep
-                            key={index}
-                            title={step.title}
-                            description={step.description}
-                            isActive={stepsStatus[index].status === 'active'}
-                            minChars={step.minChars}
-                            maxChars={step.maxChars}
-                            stepStatus={stepsStatus[index]}
-                            onUpdateStep={(value, completed) => handleUpdateStep(index, value, completed)}
-                        />
-                    )
+                    <NewGameStep
+                        key={index}
+                        title={step.title}
+                        description={step.description}
+                        placeholder={step.placeholder}
+                        isActive={stepsStatus[index].status !== 'pending'} // Modified this line
+                        minChars={step.minChars}
+                        maxChars={step.maxChars}
+                        stepStatus={stepsStatus[index]}
+                        onUpdateStep={(value, completed) => handleUpdateStep(index, value, completed)}
+                    />
                 ))
             )}
         </div>
