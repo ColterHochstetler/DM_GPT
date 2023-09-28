@@ -10,7 +10,6 @@ const StepContainer = styled.div<StepContainerProps>`
     display: flex; 
     flex-direction: column;
     flex-grow: 1; 
-    min-height: 150px;
     padding: 1rem;
     border-radius: 0.25rem;
     margin-bottom: 1rem;
@@ -19,6 +18,7 @@ const StepContainer = styled.div<StepContainerProps>`
 
 const StepTitle = styled.h1`
     display: flex;
+    justify-content: space-between; 
     align-items: center;
     color: #ffffff;
 `;
@@ -28,6 +28,14 @@ const StepDescription = styled.p`
     color: #ffffff;
     font-size: 0.8rem;
 `;
+
+const ActionContainer = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 0.6rem;
+`;
+
 
 type CharacterCounterProps = {
     isValid: boolean;
@@ -39,7 +47,7 @@ const CharacterCounter = styled.span<CharacterCounterProps>`
     font-size: 0.8rem;
 `;
 
-function NewGameStep({ title, description, placeholder, isActive, minChars, maxChars, stepStatus, onUpdateStep }) {
+function NewGameStep({ title, help, description, placeholder, isActive, minChars, maxChars, stepStatus, onUpdateStep }) {
     const isValidLength = (value) => value.length >= minChars && value.length <= maxChars;
 
     return (
@@ -47,46 +55,49 @@ function NewGameStep({ title, description, placeholder, isActive, minChars, maxC
             <StepTitle>
                 {title}
                 
-                <Tooltip label={description} position="right">
+                <Tooltip label={help} position="right">
                     <ActionIcon style={{ marginLeft: '0.5rem' }}>
                         <i className="fas fa-question-circle" />
                     </ActionIcon>
                 </Tooltip>
             </StepTitle>
-            <Collapse in={isActive}>
+            <Collapse in={stepStatus.status === 'active'}>
                 <StepDescription>{description}</StepDescription>
                 <Textarea
-                    size="lg"
+                    size="sm"
                     placeholder={placeholder}
                     value={stepStatus.value}
+                    minRows={5}
                     onChange={(e) => onUpdateStep(e.target.value)}
-                    disabled={!isActive}
+                    disabled={stepStatus.status !== 'active'}
                 />
-                <div>
+                <ActionContainer>
                     <CharacterCounter isValid={isValidLength(stepStatus.value)}>
                         {stepStatus.value.length}/{maxChars}
                     </CharacterCounter>
                     <Button
+                        color="green"
                         onClick={() => {
                             if (isValidLength(stepStatus.value)) {
                                 onUpdateStep(stepStatus.value, true);
                             }
                         }}
-                        disabled={!isValidLength(stepStatus.value) || !isActive}
+                        disabled={!isValidLength(stepStatus.value) || stepStatus.status !== 'active'}
                     >
                         Submit
                     </Button>
-                </div>
+                </ActionContainer>
             </Collapse>
         </StepContainer>
     );
 }
 
 
+
 export default function NewGame() {
     const initialStepsData = [
-        { title: 'Step 1', description: 'Description for step 1. Must be greater than 15 characters long.', placeholder:'Step 1 placeholder', minChars: 10, maxChars: 100 },
-        { title: 'Step 2', description: 'Description for step 2', placeholder:'Step 2 placeholder', minChars: 5, maxChars: 50 },
+        { title: 'Step 1', help:'Advanced Tips', description: 'Description for step 1. Must be greater than 15 characters long.', placeholder:'Step 1 placeholder', minChars: 10, maxChars: 100 },
+        { title: 'Step 2', help:'Advanced Tips2', description: 'Description for step 2', placeholder:'Step 2 placeholder', minChars: 5, maxChars: 50 },
         // ... Add more steps as needed
     ];
 
@@ -131,6 +142,7 @@ export default function NewGame() {
                     <NewGameStep
                         key={index}
                         title={step.title}
+                        help={step.help}
                         description={step.description}
                         placeholder={step.placeholder}
                         isActive={stepsStatus[index].status !== 'pending'} // Modified this line
