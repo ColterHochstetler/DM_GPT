@@ -47,8 +47,11 @@ const CharacterCounter = styled.span<CharacterCounterProps>`
     font-size: 0.8rem;
 `;
 
-function NewGameStep({ title, help, description, placeholder, isActive, minChars, maxChars, stepStatus, onUpdateStep }) {
+function NewGameStep({ title, help, description, placeholder, prefillValue, isActive, minChars, maxChars, stepStatus, onUpdateStep }) {
     const isValidLength = (value) => value.length >= minChars && value.length <= maxChars;
+
+    // Determine the value to display in the Textarea
+    const displayValue = stepStatus.value || prefillValue;
 
     return (
         <StepContainer isCompleted={stepStatus.status === 'completed'}>
@@ -66,23 +69,24 @@ function NewGameStep({ title, help, description, placeholder, isActive, minChars
                 <Textarea
                     size="sm"
                     placeholder={placeholder}
-                    value={stepStatus.value}
+                    value={displayValue}
                     minRows={5}
+                    autosize
                     onChange={(e) => onUpdateStep(e.target.value)}
                     disabled={stepStatus.status !== 'active'}
                 />
                 <ActionContainer>
-                    <CharacterCounter isValid={isValidLength(stepStatus.value)}>
-                        {stepStatus.value.length}/{maxChars}
+                    <CharacterCounter isValid={isValidLength(displayValue)}>
+                        {displayValue.length}/{maxChars}
                     </CharacterCounter>
                     <Button
                         color="green"
                         onClick={() => {
-                            if (isValidLength(stepStatus.value)) {
-                                onUpdateStep(stepStatus.value, true);
+                            if (isValidLength(displayValue)) {
+                                onUpdateStep(displayValue, true);
                             }
                         }}
-                        disabled={!isValidLength(stepStatus.value) || stepStatus.status !== 'active'}
+                        disabled={!isValidLength(displayValue) || stepStatus.status !== 'active'}
                     >
                         Submit
                     </Button>
@@ -94,10 +98,11 @@ function NewGameStep({ title, help, description, placeholder, isActive, minChars
 
 
 
+
 export default function NewGame() {
     const initialStepsData = [
-        { title: 'Step 1', help:'Advanced Tips', description: 'Description for step 1. Must be greater than 15 characters long.', placeholder:'Step 1 placeholder', minChars: 10, maxChars: 100 },
-        { title: 'Step 2', help:'Advanced Tips2', description: 'Description for step 2', placeholder:'Step 2 placeholder', minChars: 5, maxChars: 50 },
+        { title: 'Step 1', help:'Advanced Tips', description: 'Description for step 1. Must be greater than 15 characters long.', placeholder:'Step 1 placeholder', prefillValue: 'I am the prefilled text', minChars: 10, maxChars: 100 },
+        { title: 'Step 2', help:'Advanced Tips2', description: 'Description for step 2', placeholder:'Step 2 placeholder', prefillValue: 'I am the prefilled text', minChars: 5, maxChars: 50 },
         // ... Add more steps as needed
     ];
 
@@ -145,6 +150,7 @@ export default function NewGame() {
                         help={step.help}
                         description={step.description}
                         placeholder={step.placeholder}
+                        prefillValue={step.prefillValue}
                         isActive={stepsStatus[index].status !== 'pending'} // Modified this line
                         minChars={step.minChars}
                         maxChars={step.maxChars}
