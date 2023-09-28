@@ -1,6 +1,9 @@
 import { useEffect, useCallback, useState } from 'react';
 import { useAppContext } from '../../core/context';
 import RecentChats from '../sidebar/recent-chats';
+import styled from '@emotion/styled';
+
+
 
 export default function ChatHistory() {
     const context = useAppContext();
@@ -18,9 +21,6 @@ export default function ChatHistory() {
     }, []);
 
     return (
-        <div className="chat-history">
-            <h1>Chat History</h1>
             <RecentChats />
-        </div>
     );
 }

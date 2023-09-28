@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import Helmet from 'react-helmet';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSpotlight } from '@mantine/spotlight';
-import { Burger, Button, ButtonProps, Textarea} from '@mantine/core';
+import { Burger, Button, ButtonProps, Textarea, Title} from '@mantine/core';
 import { useCallback, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../core/context';
@@ -258,7 +258,7 @@ export default function Header(props: HeaderProps) {
                 <FormattedMessage defaultMessage="New" description="Label for the button used to start a new chat session" />
             </HeaderButton>
             <div className="spacer" />
-            <h1>{title}</h1>
+            <Title fz="sm" color="#D3D3D3">{title}</Title>
             <RenameModal 
                 currentTitle={title} 
                 onUpdateTitle={(newTitle) => {
