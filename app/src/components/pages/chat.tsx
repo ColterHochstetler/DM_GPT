@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import slugify from 'slugify';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Loader } from '@mantine/core';
+import { Loader, ScrollArea } from '@mantine/core';
 
 import { useAppContext } from '../../core/context';
 import { backend } from '../../core/backend';
@@ -17,10 +17,10 @@ const Messages = styled.div`
     @media (min-height: 30em) {
         max-height: 100%;
         flex-grow: 1;
-        overflow-y: scroll;
     }
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 `;
 
 const EmptyMessage = styled.div`
@@ -108,27 +108,32 @@ export default function ChatPage(props: any) {
             },
         }}>
 
-        <Suspense fallback={<Messages id="messages">
-            <EmptyMessage>
-                <Loader variant="dots" />
-            </EmptyMessage>
-        </Messages>}>
-        <Messages id="messages">
-            {shouldShowChat && (
-                <div style={{ paddingBottom: '4.5rem' }}>
-                    {messagesToDisplay.map((message) => (
-                        <Message key={id + ":" + message.id}
-                            message={message}
-                            share={props.share}
-                            last={context.currentChat.chat!.messages.leafs.some(n => n.id === message.id)} />
-                    ))}
-                </div>
-            )}
-            {!shouldShowChat && <EmptyMessage>
-                <Loader variant="dots" />
-            </EmptyMessage>}
-        </Messages>
-
-        </Suspense>
-    </Page>;
+        <Suspense fallback={
+                <Messages>  
+                    <ScrollArea.Autosize maxHeight="100%">
+                        <EmptyMessage>
+                            <Loader variant="dots" />
+                        </EmptyMessage>
+                    </ScrollArea.Autosize>
+                </Messages>
+            }>
+                <Messages> 
+                    <ScrollArea.Autosize id="messages" maxHeight="100%" type="hover">
+                        {shouldShowChat && (
+                            <div style={{ paddingBottom: '4.5rem' }}>
+                                {messagesToDisplay.map((message) => (
+                                    <Message key={id + ":" + message.id}
+                                        message={message}
+                                        share={props.share}
+                                        last={context.currentChat.chat!.messages.leafs.some(n => n.id === message.id)} />
+                                ))}
+                            </div>
+                        )}
+                        {!shouldShowChat && <EmptyMessage>
+                            <Loader variant="dots" />
+                        </EmptyMessage>}
+                    </ScrollArea.Autosize>
+                </Messages>
+            </Suspense>
+        </Page>;
 }
