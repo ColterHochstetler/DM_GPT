@@ -318,4 +318,16 @@ export class Backend extends EventEmitter {
         return storyElements;
     }
 
+    async getTextFileContent(): Promise<string | null> {
+        try {
+          const response = await this.get('/textfile'); // Assuming '/textfile' is the endpoint you set up on the backend
+          if (typeof response === 'string') {
+            return response;
+          }
+        } catch (e) {
+          console.error('Error fetching text file:', e);
+        }
+        return null;
+      }
+
 }

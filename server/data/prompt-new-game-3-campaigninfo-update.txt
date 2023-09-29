@@ -1,0 +1,3 @@
+Here is the user's reply. Update the form to integrate this information. Pay special attention to the story ideas section. If needed, add an Miscellaneous section to capture any content meaningful to the player that doesn't fit the form.  Just fill out the form and the optional misc section, do not add any extra commentary. Use the intensity question to adjust Starting Scene Intensity:
+User Reply:
+{{qna reply}}

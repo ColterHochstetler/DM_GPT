@@ -29,6 +29,7 @@ import SaveSummaryHandler from './endpoints/save-summary';
 import GetSummariesHandler from './endpoints/get-summaries';
 import SaveTokensSinceLastSummaryHandler from './endpoints/save-tokens-since-last-summary';
 import GetTokensSinceLastSummaryHandler from './endpoints/get-tokens-since-last-summary';
+import { getTextFile } from './endpoints/textfile';
 
 process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
@@ -37,6 +38,7 @@ process.on('unhandledRejection', (reason, p) => {
 if (process.env.CI) {
     setTimeout(() => process.exit(), 10000);
 }
+
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 
@@ -95,6 +97,8 @@ export default class ChatServer {
             windowMs: config.rateLimit.windowMs,
             max: config.rateLimit.max,
         }));
+
+        this.app.get('/textfile', getTextFile);
         
         this.app.post('/chatapi/delete', (req, res) => new deleteChatAndRelatedDataRequestHandler(this, req, res));
         this.app.get('/chatapi/share/:id', (req, res) => new GetShareRequestHandler(this, req, res));
