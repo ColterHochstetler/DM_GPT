@@ -99,7 +99,6 @@ export default class ChatServer {
         }));
 
         this.app.get('/textfile', getTextFile);
-        
         this.app.post('/chatapi/delete', (req, res) => new deleteChatAndRelatedDataRequestHandler(this, req, res));
         this.app.get('/chatapi/share/:id', (req, res) => new GetShareRequestHandler(this, req, res));
         this.app.post('/chatapi/share', (req, res) => new ShareRequestHandler(this, req, res));
