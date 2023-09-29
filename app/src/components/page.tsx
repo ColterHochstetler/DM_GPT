@@ -1,4 +1,4 @@
-import styled from '@emotion/styled';
+//import styled from '@emotion/styled';
 import { SpotlightProvider } from '@mantine/spotlight';
 import { useChatSpotlightProps } from '../spotlight';
 import { LoginModal, CreateAccountModal } from './auth-modals';
@@ -8,6 +8,87 @@ import { InstallUpdateNotification } from './pwa-notifications';
 import SettingsDrawer from './settings';
 import Sidebar from './sidebar';
 import AudioControls from './tts-controls';
+import { LeftPanel, RightPanel } from './sidepanel/side-panels';
+import styled from '@emotion/styled';
+
+const Container = styled.div`
+    margin: 0;
+    display: grid;
+    grid-template-columns: 26.4% 1fr 26.4%; 
+    gap: 1.75%;
+    width: 100%;
+    height: 100vh;
+    padding: 10px 25px; 
+    box-sizing: border-box; 
+`;
+
+
+
+const StyledLeftPanel = styled(LeftPanel)`
+    box-sizing: border-box;
+`;
+
+const StyledRightPanel = styled(RightPanel)`
+    box-sizing: border-box; 
+`;
+
+const Main = styled.div`
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+    box-sizing: border-box;
+
+    @media (min-height: 30em) {
+        overflow: hidden;
+    }
+`;
+
+
+export function Page(props: {
+    id: string;
+    headerProps?: HeaderProps;
+    showSubHeader?: boolean;
+    children: any;
+}) {
+    const spotlightProps = useChatSpotlightProps();
+
+    return (
+        <SpotlightProvider {...spotlightProps}>
+            <Container> 
+                <StyledLeftPanel />
+                <Main key={props.id}>
+                    <Header share={props.headerProps?.share}
+                        canShare={props.headerProps?.canShare}
+                        title={props.headerProps?.title}
+                        onShare={props.headerProps?.onShare} />
+                    {props.children}
+                    <AudioControls />
+                    <MessageInput key={localStorage.getItem('openai-api-key')} />
+                    <SettingsDrawer />
+                    <LoginModal />
+                    <CreateAccountModal />
+                    <InstallUpdateNotification />
+                </Main> 
+                <StyledRightPanel />
+            </Container>
+        </SpotlightProvider>
+    );
+}
+
+
+
+/* function Demo() {
+  return (
+    <Tabs defaultValue="first">
+      <Tabs.List>
+        <Tabs.Tab value="first">First tab</Tabs.Tab>
+        <Tabs.Tab value="second">Second tab</Tabs.Tab>
+        <Tabs.Tab value="third">Third tab</Tabs.Tab>
+      </Tabs.List>
+    </Tabs>
+  );
+} */
+/* 
 
 const Container = styled.div`
     position: absolute;
@@ -57,42 +138,15 @@ const Container = styled.div`
     }
 `;
 
-const Main = styled.div`
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: scroll;
 
-    @media (min-height: 30em) {
-        overflow: hidden;
-    }
 `;
+ */
 
-export function Page(props: {
-    id: string;
-    headerProps?: HeaderProps;
-    showSubHeader?: boolean;
-    children: any;
-}) {
-    const spotlightProps = useChatSpotlightProps();
-
-    return <SpotlightProvider {...spotlightProps}>
+/*     return <SpotlightProvider {...spotlightProps}>
         <Container>
-            <Sidebar />
-            <Main key={props.id}>
-                <Header share={props.headerProps?.share}
-                    canShare={props.headerProps?.canShare}
-                    title={props.headerProps?.title}
-                    onShare={props.headerProps?.onShare} />
-                {props.showSubHeader && <SubHeader />}
-                {props.children}
-                <AudioControls />
-                <MessageInput key={localStorage.getItem('openai-api-key')} />
-                <SettingsDrawer />
-                <LoginModal />
-                <CreateAccountModal />
-                <InstallUpdateNotification />
-            </Main>
+            <SidePanel tabs={leftTabs} position="left" />
+           
+            <SidePanel tabs={rightTabs} position="right" />
         </Container>
-    </SpotlightProvider>;
-}
+    </SpotlightProvider>; */
+//}

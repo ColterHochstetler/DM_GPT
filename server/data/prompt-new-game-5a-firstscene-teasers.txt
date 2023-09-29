@@ -1,0 +1,10 @@
+I need you to create teasers for opening scenes for a TTRPG campaign. Below is a list of information about the campaign to get started.
+
+CAMPAIGN INFORMATION
+
+	<Insert Campaign info>
+
+TEASER FORMAT
+The teaser should contain a title and description only.  The teasers should be varied, and contain an interesting conflict to or mystery to draw the player in. The teasers should build on the interests, fears, or other information above, giving the user something they'll immediately care about.  Don't ask the player what they will do.
+
+Write 4 teasers.  One teaser should be focused on the player's relationship (good or otherwise) with another character.  Another should be focused on a major event that their character is participating in.  The other two should be wild and creative. 

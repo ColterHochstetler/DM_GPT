@@ -60,7 +60,7 @@ export class SummaryAgentBase extends Agent<any> {
         const combinedHistory = 'PREVIOUS SUMMARIES (for context):' + recentSummaries + '\n\n RECENT MESSAGES (to summarize): ' + messagesString;
         
         //Static prompt components
-        const systemMessage = "You ONLY EVER SUMMARIZE. You NEVER CONTINUE THE STORY. Guidlines to Summarize: 1) Focus on summarizing things that are likely to be important to the player or help the DM tell a consistent story.  2) Keep important information about characters relationships and their way of communicating to each other. 3) Note when something has changed relative to previous summaries."
+        const systemMessage = "You ONLY EVER SUMMARIZE. You NEVER CONTINUE THE STORY. Guidlines to Summarize: 1) Focus on summarizing things that are likely to be important to the player or help the DM tell a consistent story.  2) Keep important information about characters relationships and their way of communicating to each other. 3) Note when something has changed relative to previous summaries. Only include the player's final choices and the resulting events, omitting any unselected options or initial actions that were later changed.."
         const agentPrompt = `Please summarize the RECENT MESSAGES section.`;
 
         // Create the two messages
