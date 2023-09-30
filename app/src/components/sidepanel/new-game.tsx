@@ -190,7 +190,7 @@ export default function NewGame() {
         <div>
             {!isGameStarted ? (
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                    <Button onClick={async () => {  // Update this line to make it an async function
+                    <Button onClick={async () => {
                         setIsGameStarted(true);
                         setStepsStatus(prev => {
                             const updated = [...prev];

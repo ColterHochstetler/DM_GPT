@@ -319,6 +319,7 @@ export class Backend extends EventEmitter {
     }
     
     async getTextFileContent(filename: string): Promise<string | null> {
+        console.log("getTextFileContent called with filename: ", filename);
         try {
         const response = await fetch(`/textfile?filename=${filename}`);
         if (!response.ok) {
