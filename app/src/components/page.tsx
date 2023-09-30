@@ -18,6 +18,8 @@ const Container = styled.div`
     gap: 1.75%;
     width: 100%;
     height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
     padding: 10px 25px; 
     box-sizing: border-box; 
 `;

@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Tooltip, Textarea, Button, ActionIcon, Collapse, Title } from '@mantine/core';
+import { Tooltip, Textarea, Button, ActionIcon, Collapse, Title, ScrollArea } from '@mantine/core';
 import styled from '@emotion/styled';
+import { backend } from '../../core/backend';
+
 
 type StepContainerProps = {
     isCompleted: boolean;
@@ -75,15 +77,17 @@ function NewGameStep({ title, help, description, placeholder, prefillValue, minC
             </StepTitle>
             <Collapse in={stepStatus.status === 'active'}>
                 <StepDescription>{description}</StepDescription>
-                <Textarea
-                    size="sm"
-                    placeholder={placeholder}
-                    value={displayValue}
-                    minRows={12}
-                    autosize
-                    onChange={(e) => onUpdateStep(e.target.value)}
-                    disabled={stepStatus.status !== 'active'}
-                />
+                <ScrollArea.Autosize maxHeight="100%">
+                    <Textarea
+                        size="sm"
+                        placeholder={placeholder}
+                        value={displayValue}
+                        minRows={12}
+                        autosize
+                        onChange={(e) => onUpdateStep(e.target.value)}
+                        disabled={stepStatus.status !== 'active'}
+                    />
+                </ScrollArea.Autosize>
                 <ActionContainer>
                     <CharacterCounter isValid={isValidLength(displayValue)}>
                         {displayValue.length}/{maxChars}
@@ -185,14 +189,19 @@ export default function NewGame() {
     return (
         <div>
             {!isGameStarted ? (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                    <Button onClick={() => {
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    <Button onClick={async () => {
                         setIsGameStarted(true);
                         setStepsStatus(prev => {
                             const updated = [...prev];
                             updated[0].status = 'active'; // Set the first step to active
                             return updated;
                         });
+
+                        // Call getTextFileContent and print to the console
+                        const textContent = await backend.current?.getTextFileContent('x');
+                        console.log(textContent);
+
                     }}>
                         Start New Game
                     </Button>

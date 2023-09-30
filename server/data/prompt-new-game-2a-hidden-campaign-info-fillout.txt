@@ -1,0 +1,27 @@
+We need to help players dive into a rich TTRPG campaign quickly. Here’s the form we aim to fill:
+
+# World
+Tone and Genre: 
+Inspirations:
+Include: 
+Exclude:
+# Character
+Name:
+Race: 
+Gender:
+Background: 
+Appearance: 
+Notoriety: 
+# Journey
+Themes: 
+Possible Allies:
+Possible Enemies: 
+Story Ideas:
+Exclude:
+Starting Scene Intensity: (leave blank for now)
+
+Here’s the story teaser they selected and their prompt:
+
+{{step1prompt}}
+
+Fill out the form using that information provided. Provide a short suggestion for each category that matches the tone, content, or  desires provided. Be creative, avoid cliche. 
