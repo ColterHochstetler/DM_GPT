@@ -185,7 +185,7 @@ export default function NewGame() {
     return (
         <div>
             {!isGameStarted ? (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                     <Button onClick={() => {
                         setIsGameStarted(true);
                         setStepsStatus(prev => {

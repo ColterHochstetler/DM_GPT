@@ -1,4 +1,4 @@
-import { Tabs } from '@mantine/core';
+import { Tabs, ScrollArea } from '@mantine/core';
 import ChatHistory from './chat-history';
 import NewGame from './new-game';
 
@@ -13,9 +13,11 @@ export function LeftPanel() {
                 <Tabs.Tab value="journal" color="green" fz="lg" lh="xl">Journal</Tabs.Tab>
                 <Tabs.Tab value="characters" color="grape" fz="lg" lh="xl">Characters</Tabs.Tab>
             </Tabs.List>
-            <Tabs.Panel value="scenes" px="md" py="md">
-                    <ChatHistory />
-            </Tabs.Panel>
+            <ScrollArea.Autosize maxHeight="90vh">
+                <Tabs.Panel value="scenes" px="md" py="md">
+                        <ChatHistory />
+                </Tabs.Panel>
+            </ScrollArea.Autosize>
             </Tabs>
         </div>
       );
@@ -36,9 +38,11 @@ export function RightPanel() {
                 </Tabs.Tab>
 
             </Tabs.List>
-            <Tabs.Panel value="new" px="md" py="md">
-                    <NewGame/>
-            </Tabs.Panel>
+                <ScrollArea.Autosize maxHeight="90vh">
+                    <Tabs.Panel value="new" px="md" py="md">
+                        <NewGame/>
+                    </Tabs.Panel>
+                </ScrollArea.Autosize>
             </Tabs>
         </div>
       );
