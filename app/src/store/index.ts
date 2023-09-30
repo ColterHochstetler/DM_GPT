@@ -17,6 +17,7 @@ import sidebarReducer from './sidebar';
 import uiReducer from './ui';
 import campaignReducer from './campaign-slice';
 import titleReducer from './title'
+import newGameReducer from './new-game-slice';
 
 const persistConfig = {
   key: 'root',
@@ -46,6 +47,7 @@ const store = configureStore({
     settingsUI: settingsUIReducer,
     sidebar: persistReducer<ReturnType<typeof sidebarReducer>>(persistSidebarConfig, sidebarReducer),
     title: persistReducer<ReturnType<typeof titleReducer>>(persistTitleConfig, titleReducer),
+    newGame: newGameReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

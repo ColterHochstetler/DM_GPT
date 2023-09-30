@@ -321,16 +321,16 @@ export class Backend extends EventEmitter {
     async getTextFileContent(filename: string): Promise<string | null> {
         console.log("getTextFileContent called with filename: ", filename);
         try {
-        const response = await fetch(`/textfile?filename=${filename}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const text = await response.text(); // Read the response as text
-        return text;
+            const response = await this.get(`${endpoint}/textfile?filename=${filename}`);
+            console.log('Server response:', response);  // Log the entire response
+            return response.textContent;
         } catch (e) {
-        console.error('Error fetching text file:', e);
+            console.error('Error fetching text file:', e);
         }
         return null;
     }
+    
+    
+    
 
 }
