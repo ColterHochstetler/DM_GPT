@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Tooltip, Textarea, Button, ActionIcon, Collapse, Title, ScrollArea } from '@mantine/core';
 import styled from '@emotion/styled';
+import { backend } from '../../core/backend';
+
 
 type StepContainerProps = {
     isCompleted: boolean;
@@ -188,13 +190,18 @@ export default function NewGame() {
         <div>
             {!isGameStarted ? (
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                    <Button onClick={() => {
+                    <Button onClick={async () => {  // Update this line to make it an async function
                         setIsGameStarted(true);
                         setStepsStatus(prev => {
                             const updated = [...prev];
                             updated[0].status = 'active'; // Set the first step to active
                             return updated;
                         });
+
+                        // Call getTextFileContent and print to the console
+                        const textContent = await backend.current?.getTextFileContent('prompt-new-game-1-storyseed-teaser-generation');
+                        console.log(textContent);
+
                     }}>
                         Start New Game
                     </Button>
