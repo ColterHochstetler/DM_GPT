@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { Tooltip, Textarea, Button, ActionIcon, Collapse, Title, ScrollArea } from '@mantine/core';
 import styled from '@emotion/styled';
 import { backend } from '../../core/backend';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCurrentStep, selectCurrentStep, setUserInputs, setLlmOutputs, selectUserInputs, selectLlmOutputs } from '../../store/new-game-slice';
+
 
 
 type StepContainerProps = {
@@ -161,7 +164,12 @@ export default function NewGame() {
             maxChars: 1000
         }
     ];
-    
+
+    const dispatch = useDispatch();
+    const currentStep = useSelector(selectCurrentStep);
+    const userInputs = useSelector(selectUserInputs);
+    const llmOutputs = useSelector(selectLlmOutputs);
+
 
     const [stepsStatus, setStepsStatus] = useState(initialStepsData.map(step => ({
         status: 'pending',
@@ -181,6 +189,10 @@ export default function NewGame() {
             }
             return updated;
         });
+
+        // Update the Redux state
+        dispatch(setCurrentStep(index));  // Assuming `index` represents the current step
+        dispatch(setUserInputs({ step: index, value: value }));  // Update the user inputs for the current step
     };
 
     const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
@@ -198,10 +210,12 @@ export default function NewGame() {
                             return updated;
                         });
 
-                        // Call getTextFileContent and print to the console
+                        dispatch(setCurrentStep(0));  // Set the initial step in Redux state
+                        // Fetch initial prompts and update Redux state
                         const textContent = await backend.current?.getTextFileContent('x');
-                        console.log(textContent);
+                        dispatch(setLlmOutputs({ initialPrompt: textContent }));  // Assuming you want to store the initial prompt
 
+                        console.log(textContent);
                     }}>
                         Start New Game
                     </Button>
@@ -226,11 +240,18 @@ export default function NewGame() {
                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', margin: '2rem 0' }}>
                             <Title size="h4" color="white" style={{ marginBottom: '1rem' }}>All steps completed!</Title>
                             <Button color="green" onClick={() => {
+                                // Reset local state
                                 setIsGameStarted(false);
                                 setStepsStatus(initialStepsData.map(step => ({
                                     status: 'pending',
                                     value: ''
                                 })));
+
+                                // Reset Redux state
+                                dispatch(setCurrentStep(0));  // Reset to the initial step
+                                dispatch(setUserInputs({}));  // Clear user inputs
+                                dispatch(setLlmOutputs({}));  // Clear LLM outputs, if needed
+
                             }}>
                                 Launch!
                             </Button>

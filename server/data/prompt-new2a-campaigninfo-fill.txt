@@ -22,6 +22,6 @@ Starting Scene Intensity: (leave blank for now)
 
 Here’s the story teaser they selected and their prompt:
 
-{{step1prompt}}
+{{step1submission}}
 
-Fill out the form using that information provided. Provide a short suggestion for each category that matches the tone, content, or  desires provided. Be creative, avoid cliche. 
+Fill out the form using that information provided. Provide a short suggestion for each category that matches the tone, content, or  desires provided. Be creative, avoid cliche.
