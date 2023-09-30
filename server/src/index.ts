@@ -29,7 +29,7 @@ import SaveSummaryHandler from './endpoints/save-summary';
 import GetSummariesHandler from './endpoints/get-summaries';
 import SaveTokensSinceLastSummaryHandler from './endpoints/save-tokens-since-last-summary';
 import GetTokensSinceLastSummaryHandler from './endpoints/get-tokens-since-last-summary';
-import { getTextFile } from './endpoints/textfile';
+import TextFileRequestHandler from './endpoints/textfile';
 
 process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
@@ -59,6 +59,7 @@ export default class ChatServer {
             console.error('Unhandled Rejection at:', promise, 'reason:', reason);
         });
 
+
         this.app.use(express.urlencoded({ extended: false }));
 
         if (config.auth0?.clientID && config.auth0?.issuer && config.publicSiteURL) {
@@ -78,11 +79,18 @@ export default class ChatServer {
 
         const { default: rateLimit } = await import('express-rate-limit'); // esm
 
-        this.app.get('/chatapi/health', (req, res) => new HealthRequestHandler(this, req, res));
+        this.app.get('/chatapi/health', (req, res) => {
+            console.log("Handling request for /chatapi/health");  // Logging
+            new HealthRequestHandler(this, req, res);
+        });
 
         this.app.get('/chatapi/session',
             rateLimit({ windowMs: 60 * 1000, max: 100 }),
-            (req, res) => new SessionRequestHandler(this, req, res));
+            (req, res) => {
+                console.log("Handling request for /chatapi/session");  // Logging
+                new SessionRequestHandler(this, req, res);
+            }
+        );
 
         this.app.post('/chatapi/y-sync',
             rateLimit({ windowMs: 60 * 1000, max: 100 }),
@@ -98,7 +106,11 @@ export default class ChatServer {
             max: config.rateLimit.max,
         }));
 
-        this.app.get('/textfile', getTextFile);
+        this.app.get('/textfile', (req, res) => {
+            console.log("Handling request for /textfile");  // Logging
+            new TextFileRequestHandler(this, req, res);
+        });
+        
         this.app.post('/chatapi/delete', (req, res) => new deleteChatAndRelatedDataRequestHandler(this, req, res));
         this.app.get('/chatapi/share/:id', (req, res) => new GetShareRequestHandler(this, req, res));
         this.app.post('/chatapi/share', (req, res) => new ShareRequestHandler(this, req, res));

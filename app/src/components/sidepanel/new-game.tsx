@@ -199,7 +199,7 @@ export default function NewGame() {
                         });
 
                         // Call getTextFileContent and print to the console
-                        const textContent = await backend.current?.getTextFileContent('prompt-new-game-1-storyseed-teaser-generation');
+                        const textContent = await backend.current?.getTextFileContent('x');
                         console.log(textContent);
 
                     }}>
