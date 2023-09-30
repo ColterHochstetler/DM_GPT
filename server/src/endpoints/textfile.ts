@@ -12,10 +12,11 @@ export default class TextFileRequestHandler extends RequestHandler {
         
         fs.readFile(filePath, 'utf8', (err, data) => {
             if (err) {
-                res.status(500).send('Error reading the file.');
+                console.error('Error reading the file:', err);
+                res.status(500).json({ error: 'Error reading the file' });
                 return;
             }
-            res.send(data);
+            res.status(200).json({ textContent: data });  // Explicitly set status to 200
         });
     }
 }

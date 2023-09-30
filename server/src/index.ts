@@ -84,6 +84,12 @@ export default class ChatServer {
             new HealthRequestHandler(this, req, res);
         });
 
+        this.app.get('/chatapi/textfile', (req, res) => {
+            console.log("Handling request for /chatapi/textfile");  // Logging
+            new TextFileRequestHandler(this, req, res);
+        });
+        
+
         this.app.get('/chatapi/session',
             rateLimit({ windowMs: 60 * 1000, max: 100 }),
             (req, res) => {
@@ -106,11 +112,6 @@ export default class ChatServer {
             max: config.rateLimit.max,
         }));
 
-        this.app.get('/textfile', (req, res) => {
-            console.log("Handling request for /textfile");  // Logging
-            new TextFileRequestHandler(this, req, res);
-        });
-        
         this.app.post('/chatapi/delete', (req, res) => new deleteChatAndRelatedDataRequestHandler(this, req, res));
         this.app.get('/chatapi/share/:id', (req, res) => new GetShareRequestHandler(this, req, res));
         this.app.post('/chatapi/share', (req, res) => new ShareRequestHandler(this, req, res));
@@ -149,6 +150,7 @@ export default class ChatServer {
                 res.send(indexSource);
             });
         }
+
 
         await this.objectStore.initialize();
         await this.database.initialize();
