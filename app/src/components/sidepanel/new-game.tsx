@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Tooltip, Textarea, Button, ActionIcon, Collapse, Title } from '@mantine/core';
+import { Tooltip, Textarea, Button, ActionIcon, Collapse, Title, ScrollArea } from '@mantine/core';
 import styled from '@emotion/styled';
 
 type StepContainerProps = {
@@ -75,15 +75,17 @@ function NewGameStep({ title, help, description, placeholder, prefillValue, minC
             </StepTitle>
             <Collapse in={stepStatus.status === 'active'}>
                 <StepDescription>{description}</StepDescription>
-                <Textarea
-                    size="sm"
-                    placeholder={placeholder}
-                    value={displayValue}
-                    minRows={12}
-                    autosize
-                    onChange={(e) => onUpdateStep(e.target.value)}
-                    disabled={stepStatus.status !== 'active'}
-                />
+                <ScrollArea.Autosize maxHeight="100%">
+                    <Textarea
+                        size="sm"
+                        placeholder={placeholder}
+                        value={displayValue}
+                        minRows={12}
+                        autosize
+                        onChange={(e) => onUpdateStep(e.target.value)}
+                        disabled={stepStatus.status !== 'active'}
+                    />
+                </ScrollArea.Autosize>
                 <ActionContainer>
                     <CharacterCounter isValid={isValidLength(displayValue)}>
                         {displayValue.length}/{maxChars}
