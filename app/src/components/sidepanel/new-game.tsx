@@ -3,9 +3,9 @@ import { Tooltip, Textarea, Button, ActionIcon, Collapse, Title, ScrollArea } fr
 import styled from '@emotion/styled';
 import { backend } from '../../core/backend';
 import { useAppDispatch, useAppSelector } from '../../store'
-import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetSteps } from '../../store/new-game-slice';
+import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetSteps, selectCurrentStep, setCurrentStep } from '../../store/new-game-slice';
 import useNewChatTrigger from '../../core/chat/new-chat';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 
 type StepContainerProps = {
@@ -167,33 +167,49 @@ export default function NewGame() {
     const [loading, setLoading] = useState(false);
     const dispatch = useAppDispatch();
     const stepsStatus = useAppSelector(selectStepsStatus); // New: get stepsStatus from Redux
-
-    const [isGameStarted, setIsGameStarted] = useState(false);
+    const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
+    const currentStep = useAppSelector(selectCurrentStep);
+    const [isGameStarted, setIsGameStarted] = useState(currentStep > 0);
 
     const handleUpdateStep = (index, value, completed = false) => {
         dispatch(updateStepValue({ index, value })); // New: update value in Redux
-
+    
         if (completed) {
             dispatch(completeStep(index)); // New: mark step as completed in Redux
-
+            dispatch(setCurrentStep(index + 1)); // Update currentStep in Redux
+    
             if (index + 1 < stepsStatus.length) {
                 dispatch(activateNextStep(index)); // New: activate next step in Redux
             }
         }
     };
 
-    const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
+    useEffect(() => {
+        // Check if all steps are in their initial 'pending' state with empty value
+        const areStepsInInitialState = stepsStatus.every(step => step.status === 'pending' && step.value === '');
+      
+        if (areStepsInInitialState) {
+          // If so, initialize the steps
+          dispatch(initializeSteps());
+        }
+      }, [stepsStatus, dispatch]);
+
+
 
     const startNewGame = useCallback(async () => {
-        triggerNewChat(setLoading);
-        
-        setIsGameStarted(true);
+        try {
+            // Wait for triggerNewChat to complete
+            await triggerNewChat(setLoading);
     
-        dispatch(initializeSteps());
+            // Then proceed with initializing the new game
+            setIsGameStarted(true);
+            dispatch(initializeSteps());
     
-        const textContent = await backend.current?.getTextFileContent('x');
-        console.log(textContent);
-    
+            const textContent = await backend.current?.getTextFileContent('x');
+            console.log(textContent);
+        } catch (error) {
+            console.error("Error in starting a new game:", error);
+        }
     }, [dispatch, setIsGameStarted, backend, triggerNewChat, setLoading]);
 
     return (
@@ -213,7 +229,7 @@ export default function NewGame() {
                             help={step.help}
                             description={step.description}
                             placeholder={step.placeholder}
-                            prefillValue={step.prefillValue}
+                            prefillValue={stepsStatus[index]?.value || step.prefillValue} // Modified line
                             minChars={step.minChars}
                             maxChars={step.maxChars}
                             stepStatus={stepsStatus[index]}
@@ -231,6 +247,15 @@ export default function NewGame() {
                             </Button>
                         </div>
                     )}
+                    <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'center', margin: '1rem 0' }}>
+                    <Button color="red" onClick={() => {
+                        setIsGameStarted(false); // Reset isGameStarted state
+                        dispatch(resetSteps());  // Reset stepsStatus in Redux
+                        dispatch(setCurrentStep(0)); // Reset currentStep in Redux
+                    }}>
+                        Cancel
+                    </Button>
+                </div>
                 </>
             )}
         </div>
