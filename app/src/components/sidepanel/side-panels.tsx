@@ -1,13 +1,21 @@
 import { Tabs, ScrollArea } from '@mantine/core';
 import ChatHistory from './chat-history';
 import NewGame from './new-game';
-
+import { useAppDispatch, useAppSelector } from '../../store';
+import { setSelectedLeftTab, setSelectedRightTab } from '../../store/tabs-slice';
 
 export function LeftPanel() {
+    const dispatch = useAppDispatch();
+    const selectedLeftTab = useAppSelector((state) => state.tabs.selectedLeftTab);
+
 
     return (
         <div> 
-            <Tabs defaultValue="scenes">
+            <Tabs defaultValue={selectedLeftTab} onTabChange={(tab) => {
+                if (typeof tab === 'string') {
+                    dispatch(setSelectedLeftTab(tab));
+                }
+            }}>
             <Tabs.List grow px="20px,20px">
                 <Tabs.Tab value="scenes" color="cyan" fz="lg" lh="xl">Scenes</Tabs.Tab>
                 <Tabs.Tab value="journal" color="green" fz="lg" lh="xl">Journal</Tabs.Tab>
@@ -25,10 +33,17 @@ export function LeftPanel() {
 
 
 export function RightPanel() {
+    const dispatch = useAppDispatch();
+    const selectedRightTab = useAppSelector((state) => state.tabs.selectedRightTab);
+
 
     return (
         <div> 
-            <Tabs defaultValue="character sheet">
+            <Tabs defaultValue={selectedRightTab} onTabChange={(tab) => {
+                if (typeof tab === 'string') {
+                    dispatch(setSelectedRightTab(tab));
+                }
+            }}>            
             <Tabs.List grow px="20px,20px">
                 <Tabs.Tab value="character sheet" color="orange" fz="lg">Character Sheet</Tabs.Tab>
                 <Tabs.Tab value="inventory" color="yellow" fz="lg">Inventory</Tabs.Tab>

@@ -17,7 +17,8 @@ import sidebarReducer from './sidebar';
 import uiReducer from './ui';
 import campaignReducer from './campaign-slice';
 import titleReducer from './title'
-import newGameReducer from './new-game-slice';
+import newGameSliceReducer from './new-game-slice';
+import tabReducer from './tabs-slice';
 
 const persistConfig = {
   key: 'root',
@@ -39,6 +40,16 @@ const persistTitleConfig = {
   storage,
 };
 
+const persistTabsConfig = {
+  key: 'tabs',
+  storage,
+};
+
+const persistNewGameSliceConfig = {
+  key: 'newGameSlice',
+  storage,
+};
+
 const store = configureStore({
   reducer: {
     campaign: campaignReducer,
@@ -47,7 +58,8 @@ const store = configureStore({
     settingsUI: settingsUIReducer,
     sidebar: persistReducer<ReturnType<typeof sidebarReducer>>(persistSidebarConfig, sidebarReducer),
     title: persistReducer<ReturnType<typeof titleReducer>>(persistTitleConfig, titleReducer),
-    newGame: newGameReducer,
+    newGameSlice: persistReducer<ReturnType<typeof newGameSliceReducer>>(persistNewGameSliceConfig, newGameSliceReducer),
+    tabs: persistReducer<ReturnType<typeof tabReducer>>(persistTabsConfig, tabReducer),
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
