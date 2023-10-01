@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createChatCompletion } from "../chat/openai";
 
 //agents dont return, everything they do should be handled in postprocessMessage
-abstract class Agent<T> {
+export abstract class Agent<T> {
 
     abstract preprocessMessage(messages: Message[], summaries: SummaryMinimal[]): Promise<Message[]>;
     abstract setParameters(parameters: Parameters): Promise<Parameters> ;
@@ -40,57 +40,57 @@ abstract class Agent<T> {
 export class SummaryAgentBase extends Agent<any> {
     
         async preprocessMessage(messages: Message[], summaries: SummaryMinimal[]): Promise<Message[]> {
-        const chatID = messages[messages.length - 1].chatID;
-        const date = Date.now();
+            const chatID = messages[messages.length - 1].chatID;
+            const date = Date.now();
 
-        // Process messagesString without the last message
-        let messagesString = messages.slice(0, -1).map(message => {
-            const content = message.content || '';
-            let role = message.role || '';
-            if (role === 'assistant') {
-                role = 'DM writes';
-            } else {
-                role = 'Player responds';
-            }
-            return `${role}: ${content}`;
-        }).join(' ');
-    
-        // Process prompt
-        const recentSummaries: string = summaries.slice(-3).map(data => data.summary).join(' ');
-        const combinedHistory = 'PREVIOUS SUMMARIES (for context):' + recentSummaries + '\n\n RECENT MESSAGES (to summarize): ' + messagesString;
+            // Process messagesString without the last message
+            let messagesString = messages.slice(0, -1).map(message => {
+                const content = message.content || '';
+                let role = message.role || '';
+                if (role === 'assistant') {
+                    role = 'DM writes';
+                } else {
+                    role = 'Player responds';
+                }
+                return `${role}: ${content}`;
+            }).join(' ');
         
-        //Static prompt components
-        const systemMessage = "You ONLY EVER SUMMARIZE. You NEVER CONTINUE THE STORY. Guidlines to Summarize: 1) Focus on summarizing things that are likely to be important to the player or help the DM tell a consistent story.  2) Keep important information about characters relationships and their way of communicating to each other. 3) Note when something has changed relative to previous summaries. Only include the player's final choices and the resulting events, omitting any unselected options or initial actions that were later changed.."
-        const agentPrompt = `Please summarize the RECENT MESSAGES section.`;
+            // Process prompt
+            const recentSummaries: string = summaries.slice(-3).map(data => data.summary).join(' ');
+            const combinedHistory = 'PREVIOUS SUMMARIES (for context):' + recentSummaries + '\n\n RECENT MESSAGES (to summarize): ' + messagesString;
+            
+            //Static prompt components
+            const systemMessage = "You ONLY EVER SUMMARIZE. You NEVER CONTINUE THE STORY. Guidlines to Summarize: 1) Focus on summarizing things that are likely to be important to the player or help the DM tell a consistent story.  2) Keep important information about characters relationships and their way of communicating to each other. 3) Note when something has changed relative to previous summaries. Only include the player's final choices and the resulting events, omitting any unselected options or initial actions that were later changed.."
+            const agentPrompt = `Please summarize the RECENT MESSAGES section.`;
 
-        // Create the two messages
-        const processedMessages: Message[] = [
-            {
-                id: uuidv4(),
-                chatID: chatID,
-                timestamp: (date - 20000),
-                role: 'system',
-                content: systemMessage
-            },
-            {
-                id: uuidv4(),
-                chatID: chatID,
-                timestamp: (date - 10000),
-                role: 'user',
-                content: combinedHistory
-            },
-            {
-                id: uuidv4(),
-                chatID: chatID,
-                timestamp: date,
-                role: 'user',
-                content: agentPrompt
-            }
-        ];
+            // Create the two messages
+            const processedMessages: Message[] = [
+                {
+                    id: uuidv4(),
+                    chatID: chatID,
+                    timestamp: (date - 20000),
+                    role: 'system',
+                    content: systemMessage
+                },
+                {
+                    id: uuidv4(),
+                    chatID: chatID,
+                    timestamp: (date - 10000),
+                    role: 'user',
+                    content: combinedHistory
+                },
+                {
+                    id: uuidv4(),
+                    chatID: chatID,
+                    timestamp: date,
+                    role: 'user',
+                    content: agentPrompt
+                }
+            ];
 
-        console.log('++++++++preprocessMessage called with messages:', processedMessages);
-    
-        return processedMessages;
+            console.log('++++++++preprocessMessage called with messages:', processedMessages);
+        
+            return processedMessages;
         }
     
 

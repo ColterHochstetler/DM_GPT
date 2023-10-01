@@ -1,23 +1,12 @@
-We need to help players dive into a rich TTRPG campaign quickly. Here’s the form we aim to fill:
+You are an LLM that never uses the word "teaser". You can provide a list without explicitly labeling the items "teaser". Where you would say "teaser" you say "title".
 
-# World
-Tone and Genre: 
-Inspirations:
-Include: 
-Exclude:
-# Character
-Name:
-Race: 
-Gender:
-Background: 
-Appearance: 
-Notoriety: 
-# Journey
-Themes: 
-Possible Allies:
-Possible Enemies: 
-Story Ideas:
-Exclude:
-Starting Scene Intensity:
+We need to help players dive into a rich TTRPG campaign quickly.
 
-Provide three distinct story teasers, each no longer than 5 sentences. These teasers should hint at the world, character, and journey without explicitly filling out the form. The player's choice will guide us in completing the form. Ensure each teaser offers a unique tone and genre. 
+Provide three distinct story teasers (but don't call them teasers). They should have a title, genre or two, and 5 sentences. Don't add additional text beyond what is requested here.
+
+These teasers should hint at the world, character, and journey without explicitly filling out the form. The player's choice will guide us in completing the form. 
+
+Ensure each teaser offers a unique tone and genre, but only note the genre. 
+
+Don't use markdown. Do not label them "teaser 1, teaser 2," etc. Only use their titles. Do not use the word "teaser".
+

@@ -6,7 +6,10 @@ import { useAppDispatch, useAppSelector } from '../../store'
 import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetSteps, selectCurrentStep, setCurrentStep } from '../../store/new-game-slice';
 import useNewChatTrigger from '../../core/chat/new-chat';
 import React, { useCallback, useEffect } from 'react';
-
+import { useAppContext } from '../../core/context';
+import { GenerateStorySeeds } from '../../core/game/new-game-prompting';
+import { useNavigate } from 'react-router-dom';
+import { useOnSubmit } from '../../core/chat/messageSubmitHelper';
 
 type StepContainerProps = {
     isCompleted: boolean;
@@ -115,6 +118,8 @@ function NewGameStep({ title, help, description, placeholder, prefillValue, minC
 
 
 export default function NewGame() {
+
+
     const initialStepsData = [
         {
             title: '1. Story Seed',
@@ -162,7 +167,9 @@ export default function NewGame() {
             maxChars: 1000
         }
     ];
-    
+
+    const context = useAppContext();
+    const navigate = useNavigate();
     const triggerNewChat = useNewChatTrigger();
     const [loading, setLoading] = useState(false);
     const dispatch = useAppDispatch();
@@ -170,6 +177,7 @@ export default function NewGame() {
     const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
     const currentStep = useAppSelector(selectCurrentStep);
     const [isGameStarted, setIsGameStarted] = useState(currentStep > 0);
+    const onSubmitHelper = useOnSubmit(context, navigate, dispatch);
 
     const handleUpdateStep = (index, value, completed = false) => {
         dispatch(updateStepValue({ index, value })); // New: update value in Redux
@@ -202,13 +210,14 @@ export default function NewGame() {
     
             // Then, wait for triggerNewChat to complete
             await triggerNewChat(setLoading);
+
+            await GenerateStorySeeds(onSubmitHelper, context, dispatch, navigate);
+            console.log("New game started!");
     
-            const textContent = await backend.current?.getTextFileContent('x');
-            console.log(textContent);
         } catch (error) {
             console.error("Error in starting a new game:", error);
         }
-    }, [dispatch, setIsGameStarted, backend, triggerNewChat, setLoading]);
+    }, [dispatch, setIsGameStarted, backend, triggerNewChat, setLoading, context, navigate, onSubmitHelper]);
 
     return (
         <div>

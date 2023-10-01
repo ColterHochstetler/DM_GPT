@@ -12,6 +12,7 @@ import { speechRecognition, supportsSpeechRecognition } from '../core/speech-rec
 import { useWhisper } from '@chengsokdara/use-whisper';
 import QuickSettings from './quick-settings';
 import { useOption } from '../core/options/use-option';
+import { useOnSubmit } from '../core/chat/messageSubmitHelper';
 
 const Container = styled.div`
     background: #292933;
@@ -60,6 +61,7 @@ export default function MessageInput(props: MessageInputProps) {
     const context = useAppContext();
     const dispatch = useAppDispatch();
     const intl = useIntl();
+    const onSubmitHelper = useOnSubmit(context, navigate, dispatch);
 
     const tab = useAppSelector(selectSettingsTab);
 
@@ -75,15 +77,9 @@ export default function MessageInput(props: MessageInputProps) {
     const onSubmit = useCallback(async () => {
         setSpeechError(null);
 
-        const id = await context.onNewMessage(message);
+        onSubmitHelper(message)
 
-        if (id) {
-            if (!window.location.pathname.includes(id)) {
-                navigate('/chat/' + id);
-            }
-            dispatch(setMessage(''));
-        }
-    }, [context, message, dispatch, navigate]);
+    }, [context, message, dispatch, navigate, onSubmitHelper]);
 
     const onSpeechError = useCallback((e: any) => {
         console.error('speech recognition error', e);

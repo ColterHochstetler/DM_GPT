@@ -27,6 +27,7 @@ export class ChatManager extends EventEmitter {
     private activeReplies = new Map<string, ReplyRequest>();
     private changedIDs = new Set<string>();
     public lastReplyID: string | null = null;
+    public game: Game = new Game();
 
     constructor() {
         super();
@@ -132,12 +133,14 @@ export class ChatManager extends EventEmitter {
         }
     }
 
-    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, game: Game) {
+    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, saveMessageContent: boolean = true) {
         const chat = this.doc.getYChat(userSubmittedMessage.chatID);
 
         if (!chat) {
             throw new Error('Chat not found');
         }
+
+        
 
         const message: Message = {
             id: uuidv4(),
@@ -149,12 +152,27 @@ export class ChatManager extends EventEmitter {
             done: true,
         };
 
-        this.doc.addMessage(message);
+        const emptyContentMessage: Message = {
+            ...message,
+            content: '', // Set the content to an empty string
+        };
 
-        const messages: Message[] = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);
+
+        let messages: Message[] = [];
+
+        if (saveMessageContent) {
+            this.doc.addMessage(message);
+            console.log('++++++++sendMessage called with messages:', messages);
+            
+        } else {
+            this.doc.addMessage(emptyContentMessage);;
+            console.log('++++++++sendMessage called, no save content:', messages);
+        }
+
+        messages = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);
         messages.push(message);
 
-        game.runLoop(messages,userSubmittedMessage.requestedParameters);
+        this.game.runLoop(messages,userSubmittedMessage.requestedParameters);
 
         await this.getReply(messages, userSubmittedMessage.requestedParameters);
     }

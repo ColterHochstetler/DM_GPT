@@ -11,8 +11,6 @@ import { TTSContextProvider } from "./tts/use-tts";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { isProxySupported } from "./chat/openai";
 import { audioContext, resetAudioContext } from "./tts/audio-file-player";
-import { Game } from "./game/game";
-
 
 export interface Context {
     authenticated: boolean;
@@ -34,7 +32,6 @@ const AppContext = React.createContext<Context>({} as any);
 
 const chatManager = new ChatManager();
 const backend = new Backend(chatManager);
-const game = new Game()
 
 let intl: IntlShape;
 
@@ -125,7 +122,7 @@ export function useCreateAppContext(): Context {
                 apiKey: openaiApiKey,
             },
             parentID: currentChat.leaf?.id,
-        }, game);
+        });
 
         return id;
     }, [dispatch, id, currentChat.leaf, isShare]);
@@ -191,7 +188,7 @@ export function useCreateAppContext(): Context {
                     apiKey: openaiApiKey,
                 },
                 parentID: message.parentID,
-            }, game);
+            });
         } else {
             const id = await chatManager.createChat();
             await chatManager.sendMessage({
@@ -202,7 +199,7 @@ export function useCreateAppContext(): Context {
                     apiKey: openaiApiKey,
                 },
                 parentID: message.parentID,
-            }, game);
+            });
         }
 
         return true;

@@ -5,7 +5,6 @@ import { YChat, YChatDoc } from "../chat/y-chat";
 import { globalOptions } from "../../global-options";
 import { OptionGroup } from "./option-group";
 import { BroadcastChannel } from "broadcast-channel";
-
 export const broadcastChannel = new BroadcastChannel("options");
 
 function cacheKey(groupID: string, optionID: string, chatID?: string | null) {
@@ -207,4 +206,5 @@ export class OptionsManager extends EventEmitter {
         this.removeAllListeners();
         broadcastChannel.onmessage = null;
     }
+
 }
