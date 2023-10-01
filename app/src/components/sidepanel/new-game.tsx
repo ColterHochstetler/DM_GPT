@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Tooltip, Textarea, Button, ActionIcon, Collapse, Title, ScrollArea } from '@mantine/core';
 import styled from '@emotion/styled';
 import { backend } from '../../core/backend';
-import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentStep, selectCurrentStep, setUserInputs, setLlmOutputs, selectUserInputs, selectLlmOutputs } from '../../store/new-game-slice';
+import { useAppDispatch, useAppSelector } from '../../store'
+import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetSteps } from '../../store/new-game-slice';
+
 
 
 
@@ -164,35 +165,23 @@ export default function NewGame() {
             maxChars: 1000
         }
     ];
+    
 
-    const dispatch = useDispatch();
-    const currentStep = useSelector(selectCurrentStep);
-    const userInputs = useSelector(selectUserInputs);
-    const llmOutputs = useSelector(selectLlmOutputs);
+    const dispatch = useAppDispatch();
+    const stepsStatus = useAppSelector(selectStepsStatus); // New: get stepsStatus from Redux
 
-
-    const [stepsStatus, setStepsStatus] = useState(initialStepsData.map(step => ({
-        status: 'pending',
-        value: ''
-    })));
     const [isGameStarted, setIsGameStarted] = useState(false);
 
     const handleUpdateStep = (index, value, completed = false) => {
-        setStepsStatus(prev => {
-            const updated = [...prev];
-            updated[index].value = value;
-            if (completed) {
-                updated[index].status = 'completed';
-                if (index + 1 < updated.length) {
-                    updated[index + 1].status = 'active';
-                }
-            }
-            return updated;
-        });
+        dispatch(updateStepValue({ index, value })); // New: update value in Redux
 
-        // Update the Redux state
-        dispatch(setCurrentStep(index));  // Assuming `index` represents the current step
-        dispatch(setUserInputs({ step: index, value: value }));  // Update the user inputs for the current step
+        if (completed) {
+            dispatch(completeStep(index)); // New: mark step as completed in Redux
+
+            if (index + 1 < stepsStatus.length) {
+                dispatch(activateNextStep(index)); // New: activate next step in Redux
+            }
+        }
     };
 
     const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
@@ -204,18 +193,12 @@ export default function NewGame() {
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                     <Button onClick={async () => {
                         setIsGameStarted(true);
-                        setStepsStatus(prev => {
-                            const updated = [...prev];
-                            updated[0].status = 'active'; // Set the first step to active
-                            return updated;
-                        });
+                        dispatch(initializeSteps()); // New: Initialize stepsStatus in Redux
 
-                        dispatch(setCurrentStep(0));  // Set the initial step in Redux state
-                        // Fetch initial prompts and update Redux state
+                        // Call getTextFileContent and print to the console
                         const textContent = await backend.current?.getTextFileContent('x');
-                        dispatch(setLlmOutputs({ initialPrompt: textContent }));  // Assuming you want to store the initial prompt
-
                         console.log(textContent);
+
                     }}>
                         Start New Game
                     </Button>
@@ -240,18 +223,8 @@ export default function NewGame() {
                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', margin: '2rem 0' }}>
                             <Title size="h4" color="white" style={{ marginBottom: '1rem' }}>All steps completed!</Title>
                             <Button color="green" onClick={() => {
-                                // Reset local state
                                 setIsGameStarted(false);
-                                setStepsStatus(initialStepsData.map(step => ({
-                                    status: 'pending',
-                                    value: ''
-                                })));
-
-                                // Reset Redux state
-                                dispatch(setCurrentStep(0));  // Reset to the initial step
-                                dispatch(setUserInputs({}));  // Clear user inputs
-                                dispatch(setLlmOutputs({}));  // Clear LLM outputs, if needed
-
+                                dispatch(resetSteps()); // New: Reset stepsStatus in Redux
                             }}>
                                 Launch!
                             </Button>
@@ -262,5 +235,4 @@ export default function NewGame() {
         </div>
     );
 }
-
 
