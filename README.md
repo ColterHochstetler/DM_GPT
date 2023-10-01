@@ -69,4 +69,4 @@ docker pull ghcr.io/cogentapps/chat-with-gpt:release
 
 ## License
 
-Chat with GPT is licensed under the MIT license. See the LICENSE file for more information.
+Not sharing. I'd like to make this my full time job one day.
