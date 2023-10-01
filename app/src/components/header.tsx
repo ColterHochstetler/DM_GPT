@@ -16,7 +16,7 @@ import { useOption } from '../core/options/use-option';
 import { useHotkeys } from '@mantine/hooks';
 import { setTitle, selectTitle } from '../store/title';
 import { useModals } from '@mantine/modals';
-//import { RenameModal } from './rename-modal';
+import useNewChatTrigger from "../core/chat/new-chat";
 
 const Banner = styled.div`
     background: rgba(224, 49, 49, 0.2);
@@ -211,12 +211,7 @@ export default function Header(props: HeaderProps) {
         ? intl.formatMessage({ defaultMessage: "Close sidebar" })
         : intl.formatMessage({ defaultMessage: "Open sidebar" });
 
-    const onNewChat = useCallback(async () => {
-        setLoading(true);
-        navigate(`/`);
-        setLoading(false);
-        setTimeout(() => document.querySelector<HTMLTextAreaElement>('#message-input')?.focus(), 100);
-    }, [navigate]);
+    const triggerNewChat = useNewChatTrigger();
 
     const openSettings = useCallback(() => {
         dispatch(setTab(openAIApiKey ? 'chat' : 'user'));
@@ -239,7 +234,10 @@ export default function Header(props: HeaderProps) {
     }, [dispatch])
 
     useHotkeys([
-        ['c', onNewChat],
+        ['c', (event: KeyboardEvent) => {
+            event.preventDefault();  // Prevent any default behavior, optional
+            triggerNewChat(setLoading);
+        }],
     ]);
 
     return (<>
@@ -254,7 +252,7 @@ export default function Header(props: HeaderProps) {
                 </title>
             </Helmet>
             {!sidebarOpen && <Burger opened={sidebarOpen} onClick={onBurgerClick} aria-label={burgerLabel} transitionDuration={0} />}
-            <HeaderButton icon="plus" onClick={onNewChat} loading={loading} variant="light">
+            <HeaderButton icon="plus" onClick={() => triggerNewChat(setLoading)} loading={loading} variant="light">
                 <FormattedMessage defaultMessage="New" description="Label for the button used to start a new chat session" />
             </HeaderButton>
             <div className="spacer" />

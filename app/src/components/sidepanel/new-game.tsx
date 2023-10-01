@@ -4,8 +4,8 @@ import styled from '@emotion/styled';
 import { backend } from '../../core/backend';
 import { useAppDispatch, useAppSelector } from '../../store'
 import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetSteps } from '../../store/new-game-slice';
-
-
+import useNewChatTrigger from '../../core/chat/new-chat';
+import React, { useCallback } from 'react';
 
 
 type StepContainerProps = {
@@ -114,9 +114,6 @@ function NewGameStep({ title, help, description, placeholder, prefillValue, minC
 }
 
 
-
-
-
 export default function NewGame() {
     const initialStepsData = [
         {
@@ -166,7 +163,8 @@ export default function NewGame() {
         }
     ];
     
-
+    const triggerNewChat = useNewChatTrigger();
+    const [loading, setLoading] = useState(false);
     const dispatch = useAppDispatch();
     const stepsStatus = useAppSelector(selectStepsStatus); // New: get stepsStatus from Redux
 
@@ -186,20 +184,23 @@ export default function NewGame() {
 
     const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
 
+    const startNewGame = useCallback(async () => {
+        triggerNewChat(setLoading);
+        
+        setIsGameStarted(true);
+    
+        dispatch(initializeSteps());
+    
+        const textContent = await backend.current?.getTextFileContent('x');
+        console.log(textContent);
+    
+    }, [dispatch, setIsGameStarted, backend, triggerNewChat, setLoading]);
 
     return (
         <div>
             {!isGameStarted ? (
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                    <Button onClick={async () => {
-                        setIsGameStarted(true);
-                        dispatch(initializeSteps()); // New: Initialize stepsStatus in Redux
-
-                        // Call getTextFileContent and print to the console
-                        const textContent = await backend.current?.getTextFileContent('x');
-                        console.log(textContent);
-
-                    }}>
+                    <Button onClick={startNewGame}>
                         Start New Game
                     </Button>
                 </div>
