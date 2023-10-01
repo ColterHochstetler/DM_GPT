@@ -194,16 +194,14 @@ export default function NewGame() {
         }
       }, [stepsStatus, dispatch]);
 
-
-
-    const startNewGame = useCallback(async () => {
+      const startNewGame = useCallback(async () => {
         try {
-            // Wait for triggerNewChat to complete
-            await triggerNewChat(setLoading);
-    
-            // Then proceed with initializing the new game
+            // First, proceed with initializing the new game
             setIsGameStarted(true);
             dispatch(initializeSteps());
+    
+            // Then, wait for triggerNewChat to complete
+            await triggerNewChat(setLoading);
     
             const textContent = await backend.current?.getTextFileContent('x');
             console.log(textContent);
