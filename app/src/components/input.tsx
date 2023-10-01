@@ -12,7 +12,7 @@ import { speechRecognition, supportsSpeechRecognition } from '../core/speech-rec
 import { useWhisper } from '@chengsokdara/use-whisper';
 import QuickSettings from './quick-settings';
 import { useOption } from '../core/options/use-option';
-import { useOnSubmit } from '../core/chat/messageSubmitHelper';
+import { useOnSubmit } from '../core/chat/message-submit-helper';
 
 const Container = styled.div`
     background: #292933;

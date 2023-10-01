@@ -23,7 +23,7 @@ export interface Context {
     isHome: boolean;
     isShare: boolean;
     generating: boolean;
-    onNewMessage: (message?: string) => Promise<string | false>;
+    onNewMessage: (message?: string, overrideSavedMessage?: string, overrideParameters?: Parameters) => Promise<string | false>;
     regenerateMessage: (message: Message) => Promise<boolean>;
     editMessage: (message: Message, content: string) => Promise<boolean>;
 }
@@ -75,7 +75,8 @@ export function useCreateAppContext(): Context {
         };
     }, [updateAuth]);
 
-    const onNewMessage = useCallback(async (message?: string) => {
+    const onNewMessage = useCallback(
+        async (message?: string, overrideSavedMessage?: string,  overrideParameters?: Parameters) => {
         resetAudioContext();
         
         if (isShare) {
@@ -99,6 +100,12 @@ export function useCreateAppContext(): Context {
             temperature: chatManager.options.getOption<number>('parameters', 'temperature', id),
         };
 
+        const mergedParameters = {
+            ...parameters,
+            ...overrideParameters, // this will override values in `parameters` if provided
+            apiKey: openaiApiKey,
+          };
+
         if (id === nextID) {
             setNextID(uuidv4());
 
@@ -117,12 +124,9 @@ export function useCreateAppContext(): Context {
         chatManager.sendMessage({
             chatID: id,
             content: message.trim(),
-            requestedParameters: {
-                ...parameters,
-                apiKey: openaiApiKey,
-            },
+            requestedParameters: mergedParameters,
             parentID: currentChat.leaf?.id,
-        });
+        }, overrideSavedMessage);
 
         return id;
     }, [dispatch, id, currentChat.leaf, isShare]);

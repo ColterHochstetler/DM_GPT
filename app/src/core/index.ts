@@ -133,14 +133,13 @@ export class ChatManager extends EventEmitter {
         }
     }
 
-    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, saveMessageContent: boolean = true) {
+    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, overrideSavedMessage?: string) {
         const chat = this.doc.getYChat(userSubmittedMessage.chatID);
 
+        console.log('++++++++sendMessage called with displayMessage:', overrideSavedMessage);
         if (!chat) {
             throw new Error('Chat not found');
         }
-
-        
 
         const message: Message = {
             id: uuidv4(),
@@ -152,24 +151,22 @@ export class ChatManager extends EventEmitter {
             done: true,
         };
 
-        const emptyContentMessage: Message = {
-            ...message,
-            content: '', // Set the content to an empty string
-        };
+        if (overrideSavedMessage) {
+            const overriddenMessage = {
+                ...message,
+                content: overrideSavedMessage,
+            };
 
-
-        let messages: Message[] = [];
-
-        if (saveMessageContent) {
-            this.doc.addMessage(message);
-            console.log('++++++++sendMessage called with messages:', messages);
+            this.doc.addMessage(overriddenMessage);;
+            
+            console.log('++ yes overriding message content save content for message: ', overriddenMessage);
             
         } else {
-            this.doc.addMessage(emptyContentMessage);;
-            console.log('++++++++sendMessage called, no save content:', messages);
+            this.doc.addMessage(message);
+            console.log('++ Yes save content for message: ', message);
         }
 
-        messages = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);
+        const messages: Message[] = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);        
         messages.push(message);
 
         this.game.runLoop(messages,userSubmittedMessage.requestedParameters);

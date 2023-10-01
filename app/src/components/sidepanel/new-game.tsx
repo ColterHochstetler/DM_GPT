@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Tooltip, Textarea, Button, ActionIcon, Collapse, Title, ScrollArea } from '@mantine/core';
 import styled from '@emotion/styled';
-import { backend } from '../../core/backend';
 import { useAppDispatch, useAppSelector } from '../../store'
 import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetSteps, selectCurrentStep, setCurrentStep } from '../../store/new-game-slice';
 import useNewChatTrigger from '../../core/chat/new-chat';
@@ -9,7 +8,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useAppContext } from '../../core/context';
 import { GenerateStorySeeds } from '../../core/game/new-game-prompting';
 import { useNavigate } from 'react-router-dom';
-import { useOnSubmit } from '../../core/chat/messageSubmitHelper';
+import { useOnSubmit } from '../../core/chat/message-submit-helper';
 
 type StepContainerProps = {
     isCompleted: boolean;
@@ -177,7 +176,7 @@ export default function NewGame() {
     const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
     const currentStep = useAppSelector(selectCurrentStep);
     const [isGameStarted, setIsGameStarted] = useState(currentStep > 0);
-    const onSubmitHelper = useOnSubmit(context, navigate, dispatch);
+    const onSubmitHelper = useOnSubmit(context, navigate, dispatch, 'TIME TO START A NEW ADVENTURE! Below are suggestions for adventures, called Story Seeds. Copy and Paste one, edit it, or write your own. You can talk with me to help craft an appropriate adventure story seed. When you are happy, paste your story seed into left side box and press submit.');
 
     const handleUpdateStep = (index, value, completed = false) => {
         dispatch(updateStepValue({ index, value })); // New: update value in Redux
@@ -195,7 +194,11 @@ export default function NewGame() {
     useEffect(() => {
         // Check if all steps are in their initial 'pending' state with empty value
         const areStepsInInitialState = stepsStatus.every(step => step.status === 'pending' && step.value === '');
-      
+        
+        console.log("Component Mounted / Updated");
+        console.log("stepsStatus:", stepsStatus);
+        console.log("dispatch:", dispatch);
+
         if (areStepsInInitialState) {
           // If so, initialize the steps
           dispatch(initializeSteps());
@@ -205,19 +208,20 @@ export default function NewGame() {
       const startNewGame = useCallback(async () => {
         try {
             // First, proceed with initializing the new game
+            console.log("startNewGame - Before");
             setIsGameStarted(true);
             dispatch(initializeSteps());
     
             // Then, wait for triggerNewChat to complete
             await triggerNewChat(setLoading);
 
-            await GenerateStorySeeds(onSubmitHelper, context, dispatch, navigate);
-            console.log("New game started!");
+            GenerateStorySeeds(onSubmitHelper);
+            console.log("startNewGame - After");
     
         } catch (error) {
             console.error("Error in starting a new game:", error);
         }
-    }, [dispatch, setIsGameStarted, backend, triggerNewChat, setLoading, context, navigate, onSubmitHelper]);
+    }, [dispatch, setIsGameStarted, setLoading]);
 
     return (
         <div>
