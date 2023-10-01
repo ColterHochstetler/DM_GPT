@@ -236,16 +236,15 @@ export default function NewGame() {
 
       const startNewGame = useCallback(async () => {
         try {
-            // First, proceed with initializing the new game
-            console.log("startNewGame - Before");
+        
+            await Promise.all([
+                //triggerNewChat(() => dispatch({ type: 'SET_LOADING', payload: true })),
+                GenerateStorySeeds(onSubmitHelper)  // Assuming GenerateStorySeeds returns a Promise
+            ]);
+
+
             newGameDispatch({ type: 'SET_IS_GAME_STARTED', payload: true });
             dispatch(initializeSteps());
-    
-            // Then, wait for triggerNewChat to complete
-            await triggerNewChat(() => dispatch({ type: 'SET_LOADING', payload: true }));
-
-            GenerateStorySeeds(onSubmitHelper);
-            console.log("startNewGame - After");
     
         } catch (error) {
             console.error("Error in starting a new game:", error);
