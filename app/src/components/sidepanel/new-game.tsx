@@ -4,11 +4,31 @@ import styled from '@emotion/styled';
 import { useAppDispatch, useAppSelector } from '../../store'
 import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetSteps, selectCurrentStep, setCurrentStep } from '../../store/new-game-slice';
 import useNewChatTrigger from '../../core/chat/new-chat';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useReducer } from 'react';
 import { useAppContext } from '../../core/context';
 import { GenerateStorySeeds } from '../../core/game/new-game-prompting';
 import { useNavigate } from 'react-router-dom';
 import { useOnSubmit } from '../../core/chat/message-submit-helper';
+
+type NewGameState = {
+    loading: boolean;
+    isGameStarted: boolean;
+};
+  
+type NewGameAction =
+    | { type: 'SET_LOADING'; payload: boolean }
+    | { type: 'SET_IS_GAME_STARTED'; payload: boolean };
+  
+const newGameReducer = (state: NewGameState, action: NewGameAction): NewGameState => {
+    switch (action.type) {
+      case 'SET_LOADING':
+        return { ...state, loading: action.payload };
+      case 'SET_IS_GAME_STARTED':
+        return { ...state, isGameStarted: action.payload };
+      default:
+        return state;
+    }
+};
 
 type StepContainerProps = {
     isCompleted: boolean;
@@ -170,12 +190,10 @@ export default function NewGame() {
     const context = useAppContext();
     const navigate = useNavigate();
     const triggerNewChat = useNewChatTrigger();
-    const [loading, setLoading] = useState(false);
     const dispatch = useAppDispatch();
     const stepsStatus = useAppSelector(selectStepsStatus); // New: get stepsStatus from Redux
     const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
     const currentStep = useAppSelector(selectCurrentStep);
-    const [isGameStarted, setIsGameStarted] = useState(currentStep > 0);
     const onSubmitHelper = useOnSubmit(context, navigate, dispatch, 'TIME TO START A NEW ADVENTURE! Below are suggestions for adventures, called Story Seeds. Copy and Paste one, edit it, or write your own. You can talk with me to help craft an appropriate adventure story seed. When you are happy, paste your story seed into left side box and press submit.');
 
     const handleUpdateStep = (index, value, completed = false) => {
@@ -191,11 +209,22 @@ export default function NewGame() {
         }
     };
 
+    const initialState: NewGameState = {
+        loading: false,
+        isGameStarted: currentStep > 0, // Assuming currentStep is available in the component
+    };
+      
+    const [state, newGameDispatch] = useReducer(newGameReducer, initialState);
+
+    useEffect(() => {
+        console.log("Component Mounted ");
+    }, []);
+
     useEffect(() => {
         // Check if all steps are in their initial 'pending' state with empty value
         const areStepsInInitialState = stepsStatus.every(step => step.status === 'pending' && step.value === '');
         
-        console.log("Component Mounted / Updated");
+        console.log("Updated");
         console.log("stepsStatus:", stepsStatus);
         console.log("dispatch:", dispatch);
 
@@ -209,11 +238,11 @@ export default function NewGame() {
         try {
             // First, proceed with initializing the new game
             console.log("startNewGame - Before");
-            setIsGameStarted(true);
+            newGameDispatch({ type: 'SET_IS_GAME_STARTED', payload: true });
             dispatch(initializeSteps());
     
             // Then, wait for triggerNewChat to complete
-            await triggerNewChat(setLoading);
+            await triggerNewChat(() => dispatch({ type: 'SET_LOADING', payload: true }));
 
             GenerateStorySeeds(onSubmitHelper);
             console.log("startNewGame - After");
@@ -221,11 +250,11 @@ export default function NewGame() {
         } catch (error) {
             console.error("Error in starting a new game:", error);
         }
-    }, [dispatch, setIsGameStarted, setLoading]);
+    }, [dispatch]);
 
     return (
         <div>
-            {!isGameStarted ? (
+            {!state.isGameStarted ? (
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                     <Button onClick={startNewGame}>
                         Start New Game
@@ -251,7 +280,7 @@ export default function NewGame() {
                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', margin: '2rem 0' }}>
                             <Title size="h4" color="white" style={{ marginBottom: '1rem' }}>All steps completed!</Title>
                             <Button color="green" onClick={() => {
-                                setIsGameStarted(false);
+                                newGameDispatch({ type: 'SET_IS_GAME_STARTED', payload: false });
                                 dispatch(resetSteps()); // New: Reset stepsStatus in Redux
                             }}>
                                 Launch!
@@ -260,7 +289,7 @@ export default function NewGame() {
                     )}
                     <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'center', margin: '1rem 0' }}>
                     <Button color="red" onClick={() => {
-                        setIsGameStarted(false); // Reset isGameStarted state
+                        newGameDispatch({ type: 'SET_IS_GAME_STARTED', payload: false }); // Reset isGameStarted state
                         dispatch(resetSteps());  // Reset stepsStatus in Redux
                         dispatch(setCurrentStep(0)); // Reset currentStep in Redux
                     }}>
