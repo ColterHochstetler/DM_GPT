@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Tooltip, Textarea, Button, ActionIcon, Collapse, Title, ScrollArea } from '@mantine/core';
 import styled from '@emotion/styled';
 import { useAppDispatch, useAppSelector } from '../../store'
-import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetSteps, selectCurrentStep, setCurrentStep } from '../../store/new-game-slice';
+import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetToBeginning, selectCurrentStep, setCurrentStep } from '../../store/new-game-slice';
 import useNewChatTrigger from '../../core/chat/new-chat';
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { useAppContext } from '../../core/context';
@@ -193,8 +193,8 @@ export default function NewGame() {
     const dispatch = useAppDispatch();
     const stepsStatus = useAppSelector(selectStepsStatus); // New: get stepsStatus from Redux
     const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
-    const currentStep = useAppSelector(selectCurrentStep);
     const onSubmitHelper = useOnSubmit(context, navigate, dispatch, 'TIME TO START A NEW ADVENTURE! Below are suggestions for adventures, called Story Seeds. Copy and Paste one, edit it, or write your own. You can talk with me to help craft an appropriate adventure story seed. When you are happy, paste your story seed into left side box and press submit.');
+    const currentStep = useAppSelector(selectCurrentStep);
 
     const handleUpdateStep = (index, value, completed = false) => {
         dispatch(updateStepValue({ index, value })); // New: update value in Redux
@@ -209,6 +209,8 @@ export default function NewGame() {
         }
     };
 
+    
+
     const initialState: NewGameState = {
         loading: false,
         isGameStarted: currentStep > 0, // Assuming currentStep is available in the component
@@ -217,33 +219,29 @@ export default function NewGame() {
     const [state, newGameDispatch] = useReducer(newGameReducer, initialState);
 
     useEffect(() => {
-        console.log("Component Mounted ");
-    }, []);
+        const areStepsInInitialState = stepsStatus.every(step => step.status === 'pending' && step.value === '');
+        if (areStepsInInitialState) {
+            dispatch(initializeSteps());
+        }
+    }, [stepsStatus, dispatch]);
 
     useEffect(() => {
-        // Check if all steps are in their initial 'pending' state with empty value
-        const areStepsInInitialState = stepsStatus.every(step => step.status === 'pending' && step.value === '');
-        
-        console.log("Updated");
-        console.log("stepsStatus:", stepsStatus);
-        console.log("dispatch:", dispatch);
-
-        if (areStepsInInitialState) {
-          // If so, initialize the steps
-          dispatch(initializeSteps());
+        if (currentStep > -1) {
+            newGameDispatch({ type: 'SET_IS_GAME_STARTED', payload: true });
+        } else {
+            newGameDispatch({ type: 'SET_IS_GAME_STARTED', payload: false });
         }
-      }, [stepsStatus, dispatch]);
+    }, [currentStep, newGameDispatch]);
+    
 
-      const startNewGame = useCallback(async () => {
+    const startNewGame = useCallback(async () => {
         try {
         
             await Promise.all([
-                //triggerNewChat(() => dispatch({ type: 'SET_LOADING', payload: true })),
+                triggerNewChat(() => dispatch({ type: 'SET_LOADING', payload: true })),
                 GenerateStorySeeds(onSubmitHelper)  // Assuming GenerateStorySeeds returns a Promise
             ]);
 
-
-            newGameDispatch({ type: 'SET_IS_GAME_STARTED', payload: true });
             dispatch(initializeSteps());
     
         } catch (error) {
@@ -279,8 +277,7 @@ export default function NewGame() {
                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', margin: '2rem 0' }}>
                             <Title size="h4" color="white" style={{ marginBottom: '1rem' }}>All steps completed!</Title>
                             <Button color="green" onClick={() => {
-                                newGameDispatch({ type: 'SET_IS_GAME_STARTED', payload: false });
-                                dispatch(resetSteps()); // New: Reset stepsStatus in Redux
+                                dispatch(resetToBeginning()); // New: Reset stepsStatus in Redux
                             }}>
                                 Launch!
                             </Button>
@@ -288,9 +285,7 @@ export default function NewGame() {
                     )}
                     <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'center', margin: '1rem 0' }}>
                     <Button color="red" onClick={() => {
-                        newGameDispatch({ type: 'SET_IS_GAME_STARTED', payload: false }); // Reset isGameStarted state
-                        dispatch(resetSteps());  // Reset stepsStatus in Redux
-                        dispatch(setCurrentStep(0)); // Reset currentStep in Redux
+                        dispatch(resetToBeginning());  
                     }}>
                         Cancel
                     </Button>
