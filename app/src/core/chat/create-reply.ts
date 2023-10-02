@@ -72,6 +72,8 @@ export class ReplyRequest extends EventEmitter {
                 this.mutatedMessages = output.messages;
                 this.mutatedParameters = output.parameters;
                 this.lastChunkReceivedAt = Date.now();
+
+                console.log("Mutated Messages in create-reply.ts:", this.mutatedMessages); 
             });
 
             const { emitter, cancel } = await createStreamingChatCompletion(this.mutatedMessages, {

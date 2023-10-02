@@ -16,6 +16,6 @@ export const useOnSubmit = (context: Context, navigate, dispatch, overrideSavedM
             }
             dispatch(setMessage(''));
         }
-    }, []);
+    }, [context, dispatch, navigate]);
 };
 

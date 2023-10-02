@@ -46,10 +46,8 @@ export const newGameSlice = createSlice({
       state.currentStep = 0; // Set currentStep to 0
     },
     resetToBeginning: (state) => {
-      console.log('Before resetting:', state);
       state.stepsStatus = Array(5).fill(null).map(() => ({ status: 'pending', value: '' }));
       state.currentStep = -1;
-      console.log('After resetting:', state);
     },
     setIsGameStarted: (state, action: PayloadAction<boolean>) => {
       state.isGameStarted = action.payload;

@@ -9,6 +9,7 @@ import { useAppContext } from '../../core/context';
 import { GenerateStorySeeds } from '../../core/game/new-game-prompting';
 import { useNavigate } from 'react-router-dom';
 import { useOnSubmit } from '../../core/chat/message-submit-helper';
+import { Parameters } from '../../core/chat/types';
 
 type NewGameState = {
     loading: boolean;
@@ -189,6 +190,10 @@ export default function NewGame() {
     const dispatch = useAppDispatch();
     const stepsStatus = useAppSelector(selectStepsStatus); // New: get stepsStatus from Redux
     const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
+    const submitHelperOverrideProperties: Parameters = {
+        model: 'gpt-3.5-turbo',
+        temperature: 1.3,
+    };
     const onSubmitHelper = useOnSubmit(context, navigate, dispatch, 'TIME TO START A NEW ADVENTURE! Below are suggestions for adventures, called Story Seeds. Copy and Paste one, edit it, or write your own. You can talk with me to help craft an appropriate adventure story seed. When you are happy, paste your story seed into left side box and press submit.');
     const currentStep = useAppSelector(selectCurrentStep);
 
@@ -214,26 +219,20 @@ export default function NewGame() {
     const [state, newGameDispatch] = useReducer(newGameReducer, initialState);
 
     useEffect(() => {
-        console.log("Current Step:", currentStep);
         if (currentStep > -1) {
-            console.log("Current step >-1, Setting isGameStarted to true");
             dispatch(setIsGameStarted(true));
         } else {
-            console.log("Current step <=-1, Setting isGameStarted to false");
             dispatch(setIsGameStarted(false));
         }
-        console.log("+Is Game Started: ", !isGameStarted);
     }, [currentStep, newGameDispatch]);
     
 
     const startNewGame = useCallback(async () => {
         try {
-        
-            await Promise.all([
-                triggerNewChat(() => dispatch({ type: 'SET_LOADING', payload: true })),
-                GenerateStorySeeds(onSubmitHelper)  // Assuming GenerateStorySeeds returns a Promise
-            ]);
-
+            
+            await triggerNewChat(() => dispatch({ type: 'SET_LOADING', payload: true })),
+            await GenerateStorySeeds(onSubmitHelper)  // Assuming GenerateStorySeeds returns a Promise
+         
             dispatch(initializeSteps());
     
         } catch (error) {

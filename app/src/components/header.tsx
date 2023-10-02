@@ -278,8 +278,9 @@ export default function Header(props: HeaderProps) {
             
 
             )}
-            <HeaderButton icon="search" onClick={spotlight.openSpotlight} />
             <HeaderButton icon="gear" onClick={openSettings} />
+            <HeaderButton icon="search" onClick={spotlight.openSpotlight} />
+            
 {/*             {backend.current && !props.share && props.canShare && typeof navigator.share !== 'undefined' && <HeaderButton icon="share" onClick={props.onShare}>
                 <FormattedMessage defaultMessage="Share" description="Label for the button used to create a public share URL for a chat log" />
             </HeaderButton>} */}

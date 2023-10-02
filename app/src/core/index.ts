@@ -136,7 +136,6 @@ export class ChatManager extends EventEmitter {
     public async sendMessage(userSubmittedMessage: UserSubmittedMessage, overrideSavedMessage?: string) {
         const chat = this.doc.getYChat(userSubmittedMessage.chatID);
 
-        console.log('++++++++sendMessage called with displayMessage:', overrideSavedMessage);
         if (!chat) {
             throw new Error('Chat not found');
         }
@@ -168,6 +167,7 @@ export class ChatManager extends EventEmitter {
 
         const messages: Message[] = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);        
         messages.push(message);
+        console.log('++ messages: ', messages);
 
         this.game.runLoop(messages,userSubmittedMessage.requestedParameters);
 
