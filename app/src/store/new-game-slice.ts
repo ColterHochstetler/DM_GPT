@@ -6,6 +6,7 @@ type NewGameState = {
   stepsStatus: { status: string; value: string }[];
   user: string;
   LLM: string;
+  isGameStarted: boolean; 
 };
 
 const initialState: NewGameState = {
@@ -13,6 +14,7 @@ const initialState: NewGameState = {
   stepsStatus: Array(5).fill({ status: 'pending', value: '' }),
   user: '',
   LLM: '',
+  isGameStarted: false,
 };
 
 export const newGameSlice = createSlice({
@@ -44,21 +46,26 @@ export const newGameSlice = createSlice({
       state.currentStep = 0; // Set currentStep to 0
     },
     resetToBeginning: (state) => {
-      console.log('resetting to beginning');
+      console.log('Before resetting:', state);
       state.stepsStatus = Array(5).fill(null).map(() => ({ status: 'pending', value: '' }));
       state.currentStep = -1;
+      console.log('After resetting:', state);
+    },
+    setIsGameStarted: (state, action: PayloadAction<boolean>) => {
+      state.isGameStarted = action.payload;
     },
 },
 });
 
 // Export actions
-export const { updateStepValue, completeStep, activateNextStep, setCurrentStep, setUser, setLLM, initializeSteps, resetToBeginning } = newGameSlice.actions;
+export const { updateStepValue, completeStep, activateNextStep, setCurrentStep, setUser, setLLM, initializeSteps, resetToBeginning, setIsGameStarted  } = newGameSlice.actions;
 
 // Export selectors
 export const selectCurrentStep = (state: RootState) => state.newGameSlice.currentStep;
 export const selectUser = (state: RootState) => state.newGameSlice.user;
 export const selectLLM = (state: RootState) => state.newGameSlice.LLM;
 export const selectStepsStatus = (state: RootState) => state.newGameSlice.stepsStatus;
+export const selectIsGameStarted = (state: RootState) => state.newGameSlice.isGameStarted;
 
 // Export the reducer
 export default newGameSlice.reducer;

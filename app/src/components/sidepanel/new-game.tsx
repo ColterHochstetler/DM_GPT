@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Tooltip, Textarea, Button, ActionIcon, Collapse, Title, ScrollArea } from '@mantine/core';
 import styled from '@emotion/styled';
 import { useAppDispatch, useAppSelector } from '../../store'
-import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetToBeginning, selectCurrentStep, setCurrentStep } from '../../store/new-game-slice';
+import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetToBeginning, selectCurrentStep, setCurrentStep, setIsGameStarted, selectIsGameStarted } from '../../store/new-game-slice';
 import useNewChatTrigger from '../../core/chat/new-chat';
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { useAppContext } from '../../core/context';
@@ -12,19 +12,15 @@ import { useOnSubmit } from '../../core/chat/message-submit-helper';
 
 type NewGameState = {
     loading: boolean;
-    isGameStarted: boolean;
 };
   
 type NewGameAction =
     | { type: 'SET_LOADING'; payload: boolean }
-    | { type: 'SET_IS_GAME_STARTED'; payload: boolean };
   
 const newGameReducer = (state: NewGameState, action: NewGameAction): NewGameState => {
     switch (action.type) {
       case 'SET_LOADING':
         return { ...state, loading: action.payload };
-      case 'SET_IS_GAME_STARTED':
-        return { ...state, isGameStarted: action.payload };
       default:
         return state;
     }
@@ -209,28 +205,24 @@ export default function NewGame() {
         }
     };
 
-    
-
     const initialState: NewGameState = {
         loading: false,
-        isGameStarted: currentStep > 0, // Assuming currentStep is available in the component
     };
+
+    const isGameStarted = useAppSelector(selectIsGameStarted);
       
     const [state, newGameDispatch] = useReducer(newGameReducer, initialState);
 
     useEffect(() => {
-        const areStepsInInitialState = stepsStatus.every(step => step.status === 'pending' && step.value === '');
-        if (areStepsInInitialState) {
-            dispatch(initializeSteps());
-        }
-    }, [stepsStatus, dispatch]);
-
-    useEffect(() => {
+        console.log("Current Step:", currentStep);
         if (currentStep > -1) {
-            newGameDispatch({ type: 'SET_IS_GAME_STARTED', payload: true });
+            console.log("Current step >-1, Setting isGameStarted to true");
+            dispatch(setIsGameStarted(true));
         } else {
-            newGameDispatch({ type: 'SET_IS_GAME_STARTED', payload: false });
+            console.log("Current step <=-1, Setting isGameStarted to false");
+            dispatch(setIsGameStarted(false));
         }
+        console.log("+Is Game Started: ", !isGameStarted);
     }, [currentStep, newGameDispatch]);
     
 
@@ -251,7 +243,7 @@ export default function NewGame() {
 
     return (
         <div>
-            {!state.isGameStarted ? (
+            {!isGameStarted ? (
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                     <Button onClick={startNewGame}>
                         Start New Game
