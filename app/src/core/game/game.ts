@@ -28,13 +28,11 @@ import { SummaryAgentBase } from "./agents";
                 const message = messages[i];
 
                 if (message.id === lastMessageSummarizedID) {
-                    console.log('////last summarized ID matched: ', lastMessageSummarizedID)
                     break;
                 }
 
                 recentMessages.push(message);
                 loopCounter++;
-                console.log('loop counter: ', loopCounter)
             }
 
             // Unreverse message order

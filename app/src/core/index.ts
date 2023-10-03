@@ -158,11 +158,8 @@ export class ChatManager extends EventEmitter {
 
             this.doc.addMessage(overriddenMessage);;
             
-            console.log('++ yes overriding message content save content for message: ', overriddenMessage);
-            
         } else {
             this.doc.addMessage(message);
-            console.log('++ Yes save content for message: ', message);
         }
 
         const messages: Message[] = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);        

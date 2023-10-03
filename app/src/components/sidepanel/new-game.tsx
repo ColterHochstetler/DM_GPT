@@ -198,14 +198,14 @@ export default function NewGame() {
     const currentStep = useAppSelector(selectCurrentStep);
 
     const handleUpdateStep = (index, value, completed = false) => {
-        dispatch(updateStepValue({ index, value })); // New: update value in Redux
+        dispatch(updateStepValue({ index, value }));
     
         if (completed) {
-            dispatch(completeStep(index)); // New: mark step as completed in Redux
-            dispatch(setCurrentStep(index + 1)); // Update currentStep in Redux
+            dispatch(completeStep(index));  
+            dispatch(setCurrentStep(index + 1));
     
             if (index + 1 < stepsStatus.length) {
-                dispatch(activateNextStep(index)); // New: activate next step in Redux
+                dispatch(activateNextStep(index));
             }
         }
     };
