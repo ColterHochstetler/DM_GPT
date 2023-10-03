@@ -61,7 +61,7 @@ export default function MessageInput(props: MessageInputProps) {
     const context = useAppContext();
     const dispatch = useAppDispatch();
     const intl = useIntl();
-    const onSubmitHelper = useOnSubmit(context, navigate, dispatch);
+    const onSubmitHelper = useOnSubmit(context, navigate, dispatch, false);
 
     const tab = useAppSelector(selectSettingsTab);
 

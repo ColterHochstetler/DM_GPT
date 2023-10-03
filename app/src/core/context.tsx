@@ -23,7 +23,7 @@ export interface Context {
     isHome: boolean;
     isShare: boolean;
     generating: boolean;
-    onNewMessage: (message?: string, overrideSavedMessage?: string, overrideParameters?: Parameters) => Promise<string | false>;
+    onNewMessage: (useNextId?: boolean, message?: string, overrideSavedMessage?: string, overrideParameters?: Parameters) => Promise<string | false>;
     regenerateMessage: (message: Message) => Promise<boolean>;
     editMessage: (message: Message, content: string) => Promise<boolean>;
 }
@@ -76,8 +76,10 @@ export function useCreateAppContext(): Context {
     }, [updateAuth]);
 
     const onNewMessage = useCallback(
-        async (message?: string, overrideSavedMessage?: string,  overrideParameters?: Parameters) => {
+        async (useNextId = false, message?: string, overrideSavedMessage?: string,  overrideParameters?: Parameters) => {
         resetAudioContext();
+
+        const effectiveId = useNextId ? nextID : id; // 
         
         if (isShare) {
             return false;
@@ -106,7 +108,7 @@ export function useCreateAppContext(): Context {
             apiKey: openaiApiKey,
           };
 
-        if (id === nextID) {
+        if (effectiveId === nextID) {
             setNextID(uuidv4());
 
             const autoPlay = chatManager.options.getOption<boolean>('tts', 'autoplay');
@@ -122,13 +124,13 @@ export function useCreateAppContext(): Context {
         }
 
         chatManager.sendMessage({
-            chatID: id,
+            chatID: effectiveId,
             content: message.trim(),
             requestedParameters: mergedParameters,
             parentID: currentChat.leaf?.id,
         }, overrideSavedMessage);
 
-        return id;
+        return effectiveId;
     }, [dispatch, id, currentChat.leaf, isShare]);
 
     const regenerateMessage = useCallback(async (message: Message) => {
