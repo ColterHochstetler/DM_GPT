@@ -24,4 +24,4 @@ Here’s the story teaser they selected and their prompt:
 
 {{storySeed}}
 
-Fill out the form using that information provided. Provide a short suggestion for each category that matches the tone, content, or  desires provided. Be creative, avoid cliche.
+Fill out the form using that information provided. Provide a short suggestion for each category that matches the tone, content, or  desires provided. Be creative, avoid cliche. Only fill out the form, don't provide any affirmations or commentary. Don't use Markdown, keep the style of the form.

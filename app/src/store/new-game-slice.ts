@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from './index';
+import { step2Prep } from '../core/game/new-game-prompting';
 
 type NewGameState = {
   currentStep: number;
@@ -16,6 +17,28 @@ const initialState: NewGameState = {
   LLM: '',
   isGameStarted: false,
 };
+
+// Inside new-game-slice.ts or a new middleware file
+/* const newGameMiddleware = (store) => (next) => (action) => {
+  if (action.type === 'newGameSlice/completeStep') {
+    const stepIndex = action.payload; // Assuming payload contains the step index
+
+    switch(stepIndex) {
+      case 0:
+        step2Prep(store.getState());
+        break;
+      case 1:
+        //insert step 1 logic here
+        break;
+      // ...
+      default:
+        break;
+    }
+  }
+
+  return next(action);
+}; */
+
 
 export const newGameSlice = createSlice({
   name: 'newGameSlice',

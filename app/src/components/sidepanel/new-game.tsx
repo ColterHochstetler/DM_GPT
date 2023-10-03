@@ -194,7 +194,7 @@ export default function NewGame() {
         model: 'gpt-3.5-turbo',
         temperature: 1.3,
     };
-    const onSubmitHelper = useOnSubmit(context, navigate, dispatch, true, 'TIME TO START A NEW ADVENTURE! Below are suggestions for adventures, called Story Seeds. Copy and Paste one, edit it, or write your own. You can talk with me to help craft an appropriate adventure story seed. When you are happy, paste your story seed into left side box and press submit.');
+    const onSubmitHelper = useOnSubmit(context, true, 'TIME TO START A NEW ADVENTURE! Below are suggestions for adventures, called Story Seeds. Copy and Paste one, edit it, or write your own. You can talk with me to help craft an appropriate adventure story seed. When you are happy, paste your story seed into left side box and press submit.');
     const currentStep = useAppSelector(selectCurrentStep);
 
     const handleUpdateStep = (index, value, completed = false) => {
@@ -230,7 +230,7 @@ export default function NewGame() {
     const startNewGame = useCallback(async () => {
         try {
             
-            await triggerNewChat(() => dispatch({ type: 'SET_LOADING', payload: true })),
+            await triggerNewChat(),
             await GenerateStorySeeds(onSubmitHelper)  // Assuming GenerateStorySeeds returns a Promise
          
             dispatch(initializeSteps());
