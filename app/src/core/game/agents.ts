@@ -6,21 +6,87 @@ import { createChatCompletion } from "../chat/openai";
 //agents dont return, everything they do should be handled in postprocessMessage
 export abstract class Agent<T> {
 
-    abstract preprocessMessage(messages: Message[], summaries: SummaryMinimal[]): Promise<Message[]>;
     abstract setParameters(parameters: Parameters): Promise<Parameters> ;
-    abstract postprocessMessage(response: any, initiatingMessage: Message, parameters: Parameters, campaignID: string): any;
+    abstract sendAgentMessage(
+        parameters: Parameters,
+        summaries: SummaryMinimal[],
+        messages: Message[],
+        campaignID: string
+    ): Promise<any>;
 
+}
+
+export class SummaryAgentBase extends Agent<any> {
+    
+    async preprocessMessage(messages: Message[], summaries: SummaryMinimal[]): Promise<Message[]> {
+        const chatID = messages[messages.length - 1].chatID;
+        const date = Date.now();
+
+        // Process messagesString without the last message
+        let messagesString = messages.slice(0, -1).map(message => {
+            const content = message.content || '';
+            let role = message.role || '';
+            if (role === 'assistant') {
+                role = 'DM writes';
+            } else {
+                role = 'Player responds';
+            }
+            return `${role}: ${content}`;
+        }).join(' ');
+    
+        // Process prompt
+        const recentSummaries: string = summaries.slice(-3).map(data => data.summary).join(' ');
+        const combinedHistory = 'PREVIOUS SUMMARIES (for context):' + recentSummaries + '\n\n RECENT MESSAGES (to summarize): ' + messagesString;
+        
+        //Static prompt components
+        const systemMessage = "You ONLY EVER SUMMARIZE. You NEVER CONTINUE THE STORY. Guidlines to Summarize: 1) Focus on summarizing things that are likely to be important to the player or help the DM tell a consistent story.  2) Keep important information about characters relationships and their way of communicating to each other. 3) Note when something has changed relative to previous summaries. Only include the player's final choices and the resulting events, omitting any unselected options or initial actions that were later changed.."
+        const agentPrompt = `Please summarize the RECENT MESSAGES section.`;
+
+        // Create the two messages
+        const processedMessages: Message[] = [
+            {
+                id: uuidv4(),
+                chatID: chatID,
+                timestamp: (date - 20000),
+                role: 'system',
+                content: systemMessage
+            },
+            {
+                id: uuidv4(),
+                chatID: chatID,
+                timestamp: (date - 10000),
+                role: 'user',
+                content: combinedHistory
+            },
+            {
+                id: uuidv4(),
+                chatID: chatID,
+                timestamp: date,
+                role: 'user',
+                content: agentPrompt
+            }
+        ];
+
+        console.log('++++++++preprocessMessage called with messages:', processedMessages);
+    
+        return processedMessages;
+    }
+
+
+    async setParameters(parameters: Parameters): Promise<Parameters> {
+        parameters.maxTokens = 500;
+        parameters.temperature = 0.2;
+        return parameters;
+    }
 
     async sendAgentMessage(
         parameters: Parameters,
         summaries: SummaryMinimal[],
         messages: Message[],
         campaignID: string
-    ) {
+    ): Promise<any> {
         const preprocessedMessage = await this.preprocessMessage(messages, summaries);
         const setParameters = await this.setParameters(parameters);
-
-
 
         try {
             // Call the doSend function
@@ -28,99 +94,37 @@ export abstract class Agent<T> {
             const mutatedMessages = preprocessedMessage.map(m => getOpenAIMessageFromMessage(m));
             const reply = await createChatCompletion(mutatedMessages, setParameters);
 
-            this.postprocessMessage(reply, messages[messages.length - 1], parameters, campaignID);
+            return this.postprocessMessage(reply, messages[messages.length - 1], parameters, campaignID);
 
         } catch (error) {
             console.error("Error calling RequestAgentReply for OpenAI API:", error);
         }
 
     }
-}
 
-export class SummaryAgentBase extends Agent<any> {
+
+    async postprocessMessage(response: string, initiatingMessage: Message, parameters:Parameters, campaignID: string): Promise<string> {
+        console.log('++++++++postprocessMessage called with message:', response);
+
+        const summaryData: SummaryDetailed = {
+            summaryID: uuidv4(),
+            summary: response,
+            campaignID: campaignID,
+            chatID: initiatingMessage.chatID, 
+            messageIDs: ['msgID1', 'msgID2'], // COMPLETE List of message IDs related to the summary
+
+        };
+
+        await backend.current?.saveSummary(summaryData);
+
+        const retrievedData = await backend.current?.getSummaries(campaignID, initiatingMessage.chatID);
     
-        async preprocessMessage(messages: Message[], summaries: SummaryMinimal[]): Promise<Message[]> {
-            const chatID = messages[messages.length - 1].chatID;
-            const date = Date.now();
+        console.log('postprocessMessage retrieved summaries: ', retrievedData);
 
-            // Process messagesString without the last message
-            let messagesString = messages.slice(0, -1).map(message => {
-                const content = message.content || '';
-                let role = message.role || '';
-                if (role === 'assistant') {
-                    role = 'DM writes';
-                } else {
-                    role = 'Player responds';
-                }
-                return `${role}: ${content}`;
-            }).join(' ');
-        
-            // Process prompt
-            const recentSummaries: string = summaries.slice(-3).map(data => data.summary).join(' ');
-            const combinedHistory = 'PREVIOUS SUMMARIES (for context):' + recentSummaries + '\n\n RECENT MESSAGES (to summarize): ' + messagesString;
-            
-            //Static prompt components
-            const systemMessage = "You ONLY EVER SUMMARIZE. You NEVER CONTINUE THE STORY. Guidlines to Summarize: 1) Focus on summarizing things that are likely to be important to the player or help the DM tell a consistent story.  2) Keep important information about characters relationships and their way of communicating to each other. 3) Note when something has changed relative to previous summaries. Only include the player's final choices and the resulting events, omitting any unselected options or initial actions that were later changed.."
-            const agentPrompt = `Please summarize the RECENT MESSAGES section.`;
-
-            // Create the two messages
-            const processedMessages: Message[] = [
-                {
-                    id: uuidv4(),
-                    chatID: chatID,
-                    timestamp: (date - 20000),
-                    role: 'system',
-                    content: systemMessage
-                },
-                {
-                    id: uuidv4(),
-                    chatID: chatID,
-                    timestamp: (date - 10000),
-                    role: 'user',
-                    content: combinedHistory
-                },
-                {
-                    id: uuidv4(),
-                    chatID: chatID,
-                    timestamp: date,
-                    role: 'user',
-                    content: agentPrompt
-                }
-            ];
-
-            console.log('++++++++preprocessMessage called with messages:', processedMessages);
-        
-            return processedMessages;
-        }
-    
-
-        async setParameters(parameters: Parameters): Promise<Parameters> {
-            parameters.maxTokens = 500;
-            parameters.temperature = 0.2;
-            return parameters;
-        }
-
-
-        async postprocessMessage(response: string, initiatingMessage: Message, parameters:Parameters, campaignID: string): Promise<void> {
-            console.log('++++++++postprocessMessage called with message:', response);
-    
-            const summaryData: SummaryDetailed = {
-                summaryID: uuidv4(),
-                summary: response,
-                campaignID: campaignID,
-                chatID: initiatingMessage.chatID, 
-                messageIDs: ['msgID1', 'msgID2'], // COMPLETE List of message IDs related to the summary
-
-            };
-    
-            await backend.current?.saveSummary(summaryData);
-
-            const retrievedData = await backend.current?.getSummaries(campaignID, initiatingMessage.chatID);
-        
-            console.log('postprocessMessage retrieved summaries: ', retrievedData);
-        }
-
+        return response;
     }
+
+}
 
 /* 
 export class NarrativeAgentBase extends Agent<any> {

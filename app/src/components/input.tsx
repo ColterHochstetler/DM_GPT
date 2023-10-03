@@ -205,7 +205,7 @@ export default function MessageInput(props: MessageInputProps) {
                     <Button variant="subtle" size="xs" compact onClick={() => {
                         context.chat.cancelReply(context.currentChat.chat?.id, context.currentChat.leaf!.id);
                     }}>
-                        <FormattedMessage defaultMessage={"Cancel"} description="Label for the button that can be clicked while the AI is generating a response to cancel generation" />
+                        <FormattedMessage defaultMessage={"Stop"} description="Label for the button that can be clicked while the AI is generating a response to cancel generation" />
                     </Button>
                     <Loader size="xs" style={{ padding: '0 0.8rem 0 0.5rem' }} />
                 </>)}
