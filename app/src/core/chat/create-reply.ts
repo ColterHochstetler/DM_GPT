@@ -39,6 +39,7 @@ export class ReplyRequest extends EventEmitter {
         },
 
         createChatCompletion: async (messages: OpenAIMessage[], _parameters: Parameters) => {
+            console.log('createChatCompletion() called with messages: ', messages);
             return await createChatCompletion(messages, {
                 ..._parameters,
                 apiKey: this.requestedParameters.apiKey,

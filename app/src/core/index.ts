@@ -150,6 +150,8 @@ export class ChatManager extends EventEmitter {
             done: true,
         };
 
+        let messages: Message[] = [];
+
         if (overrideSavedMessage) {
             const overriddenMessage = {
                 ...message,
@@ -157,17 +159,13 @@ export class ChatManager extends EventEmitter {
             };
 
             this.doc.addMessage(overriddenMessage);;
+            messages.push(message);
             
         } else {
             this.doc.addMessage(message);
-        }
-
-        const messages: Message[] = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);        
-        messages.push(message);
-        console.log('++ messages: ', messages);
-
-        const filteredMessages = messages.filter(msg => Boolean(msg.role));
-        console.log('++ filteredMessages: ', filteredMessages);  // Optional: For debugging
+            messages = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);  
+            messages.push(message);
+        }    
 
         this.game.runLoop(messages,userSubmittedMessage.requestedParameters);
 

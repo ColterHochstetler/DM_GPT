@@ -65,7 +65,7 @@ export function getValidatedApiKey(parameters: Parameters): string | null {
 export async function createChatCompletion(messages: OpenAIMessage[], parameters: Parameters): Promise<string> {
     const proxied = shouldUseProxy(parameters.apiKey);
     const endpoint = getEndpoint(proxied);
-
+    console.log('createChatCompletion() called with messages: ', messages);
     if (!proxied && !parameters.apiKey) {
         throw new Error('No API key provided');
     }

@@ -1,4 +1,4 @@
-We need to help players dive into a rich TTRPG campaign quickly. To do so, we've prefilled a form:
+We need to help players dive into a rich TTRPG campaign quickly. To do so, we've prefilled a campaign info form:
 
 {{campaignInfo}}
 

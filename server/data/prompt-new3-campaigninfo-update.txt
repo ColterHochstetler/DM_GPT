@@ -1,3 +1,13 @@
-Here is the user's reply. Update the form to integrate this information. Pay special attention to the story ideas section. If needed, add an Miscellaneous section to capture any content meaningful to the player that doesn't fit the form.  Just fill out the form and the optional misc section, do not add any extra commentary. Use the intensity question to adjust Starting Scene Intensity:
-User Reply:
-{{qna reply}}
+We're helping prep a TTRPG campaign for our player. We've previously filled a campaign info form based on their preferences:
+
+{{campaignInfo}}
+
+Then we asked the user the following questions:
+
+{{qnaReply}}
+
+Insructions: 
+1. Revise the content of the form based on their answers. Pay special attention to the story ideas section. 
+2. If needed, add an Miscellaneous section to capture any content meaningful to the player that doesn't fit the form's preexisting categories.  
+3. Do not add any extra commentary.
+4. Place the filled out form in a code block.

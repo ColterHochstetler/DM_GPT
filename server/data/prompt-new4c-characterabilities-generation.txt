@@ -1,15 +1,14 @@
 I’m working on starting a TTRPG campaign for 1 player. We need to take the information the player has provided and fill out their character sheet in a way that is appropriate for the TTRPG SYSTEM.
 
 CAMPAIGN INFO
-{{campaignInfo}}
+<Insert>
 
 TTRPG SYSTEM
-{{ttrpgSystem}}
+<Insert>
 
 CHARACTER SHEET
-{{characterSheet}}
+<Insert>
 
 INSTRUCTION:
-1. Fill out the character sheet only, do not add any commentary. 
-2. Maintain the original formatting. 
-3. Place the sheet in a code block.
+1: Fill out the character sheet only, do not add any commentary.
+2: Add 4 suggested abilities that are appropriate for the character, their skills and expertise, and work well within the system.

@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../store'
 import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetToBeginning, selectCurrentStep, setCurrentStep, setIsGameStarted, selectIsGameStarted, extendStepsStatus } from '../../store/new-game-slice';
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { useAppContext } from '../../core/context';
-import { generateStorySeeds } from '../../core/game/new-game-prompting';
+import { getGenerateStorySeedsPrompt, getGenerateCharacterSeedsPrompt } from '../../core/game/new-game-prompting';
 import { useNavigate } from 'react-router-dom';
 import { useOnSubmit } from '../../core/chat/message-submit-helper';
 import { Parameters } from '../../core/chat/types';
@@ -140,55 +140,55 @@ export default function NewGame() {
     const initialStepsData = [
         {
             title: '1. Story Seed',
-            help: 'Focus on an interesting conflict or tone. Includes something important about the world/setting. Note any kind of key characters or relationships you want. You can reference popular media to help the DM, such as "like Harry Potter" or "set in Avatar: The Last airbender."',
+            help: 'Focus on an interesting conflict or tone. Includes something important about the world/setting. Note any kind of key characters or relationships you want. You can reference popular media to help the DM, such as "Halo, escaping from Reach", "Inspired by Pride and Prejudice", or "Like Avatar: The Last airbender, but with more politics."',
             description: 'In this step, the DM has suggested a legend you could use. Pick what you want, create your own, or collaborate with the DM to make one. When ready, copy and paste it below and click submit.',
             placeholder: 'Paste a story seed here...',
-            prefillValue: 'Paste a story seed here...',
+            prefillValue: '',
             minChars: 100,
             maxChars: 800
         },
         {
-            title: '2. You',
+            title: '2. Character Basics',
             help: 'Do you have a secret you run from? What are your big goals? What do you long for and what do you fear? Whats your vibe?',
-            description: 'What is your name?  What kind of character would you like to play? Use or modify the character summaries provided by the dm, or write your own. When you have what you want, paste it below and click submit.',
+            description: 'What is your name?  What kind of character would you like to play? Use or modify the character summaries provided by the dm, or write your own. When you have what you want, paste it below and click submit. Future steps will go into more detail!',
             placeholder: 'Paste a character summary here...',
-            prefillValue: 'Paste a character summary here...',
+            prefillValue: '',
             minChars: 100,
-            maxChars: 1000
+            maxChars: 800
         },
         {
             title: '3. Q&A',
             help: 'You can chat with the DM to help adjust the questions and answers to your liking.',
             description: 'The DM has asked questions in the chat to help fine-tune the adventure! You can change the questions and answers to your liking. Once you are happy, paste both questions and their answers below and click submit.',
             placeholder: 'Paste the Questions and Answers of your chosing here...',
-            prefillValue: 'Paste the Questions and Answers of your chosing here...',
+            prefillValue: '',
             minChars: 100,
-            maxChars: 1000
+            maxChars: 1500
         },
         {
             title: '4. Campaign Info Review',
             help: 'Add sections at your own risk! And be careful about adding too much: the longer this gets, the less the DM can see your adventure history.',
             description: 'The DM used the Story Seed and character info to fill out the needed campaign information. You can review and edit this, or simply click submit.',
             placeholder: 'Paste the Campaign Info here...',
-            prefillValue: 'Paste the Campaign Info here...',
+            prefillValue: '',
             minChars: 300,
             maxChars: 1500
         },
         {
-            title: '5. Character Sheet',
+            title: '5. Character Details',
             help: 'DM_GPT uses a simplified roleplay system with a high amount of flexibility. See the help tab for more information.',
             description: 'The DM has generated a Character Sheet for you. Feel free to adjust it however you wish! (Though you might want to leave room to grow in power). Once you are happy with it, click submit.',
             placeholder: 'Paste your Character Sheet here...',
-            prefillValue: 'Paste your Character Sheet here...',
+            prefillValue: '',
             minChars: 100,
-            maxChars: 1000
+            maxChars: 1200
         },
         {
             title: '6. First Scene',
             help: 'Note how exciting you want the first scene: should it be adrenaline-filled or more calm to get you settled in? Do you want to start by interacting with certain characters, or focused around a certain quest? Talk with the DM to help you craft it to your wishes.',
             description: 'Time to plan the opening scene! The DM has provided options in the chat. Copy and paste the one you want here, edit it, request changes from the DM, or write your own. When you are satisfied, click submit.',
             placeholder: 'Paste you first scene seed here...',
-            prefillValue: 'Paste you first scene seed here...',
+            prefillValue: '',
             minChars: 100,
             maxChars: 1000
         }
@@ -206,8 +206,10 @@ export default function NewGame() {
     };
 
     //prep submit helpers
-    const generateSeedsSubmitHelper = useOnSubmit(context, true, 'TIME TO START A NEW ADVENTURE! Below are suggestions for adventures, called Story Seeds. Copy and Paste one, edit it, or write your own. You can talk with me to help craft an appropriate adventure story seed. When you are happy, paste your story seed into left side box and press submit.'); //test param override
-    const QnaSubmitHelper = useOnSubmit(context, false, 'TIME TO MAKE IT PERSONAL! The DM is asking you questions to help make a better experience for you. Follow the instructions on the right in step 2.'); //false would let it keep the context of the previous messages, add if needed.
+    const submitChatMessageStorySeeds = useOnSubmit(context, true, 'TIME TO START A NEW ADVENTURE! The DM is writing suggestions for adventures, called Story Seeds, but you can play whatever you like. Copy and Paste one, edit it, or write your own. You can talk with the DM to help craft an appropriate adventure story seed. When you are happy, follow the instructions to the right.'); //test param override
+    const submitChatMessageCharacterSeed = useOnSubmit(context, true, 'CHARACTER BASICS: Who are you and what do you want to play? The DM is creating suggestions, but you can be whatever you want. Once you have a character concept you like, paste it into the box on the right and click submit.'); //false would let it keep the context of the previous messages, add if needed.
+    const submitChatMessageQnA = useOnSubmit(context, false, 'TIME TO MAKE IT PERSONAL! The DM is asking you questions to help make a better experience for you. Follow the instructions on the right.'); //false would let it keep the context of the previous messages, add if needed.
+   
     const currentStep = useAppSelector(selectCurrentStep);
 
     const initialState: NewGameState = {
@@ -237,8 +239,8 @@ export default function NewGame() {
     const startNewGame = useCallback(async () => {
         try {
             triggerNewChat();
-            const storySeedPrompt = await generateStorySeeds()
-            await generateSeedsSubmitHelper(storySeedPrompt)
+            const storySeedPrompt = await getGenerateStorySeedsPrompt()
+            await submitChatMessageStorySeeds(storySeedPrompt)
             dispatch(initializeSteps());
     
         } catch (error) {
@@ -257,18 +259,21 @@ export default function NewGame() {
             switch (index) {
                 case 0:
                   try {
-
-                  } catch (error) {
+                    triggerNewChat();
+                    const characterSeedPrompt = await getGenerateCharacterSeedsPrompt(value); //using value might be frail, maybe direct it to the redux repo?
+                    submitChatMessageCharacterSeed(characterSeedPrompt)
+                  
+                } catch (error) {
                     console.log('new-game-slice call of step2Prep() failed, error: ', error);
                   }
                   break;
                 case 1:
                     try {
                         triggerNewChat();
-                        const QnaPrompt = await fillCampaignInfoAndGetQnAPrompt(value, context);
-                        // handle result if needed
+                        const chosenStorySeed = stepsStatus[0].value;
+                        const QnaPrompt = await fillCampaignInfoAndGetQnAPrompt(chosenStorySeed, value, context);
                         
-                        QnaSubmitHelper(QnaPrompt);
+                        submitChatMessageQnA(QnaPrompt);
     
                       } catch (error) {
                         console.log('new-game-slice call of step2Prep() failed, error: ', error);
