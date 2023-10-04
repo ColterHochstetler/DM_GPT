@@ -8,20 +8,26 @@ import { v4 as uuidv4 } from 'uuid';
 
 const campaignInfoFillAgent = new CampaignInfoFillAgent();
 //     STEP 1 PREP
-// Prepares Step 1 of NewGame for the user
-export const GenerateStorySeeds = async (onSubmitHelper:Function) => {
-  await performStorySeedGeneration(onSubmitHelper);
-};
 
-export const performStorySeedGeneration = async (handleSubmit:Function) => {
-  const prompt = await backend.current?.getTextFileContent('prompt-new0-storyseed-generation copy');
-  handleSubmit(prompt || '');
+export const generateStorySeeds = async (): Promise<string> => {
+  try {
+    const prompt = await backend.current?.getTextFileContent('prompt-new0-storyseed-generation');
+    return prompt || '';
+  } catch (error) {
+    console.error("An error occurred while fetching the story seed:", error);
+    // You could also re-throw the error if you want to handle it at a higher level
+    // throw error;
+
+    // Or return a default value
+    return '';
+  }
 };
 
 //     STEP 2 PREP
-//Prepares step 2 of NewGame by using their input to fill out the campaign info.
-//It keeps the info hidden from the user for now, and then has the DM ask the user question to improve it before showing.
-//It returns the filled campaign info prompt to be used in step 3, and triggers the QnA in a new chat.
+
+
+
+//     STEP 3 PREP
 
 export const fillCampaignInfoAndGetQnAPrompt = async (userSeed: string, context: Context) => {
 

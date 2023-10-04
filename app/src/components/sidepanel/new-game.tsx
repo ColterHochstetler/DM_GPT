@@ -5,13 +5,12 @@ import { useAppDispatch, useAppSelector } from '../../store'
 import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetToBeginning, selectCurrentStep, setCurrentStep, setIsGameStarted, selectIsGameStarted, extendStepsStatus } from '../../store/new-game-slice';
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { useAppContext } from '../../core/context';
-import { GenerateStorySeeds } from '../../core/game/new-game-prompting';
+import { generateStorySeeds } from '../../core/game/new-game-prompting';
 import { useNavigate } from 'react-router-dom';
 import { useOnSubmit } from '../../core/chat/message-submit-helper';
 import { Parameters } from '../../core/chat/types';
 import { fillCampaignInfoAndGetQnAPrompt } from '../../core/game/new-game-prompting';
 import useNewChatTrigger from '../../core/chat/new-chat';
-import { number } from 'lib0';
 
 type NewGameState = {
     loading: boolean;
@@ -238,7 +237,8 @@ export default function NewGame() {
     const startNewGame = useCallback(async () => {
         try {
             triggerNewChat();
-            await GenerateStorySeeds(generateSeedsSubmitHelper)
+            const storySeedPrompt = await generateStorySeeds()
+            await generateSeedsSubmitHelper(storySeedPrompt)
             dispatch(initializeSteps());
     
         } catch (error) {
