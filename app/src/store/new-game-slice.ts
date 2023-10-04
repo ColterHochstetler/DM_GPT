@@ -11,7 +11,7 @@ type NewGameState = {
 
 const initialState: NewGameState = {
   currentStep: -1,
-  stepsStatus: Array(5).fill({ status: 'pending', value: '' }),
+  stepsStatus: Array(6).fill({ status: 'pending', value: '' }),
   user: '',
   LLM: '',
   isGameStarted: false,
@@ -42,21 +42,33 @@ export const newGameSlice = createSlice({
       state.LLM = action.payload;
     },
     initializeSteps: (state) => {
-      state.stepsStatus[0].status = 'active'; // Initialize the first step to 'active'
+      if (state.stepsStatus.length > 0) {
+        state.stepsStatus[0].status = 'active'; // Initialize the first step to 'active'
+      }
       state.currentStep = 0; // Set currentStep to 0
     },
     resetToBeginning: (state) => {
-      state.stepsStatus = Array(5).fill(null).map(() => ({ status: 'pending', value: '' }));
+      state.stepsStatus = Array(6).fill(null).map(() => ({ status: 'pending', value: '' }));
       state.currentStep = -1;
     },
     setIsGameStarted: (state, action: PayloadAction<boolean>) => {
       state.isGameStarted = action.payload;
     },
+    extendStepsStatus: (state, action: PayloadAction<number>) => {
+      const newLength = action.payload;
+      if (state.stepsStatus.length < newLength) {
+        const additionalSteps = Array.from(
+          { length: newLength - state.stepsStatus.length },
+          () => ({ status: 'pending', value: '' })
+        );
+        state.stepsStatus = [...state.stepsStatus, ...additionalSteps];
+      }
+    },
 },
 });
 
 // Export actions
-export const { updateStepValue, completeStep, activateNextStep, setCurrentStep, setUser, setLLM, initializeSteps, resetToBeginning, setIsGameStarted  } = newGameSlice.actions;
+export const { updateStepValue, completeStep, activateNextStep, setCurrentStep, setUser, setLLM, initializeSteps, resetToBeginning, setIsGameStarted, extendStepsStatus  } = newGameSlice.actions;
 
 // Export selectors
 export const selectCurrentStep = (state: RootState) => state.newGameSlice.currentStep;

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Tooltip, Textarea, Button, ActionIcon, Collapse, Title, ScrollArea } from '@mantine/core';
 import styled from '@emotion/styled';
 import { useAppDispatch, useAppSelector } from '../../store'
-import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetToBeginning, selectCurrentStep, setCurrentStep, setIsGameStarted, selectIsGameStarted } from '../../store/new-game-slice';
+import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetToBeginning, selectCurrentStep, setCurrentStep, setIsGameStarted, selectIsGameStarted, extendStepsStatus } from '../../store/new-game-slice';
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { useAppContext } from '../../core/context';
 import { GenerateStorySeeds } from '../../core/game/new-game-prompting';
@@ -11,6 +11,7 @@ import { useOnSubmit } from '../../core/chat/message-submit-helper';
 import { Parameters } from '../../core/chat/types';
 import { fillCampaignInfoAndGetQnAPrompt } from '../../core/game/new-game-prompting';
 import useNewChatTrigger from '../../core/chat/new-chat';
+import { number } from 'lib0';
 
 type NewGameState = {
     loading: boolean;
@@ -142,45 +143,54 @@ export default function NewGame() {
             title: '1. Story Seed',
             help: 'Focus on an interesting conflict or tone. Includes something important about the world/setting. Note any kind of key characters or relationships you want. You can reference popular media to help the DM, such as "like Harry Potter" or "set in Avatar: The Last airbender."',
             description: 'In this step, the DM has suggested a legend you could use. Pick what you want, create your own, or collaborate with the DM to make one. When ready, copy and paste it below and click submit.',
-            placeholder: 'Step 1 placeholder',
-            prefillValue: 'I am the prefilled text',
-            minChars: 50,
-            maxChars: 150
+            placeholder: 'Paste a story seed here...',
+            prefillValue: 'Paste a story seed here...',
+            minChars: 100,
+            maxChars: 800
         },
         {
-            title: '2. Q&A',
+            title: '2. You',
+            help: 'Do you have a secret you run from? What are your big goals? What do you long for and what do you fear? Whats your vibe?',
+            description: 'What is your name?  What kind of character would you like to play? Use or modify the character summaries provided by the dm, or write your own. When you have what you want, paste it below and click submit.',
+            placeholder: 'Paste a character summary here...',
+            prefillValue: 'Paste a character summary here...',
+            minChars: 100,
+            maxChars: 1000
+        },
+        {
+            title: '3. Q&A',
             help: 'You can chat with the DM to help adjust the questions and answers to your liking.',
             description: 'The DM has asked questions in the chat to help fine-tune the adventure! You can change the questions and answers to your liking. Once you are happy, paste both questions and their answers below and click submit.',
-            placeholder: 'Step 2 placeholder',
-            prefillValue: 'I am the prefilled text',
-            minChars: 50,
-            maxChars: 500
-        },
-        {
-            title: '3. Campaign Info Review',
-            help: 'Add sections at your own risk! And be careful about adding too much: the longer this gets, the less the DM can see your adventure history.',
-            description: 'The DM used the Story Seed and Q&A to fill out the needed campaign information. You can review and edit this, or simply click submit.',
-            placeholder: 'Step 3 placeholder',
-            prefillValue: 'I am the prefilled text',
-            minChars: 50,
+            placeholder: 'Paste the Questions and Answers of your chosing here...',
+            prefillValue: 'Paste the Questions and Answers of your chosing here...',
+            minChars: 100,
             maxChars: 1000
         },
         {
-            title: '4. Character Sheet',
+            title: '4. Campaign Info Review',
+            help: 'Add sections at your own risk! And be careful about adding too much: the longer this gets, the less the DM can see your adventure history.',
+            description: 'The DM used the Story Seed and character info to fill out the needed campaign information. You can review and edit this, or simply click submit.',
+            placeholder: 'Paste the Campaign Info here...',
+            prefillValue: 'Paste the Campaign Info here...',
+            minChars: 300,
+            maxChars: 1500
+        },
+        {
+            title: '5. Character Sheet',
             help: 'DM_GPT uses a simplified roleplay system with a high amount of flexibility. See the help tab for more information.',
             description: 'The DM has generated a Character Sheet for you. Feel free to adjust it however you wish! (Though you might want to leave room to grow in power). Once you are happy with it, click submit.',
-            placeholder: 'Step 4 placeholder',
-            prefillValue: 'I am the prefilled text',
-            minChars: 50,
+            placeholder: 'Paste your Character Sheet here...',
+            prefillValue: 'Paste your Character Sheet here...',
+            minChars: 100,
             maxChars: 1000
         },
         {
-            title: '5. First Scene',
+            title: '6. First Scene',
             help: 'Note how exciting you want the first scene: should it be adrenaline-filled or more calm to get you settled in? Do you want to start by interacting with certain characters, or focused around a certain quest? Talk with the DM to help you craft it to your wishes.',
             description: 'Time to plan the opening scene! The DM has provided options in the chat. Copy and paste the one you want here, edit it, request changes from the DM, or write your own. When you are satisfied, click submit.',
-            placeholder: 'Step 5 placeholder',
-            prefillValue: 'I am the prefilled text',
-            minChars: 50,
+            placeholder: 'Paste you first scene seed here...',
+            prefillValue: 'Paste you first scene seed here...',
+            minChars: 100,
             maxChars: 1000
         }
     ];
@@ -217,6 +227,14 @@ export default function NewGame() {
         }
     }, [currentStep, newGameDispatch]);
 
+    useEffect(() => {
+        const numberOfSteps = initialStepsData.length;
+        if (stepsStatus.length != numberOfSteps) {
+          dispatch(extendStepsStatus(numberOfSteps));
+        }
+      }, []);
+      
+    
     const startNewGame = useCallback(async () => {
         try {
             triggerNewChat();
@@ -239,18 +257,22 @@ export default function NewGame() {
             switch (index) {
                 case 0:
                   try {
-                    triggerNewChat();
-                    const QnaPrompt = await fillCampaignInfoAndGetQnAPrompt(value, context);
-                    // handle result if needed
-                    
-                    QnaSubmitHelper(QnaPrompt);
 
                   } catch (error) {
                     console.log('new-game-slice call of step2Prep() failed, error: ', error);
                   }
                   break;
                 case 1:
-                  // Other cases
+                    try {
+                        triggerNewChat();
+                        const QnaPrompt = await fillCampaignInfoAndGetQnAPrompt(value, context);
+                        // handle result if needed
+                        
+                        QnaSubmitHelper(QnaPrompt);
+    
+                      } catch (error) {
+                        console.log('new-game-slice call of step2Prep() failed, error: ', error);
+                      }
                   break;
                 default:
                   break;
@@ -263,6 +285,7 @@ export default function NewGame() {
             }
         }
     };
+
 
     return (
         <div>

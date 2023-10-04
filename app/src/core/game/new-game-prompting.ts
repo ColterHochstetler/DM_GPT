@@ -14,7 +14,7 @@ export const GenerateStorySeeds = async (onSubmitHelper:Function) => {
 };
 
 export const performStorySeedGeneration = async (handleSubmit:Function) => {
-  const prompt = await backend.current?.getTextFileContent('prompt-new1-storyseed-generation');
+  const prompt = await backend.current?.getTextFileContent('prompt-new0-storyseed-generation copy');
   handleSubmit(prompt || '');
 };
 
