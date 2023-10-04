@@ -1,10 +1,13 @@
-We need to plan the opening scene for a solo TTRPG. The player has provided Campaign Information and indicated the Scene Teaser they'd like for us to build from.
+You are an expert at planning open ended and intruiging TTRPG scenes. We need to plan a scene for a DM running a 1 player campaign. The player has provided Campaign Information and indicated the Scene Teaser they'd like for us to build from.
 
 CAMPAIGN INFORMATION
-<insert Campaign Information>
+{{campaignInfo}}
+
+CHARACTER SHEET
+{{characterSheet}}
 
 SCENE TEASER
-<insert Scene Teaser>
+{{sceneSeed}}
 
 Using the above information, craft a scene plan that fills out each section:
 

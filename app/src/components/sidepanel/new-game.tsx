@@ -5,13 +5,13 @@ import { useAppDispatch, useAppSelector } from '../../store'
 import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetToBeginning, selectCurrentStep, setCurrentStep, setIsGameStarted, selectIsGameStarted, extendStepsStatus } from '../../store/new-game-slice';
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { useAppContext } from '../../core/context';
-import { getGenerateStorySeedsPrompt, getGenerateCharacterSeedsPrompt } from '../../core/game/new-game-prompting';
+import { getGenerateStorySeedsPrompt, getGenerateCharacterSeedsPrompt, getUpdateCampaignInfoPrompt, getCharacterSheetPrompt, removeCharacterFromCampaignInfo, getFirstSceneSeedPrompt } from '../../core/game/new-game-prompting';
 import { useNavigate } from 'react-router-dom';
 import { useOnSubmit } from '../../core/chat/message-submit-helper';
 import { Parameters } from '../../core/chat/types';
 import { fillCampaignInfoAndGetQnAPrompt } from '../../core/game/new-game-prompting';
 import useNewChatTrigger from '../../core/chat/new-chat';
-import { updateCampaignInfo } from '../../store/campaign-slice';
+import { updateCampaignInfo, selectCurrentCampaignInfo, updateCharacterSheet, selectCurrentCharacterSheet } from '../../store/campaign-slice';
 
 type NewGameState = {
     loading: boolean;
@@ -164,7 +164,7 @@ export default function NewGame() {
             placeholder: 'Paste the Questions and Answers of your chosing here...',
             prefillValue: '',
             minChars: 100,
-            maxChars: 1500
+            maxChars: 2000
         },
         {
             title: '4. Campaign Info Review',
@@ -173,7 +173,7 @@ export default function NewGame() {
             placeholder: 'Paste the Campaign Info here...',
             prefillValue: '',
             minChars: 300,
-            maxChars: 1500
+            maxChars: 2000
         },
         {
             title: '5. Character Details',
@@ -197,20 +197,31 @@ export default function NewGame() {
     //get context and destructure the parts that need to be passed to redux
     const context = useAppContext();
     const triggerNewChat = useNewChatTrigger();
-
     const dispatch = useAppDispatch();
-    const stepsStatus = useAppSelector(selectStepsStatus); // New: get stepsStatus from Redux
-    const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
-    const submitHelperOverrideProperties: Parameters = {
-        model: 'gpt-3.5-turbo',
-        temperature: 1.3,
+
+    const stepsStatus = useAppSelector(selectStepsStatus);
+
+    //get Campaign info and character sheet from campaign redux
+    const currentCampaignInfo = useAppSelector(selectCurrentCampaignInfo);
+    if (!currentCampaignInfo) {
+        throw new Error("Campaign info not found");
     };
+
+    const currentCharacterSheet = useAppSelector(selectCurrentCharacterSheet);
+    if (!currentCharacterSheet) {
+        throw new Error("Character sheet not found");
+    };
+
+    const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
 
     //prep submit helpers
     const submitChatMessageStorySeeds = useOnSubmit(context, true, 'TIME TO START A NEW ADVENTURE! The DM is writing suggestions for adventures, called Story Seeds, but you can play whatever you like. Copy and Paste one, edit it, or write your own. You can talk with the DM to help craft an appropriate adventure story seed. When you are happy, follow the instructions to the right.'); //test param override
     const submitChatMessageCharacterSeed = useOnSubmit(context, true, 'CHARACTER BASICS: Who are you and what do you want to play? The DM is creating suggestions, but you can be whatever you want. Once you have a character concept you like, paste it into the box on the right and click submit.'); //false would let it keep the context of the previous messages, add if needed.
-    const submitChatMessageQnA = useOnSubmit(context, false, 'TIME TO MAKE IT PERSONAL! The DM is asking you questions to help make a better experience for you. Follow the instructions on the right.'); //false would let it keep the context of the previous messages, add if needed.
-   
+    const submitChatMessageQnA = useOnSubmit(context, false, 'TIME TO MAKE IT PERSONAL! The DM is asking you questions to help make a better experience for you. Follow the instructions on the right. PRO TIP: If your answers get too long, you can paste it to the DM and ask them to help you condense it.');
+    const submitChatMessageUpdateCampaignInfo = useOnSubmit(context, false, 'LOCK IT IN! The DM is filling out the campaign info for you. Copy and paste it into the side bar, and edit as you please, or get the DM to help you make modifications. Follow the instructions to the right.');
+    const submitChatMessageFillCharacterSheet = useOnSubmit(context, true, 'MORE DETAILS ABOUT YOUR CHARACTER! The DM has generated a character sheet for you. You can edit it, or get the DM to help you make modifications. Follow the instructions to the right.');
+    const submitChatMessageFirstSceneSeed = useOnSubmit(context, false, 'TIME TO START THE ADVENTURE! The DM is writing suggestions for the first scene, but you can play whatever you like. Copy and Paste one, edit it, or write your own. You can talk with the DM to help craft an appropriate first scene. When you are happy, follow the instructions to the right.');
+
     const currentStep = useAppSelector(selectCurrentStep);
 
     const initialState: NewGameState = {
@@ -253,36 +264,87 @@ export default function NewGame() {
     const handleUpdateStep = async (index, value, completed = false) => {
         dispatch(updateStepValue({ index, value }));
 
-        console.log("handleUpdateStep: index, value, completed", index, value, completed);
+        //console.log("handleUpdateStep: index, value, completed", index, value, completed);
     
         if (completed) {
             dispatch(completeStep({ index }));
 
             switch (index) {
+                //note: case 0 starts after the player hits submit on what the UI labels as "step 1".
                 case 0:
-                  try {
-                    triggerNewChat();
-                    const characterSeedPrompt = await getGenerateCharacterSeedsPrompt(value); //using value might be frail, maybe direct it to the redux repo?
-                    submitChatMessageCharacterSeed(characterSeedPrompt)
-                  
-                } catch (error) {
-                    console.log('new-game-slice call of step2Prep() failed, error: ', error);
-                  }
-                  break;
-                case 1:
+                    //prep for step 2, character seed selection. Data stored on redux index 1.
                     try {
                         triggerNewChat();
+                        const characterSeedPrompt = await getGenerateCharacterSeedsPrompt(value); //using value might be frail, maybe direct it to the redux repo?
+                        submitChatMessageCharacterSeed(characterSeedPrompt)
+                    } catch (error) {
+                        console.log('new-game-slice call of step2Prep() failed, error: ', error);
+                    }
+                    break;
+
+                case 1:
+                    //prep for step 3, Q&A. Data stored on redux index 2.
+                    try {
                         const chosenStorySeed = stepsStatus[0].value;
-                        const [fillCampaignInfoPrompt, qnaPrompt] = await fillCampaignInfoAndGetQnAPrompt(chosenStorySeed, value, context);
+                        const chosenCharacterSeed = value;
+                        console.log ("++ chosenStorySeed: ", chosenStorySeed);
+                        const [fillCampaignInfoPrompt, qnaPrompt] = await fillCampaignInfoAndGetQnAPrompt(chosenStorySeed, chosenCharacterSeed, context);
                         dispatch(updateCampaignInfo(fillCampaignInfoPrompt))
                         submitChatMessageQnA(qnaPrompt);
     
-                      } catch (error) {
-                        console.log('new-game-slice call of step2Prep() failed, error: ', error);
-                      }
-                  break;
+                    } catch (error) {
+                        console.log('case 1 of NewGame switch falied, error: ', error);
+                    }
+                    break;
+
+                case 2:
+                    //prep for step 4, Campaign Info Approval. Data stored on redux index 3.
+                    try {                        
+                        const qnaReply = stepsStatus[2].value
+                        console.log("++ qnaReply: ", qnaReply);
+                        const campaignInfo = await getUpdateCampaignInfoPrompt(currentCampaignInfo, qnaReply);
+                        submitChatMessageUpdateCampaignInfo(campaignInfo);
+                        
+                    } catch (error) {
+                        console.log('case 2 of NewGame switch failed, error: ', error);
+                    }
+                    break;
+
+                case 3:
+                    //prep for step 5, Character Sheet Creation. Data stored on redux index 4.
+                    try {
+                        triggerNewChat();
+
+                        const chosenCharacterSeed: string = stepsStatus[1].value;
+                        console.log("++ chosenCharacterSeed: ", chosenCharacterSeed);
+                        const characterSheetGenerationPrompt: string = await getCharacterSheetPrompt(chosenCharacterSeed, currentCampaignInfo);
+                        console.log("++ characterSheetGenerationPrompt: ", characterSheetGenerationPrompt);
+
+                        //Start generating the filled out character sheet
+                        submitChatMessageFillCharacterSheet(characterSheetGenerationPrompt);
+
+                        //Remove the character info from campaignInfo to save tokens and make character sheet single source of truth
+                        const campaignInfoWithoutCharacter = await removeCharacterFromCampaignInfo(context, currentCampaignInfo);
+                        dispatch(updateCampaignInfo(campaignInfoWithoutCharacter));
+                        dispatch(updateCharacterSheet(campaignInfoWithoutCharacter))
+                        
+                    } catch (error) {
+                        console.log('case 3 of NewGame switch failed, error: ', error);
+                    }
+                    break;
+
+                case 4:
+                    //prep for step 6, First Scene Seed. Data stored on redux index 5.
+                    try {
+                        const firstSceneSeedPrompt = await getFirstSceneSeedPrompt(currentCharacterSheet, currentCampaignInfo);
+                        await submitChatMessageFirstSceneSeed(firstSceneSeedPrompt);
+                    } catch (error) {
+                        console.log('case 4 of NewGame switch failed, error: ', error);
+                    }
+                    break;
+                
                 default:
-                  break;
+                    break; 
               }
 
             dispatch(setCurrentStep(index + 1));

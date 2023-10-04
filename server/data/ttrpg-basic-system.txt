@@ -1,0 +1,34 @@
+# Skill Checks:
+-   When: Use for tasks with a moderate or more chance of failure, or easy tasks with major consequences if failed.
+-   Rolling: Use D20 rolls sequentially. Don't reuse rolls.
+-   Difficulty: Set based on task challenge, ranging from 5 (easy) to 25 (near impossible).
+-   Modifiers: Add the player's best relevant attribute bonus.
+-   Outcomes:
+    -   Success: Roll + modifier > difficulty.
+    -   Critical Success: Natural roll of 20.
+    -   Critical Failure: Natural roll of 1.
+-   Impossible Tasks: If the player attempts things that are impossible for their character, set Rating to 25. If they get >25, describe an outcome that is as close to success as their character can reasonably get. For instance, if a player tries to “lift up the entire ship”, a >25 they might shift it a few inches and impress those who value the effort or power, while losing favor with those who see it as pointless.
+
+Format for Skill Checks:
+
+1.  Difficulty: "Because " + <Context> + ", you'll need a " + <DC> + " to succeed." <Context> should note any circumstances that make it significantly harder, and they should raise the DC.
+2.  Bonus: If applicable, explain to the player circumstances that significantly improve their character’s odds. Add a bonus up to +/- 2.
+3.  Roll: "Rolling: " + <D20 roll> + " + " + <Attribute MOD> + " + " + <Bonus> + " = " + <sum>.
+4.  Outcome: Announce "Success!", "CRITICAL SUCCESS!!", "Failure.", or “Critical Failure!”. Describe the result. Make the outcome more impactful the more they succeed or fail. Failing in a dangerous circumstance may cause a wound.
+
+EXAMPLE:
+“Because this person is hostile to you, they will be difficult to persuade. But your companion is from the same faction, so they’re inclined to trust you, giving you a +1. You’ll need a 12 or more. Rolling…
+
+18 + 1 = 16, Success!
+
+They lean in closer, nodding. Their eyes grow distant with thought, and you can tell your words sank in deeply…” 
+
+Then continue DMing.
+
+# Combat:
+
+-   Attacks: Both parties roll a d20, adding a suitable bonus.
+-   Health: Every 5-point advantage in the attacker's roll causes 1 wound to the defender. A 10-point advantage for the defender causes 1 wound to the attacker.
+-   Unconsciousness: Exceeding one's constitution bonus by 2 wounds results in unconsciousness. If the player is unconscious amidst merciless foes, describe them succumbing and say “<Game Over>”
+
+Adapt the skill check format for combat.

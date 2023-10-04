@@ -5,8 +5,6 @@ import { createChatCompletion } from "../chat/openai";
 
 //agents return something, but it changes every time!
 export abstract class Agent<T> {
-
-    abstract setParameters(parameters: Parameters): Promise<Parameters> ;
     abstract sendAgentMessage(
         parameters: Parameters,
         messages: Message[],
@@ -128,33 +126,24 @@ export class SummaryAgentBase extends Agent<any> {
 
 }
 
-export class CampaignInfoFillAgent extends Agent<any> {
-    
-    async setParameters(parameters: Parameters): Promise<Parameters> {
-        parameters.maxTokens = 500;  
-        parameters.temperature = 1;
-        return parameters;
-    }
+export class getHiddenReplyAgent extends Agent<any> {
   
     async sendAgentMessage(
         parameters: Parameters,
         messages: Message[],
         campaignID: string
-    ): Promise<string> {
-        const setParameters = await this.setParameters(parameters);
+    ): Promise<string> {;
         try {
             
             const mutatedMessages = messages.map(m => getOpenAIMessageFromMessage(m));
-            return await createChatCompletion(mutatedMessages, setParameters);
+            return await createChatCompletion(mutatedMessages, parameters);
   
         } catch (error) {
             console.error("Error calling RequestAgentReply for OpenAI API:", error);
             return '';
         }
-  
     }
-  
-  }
+}
 
 /* 
 export class NarrativeAgentBase extends Agent<any> {

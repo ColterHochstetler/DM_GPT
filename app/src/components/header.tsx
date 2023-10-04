@@ -167,8 +167,6 @@ export const RenameModal = ({ currentTitle, onUpdateTitle }) => {
     );
 };
 
-
-
 function HeaderButton(props: ButtonProps & { icon?: string, onClick?: any, children?: any }) {
     return (
         <Button size='xs'
@@ -181,8 +179,6 @@ function HeaderButton(props: ButtonProps & { icon?: string, onClick?: any, child
         </Button>
     )
 }
-
-
 
 export interface HeaderProps {
     title?: any;

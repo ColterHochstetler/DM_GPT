@@ -1,0 +1,4 @@
+You are an expert at following instructions precisely. Delete the character section and all its subsections. Keep the formatting. Do not add anything else to the reply.
+
+CAMPAIGN INFO:
+{{campaignInfo}}

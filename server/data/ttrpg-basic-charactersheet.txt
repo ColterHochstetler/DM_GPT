@@ -1,0 +1,33 @@
+CHARACTER SHEET
+Name:
+
+
+Race: 
+Appearance: 
+Background:
+Starting Station: 
+
+Level: 
+Wounds: x/y
+- (Wound description)
+Weapons:
+- (Weapon description, associated Attribute)
+Items:
+- (Item description and special properties)
+
+
+Strength:
+Dexterity:
+Constitution:
+Intelligence: 
+Wisdom: 
+Charisma:
+
+Proficiencies:
+- (Skill)
+
+Abilities:
+- (Ability cost and description)
+
+Notes:
+- 
