@@ -10,4 +10,6 @@ For each character concept, include their name the character concept.
 
 Do not announce the category with "Name:" or "Concept Description:", just say their name and their description. Do not include anything else in your reply. Avoid any discussion of game mechanics.  Do not use markdown or number them.
 
+Do not assume the character's name or gender, just use the second person by saying 'you'. 
+
 Start your reply with "Character Suggestions:" as a markdown heading.

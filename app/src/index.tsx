@@ -61,29 +61,38 @@ async function loadLocaleData(locale: string) {
 
 async function bootstrapApplication() {
     const locale = navigator.language;
-
+  
     let messages: any;
     try {
-        messages = await loadLocaleData(locale.toLocaleLowerCase());
+      messages = await loadLocaleData(locale.toLocaleLowerCase());
     } catch (e) {
-        console.warn("No locale data for", locale);
+      console.warn("No locale data for", locale);
     }
-
+  
+    // Suppresses translation errors
+    const onError = (err: any) => {
+      if (err.code === 'MISSING_TRANSLATION') {
+        return;
+      }
+      console.error(err);
+    };
+  
     root.render(
-        <React.StrictMode>
-            <IntlProvider locale={navigator.language} defaultLocale="en-GB" messages={messages}>
-                <MantineProvider theme={{ colorScheme: "dark" }}>
-                    <Provider store={store}>
-                        <PersistGate loading={null} persistor={persistor}>
-                            <ModalsProvider>
-                                <RouterProvider router={router} />
-                            </ModalsProvider>
-                        </PersistGate>
-                    </Provider>
-                </MantineProvider>
-            </IntlProvider>
-        </React.StrictMode>
+      <React.StrictMode>
+        <IntlProvider locale={navigator.language} defaultLocale="en-GB" messages={messages} onError={onError}>
+          <MantineProvider theme={{ colorScheme: "dark" }}>
+            <Provider store={store}>
+              <PersistGate loading={null} persistor={persistor}>
+                <ModalsProvider>
+                  <RouterProvider router={router} />
+                </ModalsProvider>
+              </PersistGate>
+            </Provider>
+          </MantineProvider>
+        </IntlProvider>
+      </React.StrictMode>
     );
-}
-
-bootstrapApplication();
+  }
+  
+  bootstrapApplication();
+  
