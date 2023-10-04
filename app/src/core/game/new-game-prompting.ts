@@ -5,6 +5,7 @@ import { Context } from '../context';
 import { Parameters } from "../chat/types";
 import { Message } from "../chat/types";
 import { v4 as uuidv4 } from 'uuid';
+import { updateCampaignInfo } from "../../store/campaign-slice";
 
 const campaignInfoFillAgent = new CampaignInfoFillAgent();
 //     STEP 1 PREP
@@ -36,7 +37,11 @@ export const getGenerateCharacterSeedsPrompt = async (userSeed: string) => {
 
 //     STEP 3 PREP
 
-export const fillCampaignInfoAndGetQnAPrompt = async (chosenStorySeed: string, chosenCharacterSeed: string, context: Context) => {
+export const fillCampaignInfoAndGetQnAPrompt = async (
+    chosenStorySeed: string,
+    chosenCharacterSeed: string,
+    context: Context
+  ): Promise<[string, string]> => {
 
   console.log('fillCampaignInfoAndGetQnAPrompt() called with chosenStorySeed: ', chosenStorySeed, ' AND chosenCharacterSeed: ', chosenCharacterSeed);
 
@@ -45,10 +50,10 @@ export const fillCampaignInfoAndGetQnAPrompt = async (chosenStorySeed: string, c
   
   if (!campaignInfoFillRaw) {
     console.log('prepCampaignFillPrompt() failed to retrieve prompt-new2a-campaigninfo-fill.txt');
-    return '';
+    return ['', ''];
   }
 
-  const campaignInfoFillPrompt = await replaceTextPlaceholders(campaignInfoFillRaw, [ ['{{storySeed}}',chosenStorySeed], ['{{characterSeed}}',chosenCharacterSeed] ])
+  const fillCampaignInfoPrompt = await replaceTextPlaceholders(campaignInfoFillRaw, [ ['{{storySeed}}',chosenStorySeed], ['{{characterSeed}}',chosenCharacterSeed] ])
 
   //Package campaignInfoFill into message type
   const parameters:Parameters = {
@@ -64,21 +69,22 @@ export const fillCampaignInfoAndGetQnAPrompt = async (chosenStorySeed: string, c
     chatID: uuidv4(),
     timestamp: Date.now(),
     role: 'user',
-    content: campaignInfoFillPrompt,
+    content: fillCampaignInfoPrompt,
     parameters: parameters
   }];
 
   //get LLM reply that's hidden from the user
   console.log('fillCampaignInfoAndGetQnAPrompt() calling campaignInfoFillAgent.sendAgentMessage()');
-  const filledCampaignPrompt = await campaignInfoFillAgent.sendAgentMessage(parameters, messages, 'campaign id to replace');
-  //ADD TO REDUX
+  const fillCampaignInfoPromptFilled: string = await campaignInfoFillAgent.sendAgentMessage(parameters, messages, 'campaign id to replace');
 
-  console.log('fillCampaignInfoAndGetQnAPrompt() filledCampaignPrompt: ', filledCampaignPrompt);
+  console.log('fillCampaignInfoAndGetQnAPrompt() fillCampaignInfoPromptFilled: ', fillCampaignInfoPromptFilled);
 
-  return await prepQnaPrompt(filledCampaignPrompt);
+  const qnaPromptFilled: string = await prepQnaPrompt(fillCampaignInfoPromptFilled, chosenCharacterSeed);
+
+  return [fillCampaignInfoPromptFilled, qnaPromptFilled];
 }
 
-const prepQnaPrompt = async (filledCampaign: string): Promise<string> => {
+const prepQnaPrompt = async (filledCampaign: string, chosenCharacterSeed: string): Promise<string> => {
 
   const QnaRaw = await backend.current?.getTextFileContent('prompt-new2b-qna-generation');
 
@@ -87,5 +93,5 @@ const prepQnaPrompt = async (filledCampaign: string): Promise<string> => {
     return '';
   }
 
-  return await replaceTextPlaceholders(QnaRaw, [['{{campaignInfo}}',filledCampaign]]);
+  return await replaceTextPlaceholders(QnaRaw, [['{{campaignInfo}}',filledCampaign], ['{{storySeed}}',chosenCharacterSeed]]);
 }

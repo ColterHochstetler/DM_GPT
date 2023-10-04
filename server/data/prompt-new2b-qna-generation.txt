@@ -2,6 +2,10 @@ We need to help players dive into a rich TTRPG campaign quickly. To do so, we've
 
 {{campaignInfo}}
 
-Ask the player 5 questions to help sharpen the information on the form to their preferences. Make the questions easy, but evocative. The questions should help build on what they’ve shown interest in.
+They also indicated they like this character concept:
 
-Then include this 6th question: “How intense should the starting scene be? Are you wanting something more intense or more relaxed?”
+{{characterSeed}}
+
+Ask the player 5 questions that focus on the 'facts' of their character, not how they 'should' roleplay them. Make the questions easy but evocative. The questions should help build on what they’ve already shown interest in, without limiting their options for how to roleplay.
+
+Then include this 6th question: 'How intense should the starting scene be? Are you wanting something more intense or more relaxed?'

@@ -1,15 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type Campaign = {
-    id: string;               // Unique identifier for the campaign
-    name: string;             // Name of the campaign
-    mainCharacterName: string; // Name of the main character
-    genre: string;            // Genre of the story (e.g., "Fantasy", "Sci-Fi", "Mystery")
-    tone: string;             // Tone of the story (e.g., "Dark", "Light-hearted", "Serious")
-    storyworld: string;       // The world or setting in which the game occurs
-    goalsDescription: string; // Description of the campaign's goals or objectives
-};
-  
+  id: string;
+  campaignInfo: string;
+};  
 
 type CampaignState = {
     campaigns: Campaign[];          // Array of campaigns
@@ -17,11 +11,17 @@ type CampaignState = {
 };
   
   
-  const initialState: CampaignState = {
-    campaigns: [],
-    selectedCampaignId: null
+const initialState: CampaignState = {
+  campaigns: [
+    {
+      id: 'defaultCampaignId',
+      campaignInfo: 'This is the default campaign',
+    }
+  ],
+  selectedCampaignId: 'defaultCampaignId',
 };
-  
+
+
 
 const campaignSlice = createSlice({
     name: 'campaign',
@@ -36,18 +36,21 @@ const campaignSlice = createSlice({
       setSelectedCampaignId: (state, action: PayloadAction<string>) => {
         state.selectedCampaignId = action.payload;
       },
-      updateCampaign: (state, action: PayloadAction<Campaign>) => {
-        const index = state.campaigns.findIndex(camp => camp.id === action.payload.id);
-        if (index !== -1) {
-          state.campaigns[index] = action.payload;
+      updateCampaignInfo: (state, action: PayloadAction<string>) => {
+        console.log('updateCampaignInfo() called with action.payload: ', action.payload);
+        if (state.selectedCampaignId !== null) {
+          const index = state.campaigns.findIndex(camp => camp.id === state.selectedCampaignId);
+          if (index !== -1) {
+            state.campaigns[index].campaignInfo = action.payload;
+          }
         }
       },
-      deleteCampaign: (state, action: PayloadAction<string>) => {
-        state.campaigns = state.campaigns.filter(camp => camp.id !== action.payload);
+        deleteCampaign: (state, action: PayloadAction<string>) => {
+          state.campaigns = state.campaigns.filter(camp => camp.id !== action.payload);
+        }
       }
-    }
   });
 
-export const { addCampaign, setCampaigns, setSelectedCampaignId, updateCampaign, deleteCampaign } = campaignSlice.actions;
+export const { addCampaign, setCampaigns, setSelectedCampaignId, updateCampaignInfo, deleteCampaign } = campaignSlice.actions;
 export default campaignSlice.reducer;
   

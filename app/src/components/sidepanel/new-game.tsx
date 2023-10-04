@@ -11,6 +11,7 @@ import { useOnSubmit } from '../../core/chat/message-submit-helper';
 import { Parameters } from '../../core/chat/types';
 import { fillCampaignInfoAndGetQnAPrompt } from '../../core/game/new-game-prompting';
 import useNewChatTrigger from '../../core/chat/new-chat';
+import { updateCampaignInfo } from '../../store/campaign-slice';
 
 type NewGameState = {
     loading: boolean;
@@ -238,6 +239,7 @@ export default function NewGame() {
     
     const startNewGame = useCallback(async () => {
         try {
+            //ADD setting up a new campaign an ID in redux. Maybe don't store it in the backend until process is done
             triggerNewChat();
             const storySeedPrompt = await getGenerateStorySeedsPrompt()
             await submitChatMessageStorySeeds(storySeedPrompt)
@@ -271,9 +273,9 @@ export default function NewGame() {
                     try {
                         triggerNewChat();
                         const chosenStorySeed = stepsStatus[0].value;
-                        const QnaPrompt = await fillCampaignInfoAndGetQnAPrompt(chosenStorySeed, value, context);
-                        
-                        submitChatMessageQnA(QnaPrompt);
+                        const [fillCampaignInfoPrompt, qnaPrompt] = await fillCampaignInfoAndGetQnAPrompt(chosenStorySeed, value, context);
+                        dispatch(updateCampaignInfo(fillCampaignInfoPrompt))
+                        submitChatMessageQnA(qnaPrompt);
     
                       } catch (error) {
                         console.log('new-game-slice call of step2Prep() failed, error: ', error);
