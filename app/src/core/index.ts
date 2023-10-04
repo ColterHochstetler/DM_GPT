@@ -166,6 +166,9 @@ export class ChatManager extends EventEmitter {
         messages.push(message);
         console.log('++ messages: ', messages);
 
+        const filteredMessages = messages.filter(msg => Boolean(msg.role));
+        console.log('++ filteredMessages: ', filteredMessages);  // Optional: For debugging
+
         this.game.runLoop(messages,userSubmittedMessage.requestedParameters);
 
         await this.getReply(messages, userSubmittedMessage.requestedParameters);

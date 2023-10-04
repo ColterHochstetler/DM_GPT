@@ -236,7 +236,7 @@ export default function Header(props: HeaderProps) {
     useHotkeys([
         ['c', (event: KeyboardEvent) => {
             event.preventDefault();  // Prevent any default behavior, optional
-            triggerNewChat(setLoading);
+            triggerNewChat();
         }],
     ]);
 
@@ -252,7 +252,7 @@ export default function Header(props: HeaderProps) {
                 </title>
             </Helmet>
             {!sidebarOpen && <Burger opened={sidebarOpen} onClick={onBurgerClick} aria-label={burgerLabel} transitionDuration={0} />}
-            <HeaderButton icon="plus" onClick={() => triggerNewChat(setLoading)} loading={loading} variant="light">
+            <HeaderButton icon="plus" onClick={() => triggerNewChat()} loading={loading} variant="light">
                 <FormattedMessage defaultMessage="New" description="Label for the button used to start a new chat session" />
             </HeaderButton>
             <div className="spacer" />
