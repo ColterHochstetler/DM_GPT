@@ -7,7 +7,7 @@ CHARACTER SHEET
 {{characterSheet}}
 
 SCENE TEASER
-{{sceneSeed}}
+{{firstSceneSeed}}
 
 Using the above information, craft a scene plan that fills out each section:
 

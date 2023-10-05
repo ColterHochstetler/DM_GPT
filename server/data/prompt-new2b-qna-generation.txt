@@ -12,6 +12,4 @@ Then include this 6th question: 'How intense should the starting scene be? Are y
 
 Do not add any extra commentary beyond the questions.
 
-Start each questions with "Q:", and add a new line after each question with "A: Your answer here..."
-
-Wrap it all in a code block.
+Start each questions with "Q:", and add two new lines after each question, then "Your answer here..."

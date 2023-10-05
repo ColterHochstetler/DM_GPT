@@ -1,33 +1,56 @@
 CHARACTER SHEET
+
 Name:
 
-
 Race: 
+
 Appearance: 
+
 Background:
-Starting Station: 
+- (List key background items here. Delete this parenthetical)
 
-Level: 
-Wounds: x/y
-- (Wound description)
-Weapons:
-- (Weapon description, associated Attribute)
-Items:
-- (Item description and special properties)
+Social Standing:
+- (List key groups they interact with and describe their social standing in each. Delete this paraenthetical.)
 
+-----
+
+LEVEL: 1 (Increase this to two if the characters is powerful. Delete this parenthetical.)
+
+WOUNDS: x/7
+
+- (Do not add any wounds here unless the character story justifies it. This section will be used later. Delete this text.)
+
+WEAPONS:
+
+- (List any notable weapons here. Note the attribute the player will roll with for the weapon. Delete this parenthetical.)
+
+ITEMS:
+
+- (List items and their descriptions here and special properties or effect. Delete this parenthetical.)
+
+-----
+
+(Add D&D 5e style stats here that are appropriate)
 
 Strength:
+
 Dexterity:
+
 Constitution:
+
 Intelligence: 
+
 Wisdom: 
+
 Charisma:
 
-Proficiencies:
-- (Skill)
+-----
 
-Abilities:
-- (Ability cost and description)
+PROFICIENCIES:
 
-Notes:
-- 
+- (List 2-3 skills that feel appropriate for the character here. Delete this paraenthetical.)
+
+ABILITIES:
+
+(Leave blank. Delete this Parenthetical.)
+

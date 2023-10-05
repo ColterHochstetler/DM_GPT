@@ -5,6 +5,7 @@ type Campaign = {
   id: string;
   campaignInfo: string;
   characterSheet: string;
+  firstScenePlan: string;
 };  
 
 type CampaignState = {
@@ -12,6 +13,17 @@ type CampaignState = {
     currentCampaignId: string | null; // ID of the currently selected campaign
 };
 
+const initialState: CampaignState = {
+  campaigns: [
+    {
+      id: 'defaultCampaignId',
+      campaignInfo: 'This is the default campaign',
+      characterSheet: 'This is the default character sheet',
+      firstScenePlan: 'This is the default first scene plan',
+    }
+  ],
+  currentCampaignId: 'defaultCampaignId',
+};
 
 export const selectCampaigns = (state: { campaign: CampaignState }) => state.campaign.campaigns;
 export const selectCurrentCampaignId = (state: { campaign: CampaignState }) => state.campaign.currentCampaignId;
@@ -31,18 +43,17 @@ export const selectCurrentCharacterSheet = createSelector(
     return campaign ? campaign.characterSheet : null;
   }
 );
+
+export const selectCurrentFirstScenePlan = createSelector(
+  [selectCampaigns, selectCurrentCampaignId],
+  (campaigns, currentCampaignId) => {
+    const campaign = campaigns.find(camp => camp.id === currentCampaignId);
+    return campaign ? campaign.firstScenePlan : null;
+  }
+);
+
   
-  
-const initialState: CampaignState = {
-  campaigns: [
-    {
-      id: 'defaultCampaignId',
-      campaignInfo: 'This is the default campaign',
-      characterSheet: 'This is the default character sheet',
-    }
-  ],
-  currentCampaignId: 'defaultCampaignId',
-};
+
 
 const campaignSlice = createSlice({
     name: 'campaign',
@@ -75,12 +86,21 @@ const campaignSlice = createSlice({
           }
         }
       },
+      updateFirstScenePlan: (state, action: PayloadAction<string>) => {
+        console.log('updateFirstScenePlan() called with action.payload: ', action.payload);
+        if (state.currentCampaignId !== null) {
+          const index = state.campaigns.findIndex(camp => camp.id === state.currentCampaignId);
+          if (index !== -1) {
+            state.campaigns[index].firstScenePlan = action.payload;
+          }
+        }
+      },  
       deleteCampaign: (state, action: PayloadAction<string>) => {
           state.campaigns = state.campaigns.filter(camp => camp.id !== action.payload);
       }
     }
   });
 
-export const { addCampaign, setCampaigns, setCurrentCampaignId, updateCampaignInfo, updateCharacterSheet, deleteCampaign } = campaignSlice.actions;
+export const { addCampaign, setCampaigns, setCurrentCampaignId, updateCampaignInfo, updateCharacterSheet, deleteCampaign, updateFirstScenePlan } = campaignSlice.actions;
 export default campaignSlice.reducer;
   

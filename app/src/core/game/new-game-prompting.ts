@@ -66,7 +66,7 @@ export const fillCampaignInfoAndGetQnAPrompt = async (
   };
   console.log('fillCampaignInfoAndGetQnAPrompt() called with parameters ', parameters);
 
-  const messages:Message[] = [{
+  const message:Message[] = [{
     id: uuidv4(),
     chatID: uuidv4(),
     timestamp: Date.now(),
@@ -77,7 +77,7 @@ export const fillCampaignInfoAndGetQnAPrompt = async (
 
   //get LLM reply that's hidden from the user
   console.log('fillCampaignInfoAndGetQnAPrompt() calling hiddenReplyAgent.sendAgentMessage()');
-  const fillCampaignInfoPromptFilled: string = await hiddenReplyAgent.sendAgentMessage(parameters, messages, 'campaign id to replace');
+  const fillCampaignInfoPromptFilled: string = await hiddenReplyAgent.sendAgentMessage(parameters, message, 'campaign id to replace');
 
   console.log('fillCampaignInfoAndGetQnAPrompt() fillCampaignInfoPromptFilled: ', fillCampaignInfoPromptFilled);
 
@@ -152,9 +152,9 @@ export const removeCharacterFromCampaignInfo = async (context: Context, campaign
     model: context.chat.options.getOption<string>('parameters', 'model', context.id),
     maxTokens: 1500,
   };
-  console.log('fillCampaignInfoAndGetQnAPrompt() called with parameters ', parameters);
+  console.log('removeCharacterFromCampaignInfo() called with parameters ', parameters);
 
-  const messages:Message[] = [{
+  const message:Message[] = [{
     id: uuidv4(),
     chatID: uuidv4(),
     timestamp: Date.now(),
@@ -164,22 +164,71 @@ export const removeCharacterFromCampaignInfo = async (context: Context, campaign
   }];
 
   //get LLM reply that's hidden from the user
-  console.log('fillCampaignInfoAndGetQnAPrompt() calling hiddenReplyAgent.sendAgentMessage()');
-  const campaignInfoWithoutCharacter: string = await hiddenReplyAgent.sendAgentMessage(parameters, messages, 'campaign id to replace');
+  console.log('removeCharacterFromCampaignInfo() calling hiddenReplyAgent.sendAgentMessage() with message: ', message);
+  const campaignInfoWithoutCharacter: string = await hiddenReplyAgent.sendAgentMessage(parameters, message, 'campaign id to replace');
   return campaignInfoWithoutCharacter
 
 }
 
 //    STEP 5 PREP
 
+export const getAbilitiesPrompt = async (characterSheet: string, campaignInfo: string): Promise<string> => {
+    
+    const abilitiesRaw = await backend.current?.getTextFileContent('prompt-new5-abilities-generation');
+    
+    if (!abilitiesRaw) {
+      console.log('getAbilitiesPrompt() failed to retrieve prompt-new5-abilities-generation.txt');
+      return '';
+    }
+    
+    return await replaceTextPlaceholders(abilitiesRaw, [['{{characterSheet}}',characterSheet], ['{{campaignInfo}}',campaignInfo]])
+}
+
+//    STEP 6 PREP
+
 export const getFirstSceneSeedPrompt = async (characterSheet: string, campaignInfo: string): Promise<string> => {
   
-  const firstSceneSeedRaw = await backend.current?.getTextFileContent('prompt-new5-firstscene-generation');
+  const firstSceneSeedRaw = await backend.current?.getTextFileContent('prompt-new6-firstsceneseed-generation');
   
   if (!firstSceneSeedRaw) {
-    console.log('getFirstSceneSeedPrompt() failed to retrieve prompt-new5-firstscene-generation.txt');
+    console.log('getFirstSceneSeedPrompt() failed to retrieve prompt-new6-firstsceneseed-generation.txt');
     return '';
   }
   
   return await replaceTextPlaceholders(firstSceneSeedRaw, [['{{characterSheet}}',characterSheet], ['{{campaignInfo}}',campaignInfo]]);
+}
+
+//    Launch Prep
+
+export const generateFirstScenePlan = async (context: Context, characterSheet: string, campaignInfo: string, firstSceneSeed: string): Promise<string> => {
+  
+  const firstScenePlanRaw = await backend.current?.getTextFileContent('prompt-new7-firstscene-plan');
+  
+  if (!firstScenePlanRaw) {
+    console.log('generateFirstScenePlan() failed to retrieve prompt-new7-firstscene-plan.txt');
+    return '';
+  }
+
+  const parameters:Parameters = {
+    temperature: 1,
+    apiKey: context.chat.options.getOption<string>('openai', 'apiKey'),
+    model: context.chat.options.getOption<string>('parameters', 'model', context.id),
+    maxTokens: 1200,
+  };
+  console.log('fillCampaignInfoAndGetQnAPrompt() called with parameters ', parameters);
+
+  const message:Message[] = [{
+    id: uuidv4(),
+    chatID: uuidv4(),
+    timestamp: Date.now(),
+    role: 'user',
+    content: firstScenePlanRaw,
+    parameters: parameters
+  }];
+
+  //get LLM reply that's hidden from the user
+  console.log('fillCampaignInfoAndGetQnAPrompt() calling hiddenReplyAgent.sendAgentMessage()');
+  const campaignInfoWithoutCharacter: string = await hiddenReplyAgent.sendAgentMessage(parameters, message, 'campaign id to replace');
+  
+  return campaignInfoWithoutCharacter
 }

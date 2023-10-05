@@ -1,4 +1,4 @@
-We need to help players dive into a rich TTRPG campaign quickly. Here’s the form we aim to fill:
+We need to help players dive into a rich TTRPG campaign quickly. Here’s the form we aim to fill by populating each area with bullet points:
 
 # World
 Tone and Genre: 
@@ -28,4 +28,4 @@ Here's their character concept:
 
 {{characterSeed}}
 
-Fill out the form using that information provided. Provide a short suggestion for each category that matches the tone, content, or  desires provided. Be creative, avoid cliche. Only fill out the form, don't provide any affirmations or commentary. Don't use Markdown, except to wrap the form in a code block.
+Fill out the form using that information provided.  Provide a short, intrguiging or exciting suggestions for each category that matches the tone, content, or desires the player has provided. Blend belove classic tropes with wild new twists. Only fill out the form, don't provide any affirmations or commentary. Don't use Markdown.

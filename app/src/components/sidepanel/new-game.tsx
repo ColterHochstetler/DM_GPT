@@ -5,13 +5,13 @@ import { useAppDispatch, useAppSelector } from '../../store'
 import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetToBeginning, selectCurrentStep, setCurrentStep, setIsGameStarted, selectIsGameStarted, extendStepsStatus } from '../../store/new-game-slice';
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { useAppContext } from '../../core/context';
-import { getGenerateStorySeedsPrompt, getGenerateCharacterSeedsPrompt, getUpdateCampaignInfoPrompt, getCharacterSheetPrompt, removeCharacterFromCampaignInfo, getFirstSceneSeedPrompt } from '../../core/game/new-game-prompting';
+import { getGenerateStorySeedsPrompt, getGenerateCharacterSeedsPrompt, getUpdateCampaignInfoPrompt, getCharacterSheetPrompt, removeCharacterFromCampaignInfo, getAbilitiesPrompt, getFirstSceneSeedPrompt, generateFirstScenePlan } from '../../core/game/new-game-prompting';
 import { useNavigate } from 'react-router-dom';
 import { useOnSubmit } from '../../core/chat/message-submit-helper';
 import { Parameters } from '../../core/chat/types';
 import { fillCampaignInfoAndGetQnAPrompt } from '../../core/game/new-game-prompting';
 import useNewChatTrigger from '../../core/chat/new-chat';
-import { updateCampaignInfo, selectCurrentCampaignInfo, updateCharacterSheet, selectCurrentCharacterSheet } from '../../store/campaign-slice';
+import { updateCampaignInfo, selectCurrentCampaignInfo, updateCharacterSheet, selectCurrentCharacterSheet, updateFirstScenePlan, selectCurrentFirstScenePlan } from '../../store/campaign-slice';
 
 type NewGameState = {
     loading: boolean;
@@ -137,7 +137,6 @@ function NewGameStep({ title, help, description, placeholder, prefillValue, minC
 
 export default function NewGame() {
 
-
     const initialStepsData = [
         {
             title: '1. Story Seed',
@@ -164,7 +163,7 @@ export default function NewGame() {
             placeholder: 'Paste the Questions and Answers of your chosing here...',
             prefillValue: '',
             minChars: 100,
-            maxChars: 2000
+            maxChars: 2200
         },
         {
             title: '4. Campaign Info Review',
@@ -173,7 +172,7 @@ export default function NewGame() {
             placeholder: 'Paste the Campaign Info here...',
             prefillValue: '',
             minChars: 300,
-            maxChars: 2000
+            maxChars: 2200
         },
         {
             title: '5. Character Details',
@@ -182,10 +181,19 @@ export default function NewGame() {
             placeholder: 'Paste your Character Sheet here...',
             prefillValue: '',
             minChars: 100,
-            maxChars: 1200
+            maxChars: 1500
         },
         {
-            title: '6. First Scene',
+            title: '6. Character Abilities',
+            help: 'Give yourself magic, super-human skills, the ability to transform, whatever you like! Be warned: much power risks taking away the fun. You will get more when you level up. Maybe try starting with one? Or making powers have a major drawback.',
+            description: 'The DM is suggesting abilities based on your character and story! You know the drill: copy what you like, edit, or make your own.',
+            placeholder: 'Paste your abilities here...',
+            prefillValue: '',
+            minChars: 100,
+            maxChars: 800
+        },
+        {
+            title: '7. First Scene',
             help: 'Note how exciting you want the first scene: should it be adrenaline-filled or more calm to get you settled in? Do you want to start by interacting with certain characters, or focused around a certain quest? Talk with the DM to help you craft it to your wishes.',
             description: 'Time to plan the opening scene! The DM has provided options in the chat. Copy and paste the one you want here, edit it, request changes from the DM, or write your own. When you are satisfied, click submit.',
             placeholder: 'Paste you first scene seed here...',
@@ -201,6 +209,10 @@ export default function NewGame() {
 
     const stepsStatus = useAppSelector(selectStepsStatus);
 
+    if (stepsStatus.length != initialStepsData.length) {
+        dispatch(extendStepsStatus(initialStepsData.length));
+    }
+
     //get Campaign info and character sheet from campaign redux
     const currentCampaignInfo = useAppSelector(selectCurrentCampaignInfo);
     if (!currentCampaignInfo) {
@@ -212,6 +224,11 @@ export default function NewGame() {
         throw new Error("Character sheet not found");
     };
 
+    const currentFirstScenePlan = useAppSelector(selectCurrentFirstScenePlan);
+    if (!currentFirstScenePlan) {
+        throw new Error("First scene plan not found");
+    }
+
     const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
 
     //prep submit helpers
@@ -220,9 +237,12 @@ export default function NewGame() {
     const submitChatMessageQnA = useOnSubmit(context, false, 'TIME TO MAKE IT PERSONAL! The DM is asking you questions to help make a better experience for you. Follow the instructions on the right. PRO TIP: If your answers get too long, you can paste it to the DM and ask them to help you condense it.');
     const submitChatMessageUpdateCampaignInfo = useOnSubmit(context, false, 'LOCK IT IN! The DM is filling out the campaign info for you. Copy and paste it into the side bar, and edit as you please, or get the DM to help you make modifications. Follow the instructions to the right.');
     const submitChatMessageFillCharacterSheet = useOnSubmit(context, true, 'MORE DETAILS ABOUT YOUR CHARACTER! The DM has generated a character sheet for you. You can edit it, or get the DM to help you make modifications. Follow the instructions to the right.');
+    const submitChatMessageAbilities = useOnSubmit(context, false, 'TIME TO GET CREATIVE! The DM is suggesting abilities for you, but you can play whatever you like. Copy and Paste one, edit it, or write your own. You can talk with the DM to help craft an appropriate ability. When you are happy, follow the instructions to the right.');
     const submitChatMessageFirstSceneSeed = useOnSubmit(context, false, 'TIME TO START THE ADVENTURE! The DM is writing suggestions for the first scene, but you can play whatever you like. Copy and Paste one, edit it, or write your own. You can talk with the DM to help craft an appropriate first scene. When you are happy, follow the instructions to the right.');
-
+    const submitChatMessageFirstScenePlan = useOnSubmit(context, false, 'The adventure begins!');
+    
     const currentStep = useAppSelector(selectCurrentStep);
+
 
     const initialState: NewGameState = {
         loading: false,
@@ -240,13 +260,6 @@ export default function NewGame() {
         }
     }, [currentStep, newGameDispatch]);
 
-    useEffect(() => {
-        const numberOfSteps = initialStepsData.length;
-        if (stepsStatus.length != numberOfSteps) {
-          dispatch(extendStepsStatus(numberOfSteps));
-        }
-      }, []);
-      
     
     const startNewGame = useCallback(async () => {
         try {
@@ -268,6 +281,8 @@ export default function NewGame() {
     
         if (completed) {
             dispatch(completeStep({ index }));
+
+            console.log ("++ index: ", index);
 
             switch (index) {
                 //note: case 0 starts after the player hits submit on what the UI labels as "step 1".
@@ -315,6 +330,8 @@ export default function NewGame() {
                     try {
                         triggerNewChat();
 
+                        console.log("++ step 5 currentCampaignInfo: ", currentCampaignInfo)
+
                         const chosenCharacterSeed: string = stepsStatus[1].value;
                         console.log("++ chosenCharacterSeed: ", chosenCharacterSeed);
                         const characterSheetGenerationPrompt: string = await getCharacterSheetPrompt(chosenCharacterSeed, currentCampaignInfo);
@@ -334,12 +351,25 @@ export default function NewGame() {
                     break;
 
                 case 4:
-                    //prep for step 6, First Scene Seed. Data stored on redux index 5.
+                    //prep for step 6, abilities. Data stored on redux index 5.
                     try {
-                        const firstSceneSeedPrompt = await getFirstSceneSeedPrompt(currentCharacterSheet, currentCampaignInfo);
-                        await submitChatMessageFirstSceneSeed(firstSceneSeedPrompt);
+                        const abilitiesPrompt: string = await getAbilitiesPrompt(currentCharacterSheet, currentCampaignInfo);
+                        await submitChatMessageAbilities(abilitiesPrompt);
                     } catch (error) {
                         console.log('case 4 of NewGame switch failed, error: ', error);
+                    }
+                    break;
+                
+                case 5:
+                    //prep for step 7, First Scene Seed. Data stored on redux index 6.
+                    const characterSheetWithAbilities = currentCharacterSheet + value;
+                    console.log("++ characterSheetWithAbilities: ", characterSheetWithAbilities);
+                    dispatch(updateCharacterSheet(characterSheetWithAbilities))
+                    try {
+                        const firstSceneSeedPrompt: string = await getFirstSceneSeedPrompt(currentCharacterSheet, currentCampaignInfo);
+                        await submitChatMessageFirstSceneSeed(firstSceneSeedPrompt);
+                    } catch (error) {
+                        console.log('case 5 of NewGame switch failed, error: ', error);
                     }
                     break;
                 
@@ -354,6 +384,13 @@ export default function NewGame() {
             }
         }
     };
+
+    const handleLaunchClick = async () => {
+        const firstScenePlanPrompt: string = await generateFirstScenePlan(context, currentCharacterSheet, currentCampaignInfo, stepsStatus[5].value)
+        dispatch(updateFirstScenePlan(firstScenePlanPrompt));
+        triggerNewChat();
+
+    }
 
 
     return (
@@ -384,6 +421,7 @@ export default function NewGame() {
                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', margin: '2rem 0' }}>
                             <Title size="h4" color="white" style={{ marginBottom: '1rem' }}>All steps completed!</Title>
                             <Button color="green" onClick={() => {
+                                handleLaunchClick();
                                 dispatch(resetToBeginning()); // New: Reset stepsStatus in Redux
                             }}>
                                 Launch!

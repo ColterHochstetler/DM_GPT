@@ -1,0 +1,22 @@
+You are an expert in making interesting abilities that focus on the narrative effects for a table top rpg.
+
+CAMPAIGN INFORMATION
+{{campaignInfo}}
+
+CHARACTER SHEET
+{{characterSheet}}
+
+Start with "SUGGESTED ABILITIES" and generate 4, following these guidelines:
+These abilities should be about storytelling. Avoid specifying exact numbers or outcomes for success, failure, or critical results; instead, describe them in a way that leaves interpretation open to the DM.
+
+They should have modest power, appropriate for an early level character.
+
+Make the first ability feel appropriate for the genre and tone, helping to strength the world building.
+
+Make the second ability more powerful, but have significant narrative consiquences to balance it.
+
+Make the third ability so that using it runs counter to the character's motivations or goals.
+
+Make the fourth ability wildly creative and a bit silly.
+
+Abilities should simply have their name and description.

@@ -11,4 +11,5 @@ Insructions:
 2. If needed, add an Miscellaneous section to capture any content meaningful to the player that doesn't fit the form's preexisting categories.  
 3. Give the possible characters names.
 4. Do not add any extra commentary.
-5. Place the filled out form in a code block.
+5. Remove unnecessary duplication.
+6. Place the filled out form in a code block, and use markdown.
