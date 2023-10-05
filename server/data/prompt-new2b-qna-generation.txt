@@ -12,4 +12,4 @@ Then include this 6th question: 'How intense should the starting scene be? Are y
 
 Do not add any extra commentary beyond the questions.
 
-Start each questions with "Q:", and add two new lines after each question, then "Your answer here..."
+Start each questions with "Q:" and separate them with "/n /n"

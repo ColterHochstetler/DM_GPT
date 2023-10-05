@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../store'
 import { updateStepValue, completeStep, activateNextStep, selectStepsStatus, initializeSteps, resetToBeginning, selectCurrentStep, setCurrentStep, setIsGameStarted, selectIsGameStarted, extendStepsStatus } from '../../store/new-game-slice';
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { useAppContext } from '../../core/context';
-import { getGenerateStorySeedsPrompt, getGenerateCharacterSeedsPrompt, getUpdateCampaignInfoPrompt, getCharacterSheetPrompt, removeCharacterFromCampaignInfo, getAbilitiesPrompt, getFirstSceneSeedPrompt, generateFirstScenePlan } from '../../core/game/new-game-prompting';
+import { getGenerateStorySeedsPrompt, getGenerateCharacterSeedsPrompt, getUpdateCampaignInfoPrompt, getCharacterSheetPrompt, removeCharacterFromCampaignInfo, getAbilitiesPrompt, getFirstSceneSeedPrompt, generateFirstSceneIntro } from '../../core/game/new-game-prompting';
 import { useNavigate } from 'react-router-dom';
 import { useOnSubmit } from '../../core/chat/message-submit-helper';
 import { Parameters } from '../../core/chat/types';
@@ -232,14 +232,14 @@ export default function NewGame() {
     const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
 
     //prep submit helpers
-    const submitChatMessageStorySeeds = useOnSubmit(context, true, 'TIME TO START A NEW ADVENTURE! The DM is writing suggestions for adventures, called Story Seeds, but you can play whatever you like. Copy and Paste one, edit it, or write your own. You can talk with the DM to help craft an appropriate adventure story seed. When you are happy, follow the instructions to the right.'); //test param override
+    const submitChatMessageStorySeeds = useOnSubmit(context, true, 'TIME TO START A NEW ADVENTURE! The DM is writing suggestions for adventures, called Story Seeds, but you can play whatever you like. Copy and Paste one, edit it, or write your own. You can talk with the DM to help craft an appropriate adventure story seed. When you are happy, follow the instructions to the right.'); //Add param heat or variety through prompt
     const submitChatMessageCharacterSeed = useOnSubmit(context, true, 'CHARACTER BASICS: Who are you and what do you want to play? The DM is creating suggestions, but you can be whatever you want. Once you have a character concept you like, paste it into the box on the right and click submit.'); //false would let it keep the context of the previous messages, add if needed.
     const submitChatMessageQnA = useOnSubmit(context, false, 'TIME TO MAKE IT PERSONAL! The DM is asking you questions to help make a better experience for you. Follow the instructions on the right. PRO TIP: If your answers get too long, you can paste it to the DM and ask them to help you condense it.');
     const submitChatMessageUpdateCampaignInfo = useOnSubmit(context, false, 'LOCK IT IN! The DM is filling out the campaign info for you. Copy and paste it into the side bar, and edit as you please, or get the DM to help you make modifications. Follow the instructions to the right.');
     const submitChatMessageFillCharacterSheet = useOnSubmit(context, true, 'MORE DETAILS ABOUT YOUR CHARACTER! The DM has generated a character sheet for you. You can edit it, or get the DM to help you make modifications. Follow the instructions to the right.');
     const submitChatMessageAbilities = useOnSubmit(context, false, 'TIME TO GET CREATIVE! The DM is suggesting abilities for you, but you can play whatever you like. Copy and Paste one, edit it, or write your own. You can talk with the DM to help craft an appropriate ability. When you are happy, follow the instructions to the right.');
     const submitChatMessageFirstSceneSeed = useOnSubmit(context, false, 'TIME TO START THE ADVENTURE! The DM is writing suggestions for the first scene, but you can play whatever you like. Copy and Paste one, edit it, or write your own. You can talk with the DM to help craft an appropriate first scene. When you are happy, follow the instructions to the right.');
-    const submitChatMessageFirstScenePlan = useOnSubmit(context, false, 'The adventure begins!');
+    const submitChatMessageFirstScenePlan = useOnSubmit(context, true);
     
     const currentStep = useAppSelector(selectCurrentStep);
 
@@ -386,10 +386,12 @@ export default function NewGame() {
     };
 
     const handleLaunchClick = async () => {
-        const firstScenePlanPrompt: string = await generateFirstScenePlan(context, currentCharacterSheet, currentCampaignInfo, stepsStatus[5].value)
-        dispatch(updateFirstScenePlan(firstScenePlanPrompt));
-        triggerNewChat();
-
+        
+        const firstScenePlanPrompt: string = await generateFirstSceneIntro(context, currentCharacterSheet, currentCampaignInfo, stepsStatus[5].value)
+        console.log("++ calling submitChatMessageFirstScenePlan: ", firstScenePlanPrompt);
+        
+        submitChatMessageFirstScenePlan(firstScenePlanPrompt);
+        dispatch(resetToBeginning());
     }
 
 
@@ -421,8 +423,8 @@ export default function NewGame() {
                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', margin: '2rem 0' }}>
                             <Title size="h4" color="white" style={{ marginBottom: '1rem' }}>All steps completed!</Title>
                             <Button color="green" onClick={() => {
+                                triggerNewChat();
                                 handleLaunchClick();
-                                dispatch(resetToBeginning()); // New: Reset stepsStatus in Redux
                             }}>
                                 Launch!
                             </Button>

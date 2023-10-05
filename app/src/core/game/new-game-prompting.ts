@@ -200,35 +200,49 @@ export const getFirstSceneSeedPrompt = async (characterSheet: string, campaignIn
 
 //    Launch Prep
 
-export const generateFirstScenePlan = async (context: Context, characterSheet: string, campaignInfo: string, firstSceneSeed: string): Promise<string> => {
+export const generateFirstSceneIntro = async (context: Context, characterSheet: string, campaignInfo: string, firstSceneSeed: string): Promise<string> => {
   
+  const howToDm = await backend.current?.getTextFileContent('how-to-dm');
+  if (!howToDm) {
+    console.log('generateFirstScenePlan() failed to retrieve how-to-dm.txt');
+    return '';
+  }
+
+  const firstSceneIntroRaw = await backend.current?.getTextFileContent('prompt-new8-firstscene-intro');
+  if (!firstSceneIntroRaw) {
+    console.log('generateFirstScenePlan() failed to retrieve prompt-new8-firstscene-intro.txt');
+    return '';
+  }
+
   const firstScenePlanRaw = await backend.current?.getTextFileContent('prompt-new7-firstscene-plan');
-  
   if (!firstScenePlanRaw) {
     console.log('generateFirstScenePlan() failed to retrieve prompt-new7-firstscene-plan.txt');
     return '';
   }
-
+  
+  const firstScenePlanPrompt: string = await replaceTextPlaceholders(firstScenePlanRaw, [['{{characterSheet}}',characterSheet], ['{{campaignInfo}}',campaignInfo], ['{{firstSceneSeed}}',firstSceneSeed]]);
+  
   const parameters:Parameters = {
-    temperature: 1,
+    temperature: 1.2,
     apiKey: context.chat.options.getOption<string>('openai', 'apiKey'),
     model: context.chat.options.getOption<string>('parameters', 'model', context.id),
-    maxTokens: 1200,
+    maxTokens: 1100,
   };
-  console.log('fillCampaignInfoAndGetQnAPrompt() called with parameters ', parameters);
+  console.log('generateFirstScenePlan() called with parameters ', parameters);
 
   const message:Message[] = [{
     id: uuidv4(),
     chatID: uuidv4(),
     timestamp: Date.now(),
     role: 'user',
-    content: firstScenePlanRaw,
+    content: firstScenePlanPrompt,
     parameters: parameters
   }];
 
-  //get LLM reply that's hidden from the user
-  console.log('fillCampaignInfoAndGetQnAPrompt() calling hiddenReplyAgent.sendAgentMessage()');
-  const campaignInfoWithoutCharacter: string = await hiddenReplyAgent.sendAgentMessage(parameters, message, 'campaign id to replace');
-  
-  return campaignInfoWithoutCharacter
+  console.log('generateFirstScenePlan() calling hiddenReplyAgent.sendAgentMessage()');
+  const firstScenePlanFilled: string = await hiddenReplyAgent.sendAgentMessage(parameters, message, 'campaign id to replace');
+
+  const combinedPrompt: string = howToDm + '\n\n' + firstScenePlanFilled + '\n\n' + firstSceneIntroRaw;
+
+  return combinedPrompt
 }

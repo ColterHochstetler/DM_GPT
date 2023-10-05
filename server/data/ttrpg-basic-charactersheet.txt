@@ -30,7 +30,7 @@ ITEMS:
 
 -----
 
-(Add D&D 5e style stats here that are appropriate)
+(Add D&D 5e stats here, so that each item has an 8, 10, 12, 14, 15, or 16.)
 
 Strength:
 
@@ -52,5 +52,4 @@ PROFICIENCIES:
 
 ABILITIES:
 
-(Leave blank. Delete this Parenthetical.)
 

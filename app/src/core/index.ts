@@ -161,11 +161,13 @@ export class ChatManager extends EventEmitter {
             this.doc.addMessage(overriddenMessage);;
             messages.push(message);
             
+            
         } else {
             this.doc.addMessage(message);
             messages = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);  
             messages.push(message);
         }    
+        messages = messages.filter(msg => Boolean(msg.role));
 
         this.game.runLoop(messages,userSubmittedMessage.requestedParameters);
 
