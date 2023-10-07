@@ -39,20 +39,21 @@ const StepContainer = styled.div<StepContainerProps>`
     flex-grow: 1; 
     padding: 1rem;
     border-radius: 0.25rem;
-    margin-bottom: 1rem;
+    margin-bottom: .5rem;
     background-color: ${props => props.isCompleted ? '#4ea03971' : '#ffffff14'};
+    border-radius: 10px;
 `;
 
 const StepTitle = styled.h1`
     display: flex;
     justify-content: space-between; 
     align-items: center;
-    color: #ffffff;
+    color: #dddddd;
 `;
 
 const StepDescription = styled.p`
     margin-bottom: 1rem;
-    color: #ffffff;
+    color: #bbbbbb;
     font-size: .9rem;
     line-height: 1.75;
 `;
@@ -398,8 +399,15 @@ export default function NewGame() {
     return (
         <div>
             {!isGameStarted ? (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                    <Button onClick={startNewGame}>
+                <div style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column',  // Add this line
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    height: '100%' 
+                  }}>
+                    <Title size="h4" color="#cfd1d4" style={{ marginBottom: '1rem' }}>Start a new adventure by planning with the DM:</Title>
+                    <Button color='green' onClick={startNewGame}>
                         Start New Game
                     </Button>
                 </div>
@@ -421,7 +429,7 @@ export default function NewGame() {
                     ))}
                     {areAllStepsCompleted() && (
                         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', margin: '2rem 0' }}>
-                            <Title size="h4" color="white" style={{ marginBottom: '1rem' }}>All steps completed!</Title>
+                            <Title size="h4" color="#cfd1d4" style={{ marginBottom: '1rem' }}>All steps completed!</Title>
                             <Button color="green" onClick={() => {
                                 triggerNewChat();
                                 handleLaunchClick();

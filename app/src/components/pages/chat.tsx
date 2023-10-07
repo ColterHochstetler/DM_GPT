@@ -130,9 +130,9 @@ export default function ChatPage(props: any) {
                 </Messages>
             }>
                 <Messages> 
-                    <ScrollArea.Autosize id="messages" maxHeight="100%" type="hover" viewportRef={scrollAreaRef}>
+                    <ScrollArea.Autosize offsetScrollbars id="messages" maxHeight="100%" type="hover" viewportRef={scrollAreaRef}>
                         {shouldShowChat && (
-                            <div style={{ paddingBottom: '4.5rem' }}>
+                            <div style={{ paddingBottom: '4.5rem'}}>
                                 {messagesToDisplay.map((message) => (
                                     <Message key={id + ":" + message.id}
                                         message={message}

@@ -52,8 +52,9 @@ const HeaderContainer = styled.div`
         }
 
         font-family: "Work Sans", sans-serif;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         line-height: 1.3;
+        color: #FFFFFF99;
 
         animation: fadein 0.5s;
         animation-fill-mode: forwards;
@@ -248,7 +249,7 @@ export default function Header(props: HeaderProps) {
                 <FormattedMessage defaultMessage="New" description="Label for the button used to start a new chat session" />
             </HeaderButton>
             <div className="spacer" />
-            <Title fz="sm" color="#D3D3D3">{title}</Title>
+            <Title fz="sm" color="#D3D3D3" style={{paddingLeft: "42px"}}>{title}</Title>
             <RenameModal 
                 currentTitle={title} 
                 onUpdateTitle={(newTitle) => {

@@ -15,9 +15,11 @@ import { useOption } from '../core/options/use-option';
 import { useOnSubmit } from '../core/chat/message-submit-helper';
 
 const Container = styled.div`
-    background: #292933;
-    border-top: thin solid #393933;
+
+
     padding: 1rem 1rem 0 1rem;
+
+    border-radius: 12px;
 
     .inner {
         max-width: 50rem;
