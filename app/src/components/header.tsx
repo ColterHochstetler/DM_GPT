@@ -29,13 +29,14 @@ const Banner = styled.div`
 `;
 
 const HeaderContainer = styled.div`
+    box-sizing: border-box;
     width: 100%;
     margin: 0 auto;
     display: flex;
     flex-shrink: 0;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 2rem;
+    gap: .1rem;
+    padding: .8rem .8rem;
     min-height: 2.618rem;
     background: rgba(0, 0, 0, 0.0);
     font-family: "Work Sans", sans-serif;
@@ -51,16 +52,12 @@ const HeaderContainer = styled.div`
         }
 
         font-family: "Work Sans", sans-serif;
-        font-size: 1rem;
+        font-size: 1.1rem;
         line-height: 1.3;
+        color: #FFFFFF99;
 
         animation: fadein 0.5s;
         animation-fill-mode: forwards;
-
-        strong {
-            font-weight: bold;
-            white-space: nowrap;
-        }
 
         span {
             display: block;
@@ -167,8 +164,6 @@ export const RenameModal = ({ currentTitle, onUpdateTitle }) => {
     );
 };
 
-
-
 function HeaderButton(props: ButtonProps & { icon?: string, onClick?: any, children?: any }) {
     return (
         <Button size='xs'
@@ -181,8 +176,6 @@ function HeaderButton(props: ButtonProps & { icon?: string, onClick?: any, child
         </Button>
     )
 }
-
-
 
 export interface HeaderProps {
     title?: any;
@@ -236,7 +229,7 @@ export default function Header(props: HeaderProps) {
     useHotkeys([
         ['c', (event: KeyboardEvent) => {
             event.preventDefault();  // Prevent any default behavior, optional
-            triggerNewChat(setLoading);
+            triggerNewChat();
         }],
     ]);
 
@@ -252,11 +245,11 @@ export default function Header(props: HeaderProps) {
                 </title>
             </Helmet>
             {!sidebarOpen && <Burger opened={sidebarOpen} onClick={onBurgerClick} aria-label={burgerLabel} transitionDuration={0} />}
-            <HeaderButton icon="plus" onClick={() => triggerNewChat(setLoading)} loading={loading} variant="light">
+            <HeaderButton icon="plus" onClick={() => triggerNewChat()} loading={loading} variant="light">
                 <FormattedMessage defaultMessage="New" description="Label for the button used to start a new chat session" />
             </HeaderButton>
             <div className="spacer" />
-            <Title fz="sm" color="#D3D3D3">{title}</Title>
+            <Title fz="sm" color="#D3D3D3" style={{paddingLeft: "42px"}}>{title}</Title>
             <RenameModal 
                 currentTitle={title} 
                 onUpdateTitle={(newTitle) => {
@@ -278,8 +271,9 @@ export default function Header(props: HeaderProps) {
             
 
             )}
-            <HeaderButton icon="search" onClick={spotlight.openSpotlight} />
             <HeaderButton icon="gear" onClick={openSettings} />
+            <HeaderButton icon="search" onClick={spotlight.openSpotlight} />
+            
 {/*             {backend.current && !props.share && props.canShare && typeof navigator.share !== 'undefined' && <HeaderButton icon="share" onClick={props.onShare}>
                 <FormattedMessage defaultMessage="Share" description="Label for the button used to create a public share URL for a chat log" />
             </HeaderButton>} */}

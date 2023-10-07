@@ -1,27 +1,59 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector } from '@reduxjs/toolkit';
 
 type Campaign = {
-    id: string;               // Unique identifier for the campaign
-    name: string;             // Name of the campaign
-    mainCharacterName: string; // Name of the main character
-    genre: string;            // Genre of the story (e.g., "Fantasy", "Sci-Fi", "Mystery")
-    tone: string;             // Tone of the story (e.g., "Dark", "Light-hearted", "Serious")
-    storyworld: string;       // The world or setting in which the game occurs
-    goalsDescription: string; // Description of the campaign's goals or objectives
-};
-  
+  id: string;
+  campaignInfo: string;
+  characterSheet: string;
+  firstScenePlan: string;
+};  
 
 type CampaignState = {
     campaigns: Campaign[];          // Array of campaigns
-    selectedCampaignId: string | null; // ID of the currently selected campaign
+    currentCampaignId: string | null; // ID of the currently selected campaign
 };
-  
-  
-  const initialState: CampaignState = {
-    campaigns: [],
-    selectedCampaignId: null
+
+const initialState: CampaignState = {
+  campaigns: [
+    {
+      id: 'defaultCampaignId',
+      campaignInfo: 'This is the default campaign',
+      characterSheet: 'This is the default character sheet',
+      firstScenePlan: 'This is the default first scene plan',
+    }
+  ],
+  currentCampaignId: 'defaultCampaignId',
 };
+
+export const selectCampaigns = (state: { campaign: CampaignState }) => state.campaign.campaigns;
+export const selectCurrentCampaignId = (state: { campaign: CampaignState }) => state.campaign.currentCampaignId;
+
+export const selectCurrentCampaignInfo = createSelector(
+  [selectCampaigns, selectCurrentCampaignId],
+  (campaigns, currentCampaignId) => {
+    const campaign = campaigns.find(camp => camp.id === currentCampaignId);
+    return campaign ? campaign.campaignInfo : null;
+  }
+);
+
+export const selectCurrentCharacterSheet = createSelector(
+  [selectCampaigns, selectCurrentCampaignId],
+  (campaigns, currentCampaignId) => {
+    const campaign = campaigns.find(camp => camp.id === currentCampaignId);
+    return campaign ? campaign.characterSheet : null;
+  }
+);
+
+export const selectCurrentFirstScenePlan = createSelector(
+  [selectCampaigns, selectCurrentCampaignId],
+  (campaigns, currentCampaignId) => {
+    const campaign = campaigns.find(camp => camp.id === currentCampaignId);
+    return campaign ? campaign.firstScenePlan : null;
+  }
+);
+
   
+
 
 const campaignSlice = createSlice({
     name: 'campaign',
@@ -33,21 +65,42 @@ const campaignSlice = createSlice({
       setCampaigns: (state, action: PayloadAction<Campaign[]>) => {
         state.campaigns = action.payload;
       },
-      setSelectedCampaignId: (state, action: PayloadAction<string>) => {
-        state.selectedCampaignId = action.payload;
+      setCurrentCampaignId: (state, action: PayloadAction<string>) => {
+        state.currentCampaignId = action.payload;
       },
-      updateCampaign: (state, action: PayloadAction<Campaign>) => {
-        const index = state.campaigns.findIndex(camp => camp.id === action.payload.id);
-        if (index !== -1) {
-          state.campaigns[index] = action.payload;
+      updateCampaignInfo: (state, action: PayloadAction<string>) => {
+        console.log('updateCampaignInfo() called with action.payload: ', action.payload);
+        if (state.currentCampaignId !== null) {
+          const index = state.campaigns.findIndex(camp => camp.id === state.currentCampaignId);
+          if (index !== -1) {
+            state.campaigns[index].campaignInfo = action.payload;
+          }
         }
       },
+      updateCharacterSheet: (state, action: PayloadAction<string>) => {
+        console.log('updateCharacterSheet() called with action.payload: ', action.payload);
+        if (state.currentCampaignId !== null) {
+          const index = state.campaigns.findIndex(camp => camp.id === state.currentCampaignId);
+          if (index !== -1) {
+            state.campaigns[index].characterSheet = action.payload;
+          }
+        }
+      },
+      updateFirstScenePlan: (state, action: PayloadAction<string>) => {
+        console.log('updateFirstScenePlan() called with action.payload: ', action.payload);
+        if (state.currentCampaignId !== null) {
+          const index = state.campaigns.findIndex(camp => camp.id === state.currentCampaignId);
+          if (index !== -1) {
+            state.campaigns[index].firstScenePlan = action.payload;
+          }
+        }
+      },  
       deleteCampaign: (state, action: PayloadAction<string>) => {
-        state.campaigns = state.campaigns.filter(camp => camp.id !== action.payload);
+          state.campaigns = state.campaigns.filter(camp => camp.id !== action.payload);
       }
     }
   });
 
-export const { addCampaign, setCampaigns, setSelectedCampaignId, updateCampaign, deleteCampaign } = campaignSlice.actions;
+export const { addCampaign, setCampaigns, setCurrentCampaignId, updateCampaignInfo, updateCharacterSheet, deleteCampaign, updateFirstScenePlan } = campaignSlice.actions;
 export default campaignSlice.reducer;
   

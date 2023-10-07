@@ -21,6 +21,8 @@ export default function ChatHistory() {
     }, []);
 
     return (
-            <RecentChats />
+        <div>
+            <RecentChats height="100%" />
+        </div>
     );
 }

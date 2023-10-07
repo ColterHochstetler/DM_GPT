@@ -1,7 +1,7 @@
 import React, { Suspense, useCallback } from 'react';
 import styled from '@emotion/styled';
 import slugify from 'slugify';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Loader, ScrollArea } from '@mantine/core';
 
@@ -84,7 +84,19 @@ export default function ChatPage(props: any) {
 
     const messagesToDisplay = context.currentChat.messagesToDisplay;
 
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
+
     const shouldShowChat = id && context.currentChat.chat && !!messagesToDisplay.length;
+
+    useEffect(() => {
+        if (scrollAreaRef.current) {
+          scrollAreaRef.current.scrollTo({
+            top: scrollAreaRef.current.scrollHeight,
+            behavior: 'smooth',
+          });
+        }
+      }, [messagesToDisplay]);
+    
 
     return <Page id={id || 'landing'}
         headerProps={{
@@ -118,9 +130,9 @@ export default function ChatPage(props: any) {
                 </Messages>
             }>
                 <Messages> 
-                    <ScrollArea.Autosize id="messages" maxHeight="100%" type="hover">
+                    <ScrollArea.Autosize offsetScrollbars id="messages" maxHeight="100%" type="hover" viewportRef={scrollAreaRef}>
                         {shouldShowChat && (
-                            <div style={{ paddingBottom: '4.5rem' }}>
+                            <div style={{ paddingBottom: '4.5rem'}}>
                                 {messagesToDisplay.map((message) => (
                                     <Message key={id + ":" + message.id}
                                         message={message}

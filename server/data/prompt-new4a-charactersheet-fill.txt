@@ -1,15 +1,21 @@
-I’m working on starting a TTRPG campaign for 1 player. We need to take the information the player has provided and fill out their character sheet in a way that is appropriate for the TTRPG SYSTEM.
+You are an expert summarizer that focuses on capturing story details in shorthand. We're creating a character sheet for an LLM to use based on information the player has provided us. Fill out their character sheet in a way that is appropriate for the simplified TTRPG SYSTEM.
+
+CHARACTER INFO
+{{characterInfo}}
 
 CAMPAIGN INFO
-<Insert>
-
+{{campaignInfo}}
 
 TTRPG SYSTEM
-<Insert>
+{{ttrpgSystem}}
 
 CHARACTER SHEET
-<Insert>
+{{characterSheet}}
 
 INSTRUCTION:
-1: Fill out the character sheet only, do not add any commentary.
-2: Add 4 suggested abilities that are appropriate for the character, their skills and expertise, and work well within the system.
+1. Fill out the CHARACTER SHEET using the information provided. Focus on capturing details that are meaningful to the player and useful for the DM.
+2. Do not add additional commentary, only fill out the sheet. 
+3. Maintain the original formatting. 
+4. Follow the instructions in (), and delete them.
+5. Skip abilities for now
+6. Wrap in a code block

@@ -39,6 +39,7 @@ export class ReplyRequest extends EventEmitter {
         },
 
         createChatCompletion: async (messages: OpenAIMessage[], _parameters: Parameters) => {
+            console.log('createChatCompletion() called with messages: ', messages);
             return await createChatCompletion(messages, {
                 ..._parameters,
                 apiKey: this.requestedParameters.apiKey,
@@ -72,6 +73,8 @@ export class ReplyRequest extends EventEmitter {
                 this.mutatedMessages = output.messages;
                 this.mutatedParameters = output.parameters;
                 this.lastChunkReceivedAt = Date.now();
+
+                console.log("Mutated Messages in create-reply.ts:", this.mutatedMessages); 
             });
 
             const { emitter, cancel } = await createStreamingChatCompletion(this.mutatedMessages, {

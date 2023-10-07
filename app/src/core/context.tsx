@@ -11,8 +11,6 @@ import { TTSContextProvider } from "./tts/use-tts";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { isProxySupported } from "./chat/openai";
 import { audioContext, resetAudioContext } from "./tts/audio-file-player";
-import { Game } from "./game/game";
-
 
 export interface Context {
     authenticated: boolean;
@@ -25,7 +23,7 @@ export interface Context {
     isHome: boolean;
     isShare: boolean;
     generating: boolean;
-    onNewMessage: (message?: string) => Promise<string | false>;
+    onNewMessage: (useNextId?: boolean, message?: string, overrideSavedMessage?: string, overrideParameters?: Parameters) => Promise<string | false>;
     regenerateMessage: (message: Message) => Promise<boolean>;
     editMessage: (message: Message, content: string) => Promise<boolean>;
 }
@@ -34,7 +32,6 @@ const AppContext = React.createContext<Context>({} as any);
 
 const chatManager = new ChatManager();
 const backend = new Backend(chatManager);
-const game = new Game()
 
 let intl: IntlShape;
 
@@ -78,8 +75,11 @@ export function useCreateAppContext(): Context {
         };
     }, [updateAuth]);
 
-    const onNewMessage = useCallback(async (message?: string) => {
+    const onNewMessage = useCallback(
+        async (useNextId = false, message?: string, overrideSavedMessage?: string,  overrideParameters?: Parameters) => {
         resetAudioContext();
+
+        const effectiveId = useNextId ? nextID : id; // 
         
         if (isShare) {
             return false;
@@ -102,7 +102,13 @@ export function useCreateAppContext(): Context {
             temperature: chatManager.options.getOption<number>('parameters', 'temperature', id),
         };
 
-        if (id === nextID) {
+        const mergedParameters = {
+            ...parameters,
+            ...overrideParameters, // this will override values in `parameters` if provided
+            apiKey: openaiApiKey,
+          };
+
+        if (effectiveId === nextID) {
             setNextID(uuidv4());
 
             const autoPlay = chatManager.options.getOption<boolean>('tts', 'autoplay');
@@ -118,16 +124,13 @@ export function useCreateAppContext(): Context {
         }
 
         chatManager.sendMessage({
-            chatID: id,
+            chatID: effectiveId,
             content: message.trim(),
-            requestedParameters: {
-                ...parameters,
-                apiKey: openaiApiKey,
-            },
+            requestedParameters: mergedParameters,
             parentID: currentChat.leaf?.id,
-        }, game);
+        }, overrideSavedMessage);
 
-        return id;
+        return effectiveId;
     }, [dispatch, id, currentChat.leaf, isShare]);
 
     const regenerateMessage = useCallback(async (message: Message) => {
@@ -191,7 +194,7 @@ export function useCreateAppContext(): Context {
                     apiKey: openaiApiKey,
                 },
                 parentID: message.parentID,
-            }, game);
+            });
         } else {
             const id = await chatManager.createChat();
             await chatManager.sendMessage({
@@ -202,7 +205,7 @@ export function useCreateAppContext(): Context {
                     apiKey: openaiApiKey,
                 },
                 parentID: message.parentID,
-            }, game);
+            });
         }
 
         return true;

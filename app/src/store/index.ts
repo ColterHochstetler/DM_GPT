@@ -17,7 +17,7 @@ import sidebarReducer from './sidebar';
 import uiReducer from './ui';
 import campaignReducer from './campaign-slice';
 import titleReducer from './title'
-import newGameSliceReducer from './new-game-slice';
+import newGameSliceReducer  from './new-game-slice';
 import tabReducer from './tabs-slice';
 
 const persistConfig = {

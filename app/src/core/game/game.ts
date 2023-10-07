@@ -28,13 +28,11 @@ import { SummaryAgentBase } from "./agents";
                 const message = messages[i];
 
                 if (message.id === lastMessageSummarizedID) {
-                    console.log('////last summarized ID matched: ', lastMessageSummarizedID)
                     break;
                 }
 
                 recentMessages.push(message);
                 loopCounter++;
-                console.log('loop counter: ', loopCounter)
             }
 
             // Unreverse message order
@@ -49,7 +47,7 @@ import { SummaryAgentBase } from "./agents";
                 backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, this.campaignID, 0, messages[messages.length - 1].id);
                 console.log('Token threshold met, new save id: ', messages[messages.length - 1].id);
 
-                this.summaryAgent.sendAgentMessage(parameters, retrievedSummaries, recentMessages, this.campaignID);
+                this.summaryAgent.sendAgentMessage(parameters, recentMessages, this.campaignID, retrievedSummaries);
             } else {
                 backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, this.campaignID, totalTokensSinceLastSummary, retrievedTokenData?.lastSummarizedMessageID);
 

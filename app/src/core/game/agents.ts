@@ -3,43 +3,22 @@ import { Message, Parameters, OpenAIMessage, getOpenAIMessageFromMessage, Summar
 import { v4 as uuidv4 } from 'uuid';
 import { createChatCompletion } from "../chat/openai";
 
-//agents dont return, everything they do should be handled in postprocessMessage
-abstract class Agent<T> {
-
-    abstract preprocessMessage(messages: Message[], summaries: SummaryMinimal[]): Promise<Message[]>;
-    abstract setParameters(parameters: Parameters): Promise<Parameters> ;
-    abstract postprocessMessage(response: any, initiatingMessage: Message, parameters: Parameters, campaignID: string): any;
-
-
-    async sendAgentMessage(
+//agents return something, but it changes every time!
+export abstract class Agent<T> {
+    abstract sendAgentMessage(
         parameters: Parameters,
-        summaries: SummaryMinimal[],
         messages: Message[],
-        campaignID: string
-    ) {
-        const preprocessedMessage = await this.preprocessMessage(messages, summaries);
-        const setParameters = await this.setParameters(parameters);
+        campaignID: string,
+        summaries?: SummaryMinimal[]
+    ): Promise<any>;
 
-
-
-        try {
-            // Call the doSend function
-            
-            const mutatedMessages = preprocessedMessage.map(m => getOpenAIMessageFromMessage(m));
-            const reply = await createChatCompletion(mutatedMessages, setParameters);
-
-            this.postprocessMessage(reply, messages[messages.length - 1], parameters, campaignID);
-
-        } catch (error) {
-            console.error("Error calling RequestAgentReply for OpenAI API:", error);
-        }
-
-    }
 }
 
 export class SummaryAgentBase extends Agent<any> {
+
+    public getApiReply = createChatCompletion;
     
-        async preprocessMessage(messages: Message[], summaries: SummaryMinimal[]): Promise<Message[]> {
+    async preprocessMessage(messages: Message[], summaries: SummaryMinimal[]): Promise<Message[]> {
         const chatID = messages[messages.length - 1].chatID;
         const date = Date.now();
 
@@ -91,36 +70,80 @@ export class SummaryAgentBase extends Agent<any> {
         console.log('++++++++preprocessMessage called with messages:', processedMessages);
     
         return processedMessages;
-        }
-    
-
-        async setParameters(parameters: Parameters): Promise<Parameters> {
-            parameters.maxTokens = 500;
-            parameters.temperature = 0.2;
-            return parameters;
-        }
+    }
 
 
-        async postprocessMessage(response: string, initiatingMessage: Message, parameters:Parameters, campaignID: string): Promise<void> {
-            console.log('++++++++postprocessMessage called with message:', response);
-    
-            const summaryData: SummaryDetailed = {
-                summaryID: uuidv4(),
-                summary: response,
-                campaignID: campaignID,
-                chatID: initiatingMessage.chatID, 
-                messageIDs: ['msgID1', 'msgID2'], // COMPLETE List of message IDs related to the summary
+    async setParameters(parameters: Parameters): Promise<Parameters> {
+        parameters.maxTokens = 400;
+        parameters.temperature = 0.2;
+        return parameters;
+    }
 
-            };
-    
-            await backend.current?.saveSummary(summaryData);
+    async sendAgentMessage(
+        parameters: Parameters,
+        messages: Message[],
+        campaignID: string,
+        summaries: SummaryMinimal[],
+    ): Promise<any> {
+        const preprocessedMessage = await this.preprocessMessage(messages, summaries);
+        const setParameters = await this.setParameters(parameters);
 
-            const retrievedData = await backend.current?.getSummaries(campaignID, initiatingMessage.chatID);
-        
-            console.log('postprocessMessage retrieved summaries: ', retrievedData);
+        try {
+            // Call the doSend function
+            
+            const mutatedMessages = preprocessedMessage.map(m => getOpenAIMessageFromMessage(m));
+            const reply = await this.getApiReply(mutatedMessages, setParameters);
+
+            return this.postprocessMessage(reply, messages[messages.length - 1], parameters, campaignID);
+
+        } catch (error) {
+            console.error("Error calling RequestAgentReply for OpenAI API:", error);
         }
 
     }
+
+
+    async postprocessMessage(response: string, initiatingMessage: Message, parameters:Parameters, campaignID: string): Promise<string> {
+        console.log('++++++++postprocessMessage called with message:', response);
+
+        const summaryData: SummaryDetailed = {
+            summaryID: uuidv4(),
+            summary: response,
+            campaignID: campaignID,
+            chatID: initiatingMessage.chatID, 
+            messageIDs: ['msgID1', 'msgID2'], // COMPLETE List of message IDs related to the summary
+
+        };
+
+        await backend.current?.saveSummary(summaryData);
+
+        const retrievedData = await backend.current?.getSummaries(campaignID, initiatingMessage.chatID);
+    
+        console.log('postprocessMessage retrieved summaries: ', retrievedData);
+
+        return response;
+    }
+
+}
+
+export class getHiddenReplyAgent extends Agent<any> {
+  
+    async sendAgentMessage(
+        parameters: Parameters,
+        messages: Message[],
+        campaignID: string
+    ): Promise<string> {;
+        try {
+            
+            const mutatedMessages = messages.map(m => getOpenAIMessageFromMessage(m));
+            return await createChatCompletion(mutatedMessages, parameters);
+  
+        } catch (error) {
+            console.error("Error calling RequestAgentReply for OpenAI API:", error);
+            return '';
+        }
+    }
+}
 
 /* 
 export class NarrativeAgentBase extends Agent<any> {

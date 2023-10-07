@@ -27,6 +27,7 @@ export class ChatManager extends EventEmitter {
     private activeReplies = new Map<string, ReplyRequest>();
     private changedIDs = new Set<string>();
     public lastReplyID: string | null = null;
+    public game: Game = new Game();
 
     constructor() {
         super();
@@ -132,7 +133,7 @@ export class ChatManager extends EventEmitter {
         }
     }
 
-    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, game: Game) {
+    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, overrideSavedMessage?: string) {
         const chat = this.doc.getYChat(userSubmittedMessage.chatID);
 
         if (!chat) {
@@ -149,12 +150,26 @@ export class ChatManager extends EventEmitter {
             done: true,
         };
 
-        this.doc.addMessage(message);
+        let messages: Message[] = [];
 
-        const messages: Message[] = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);
-        messages.push(message);
+        if (overrideSavedMessage) {
+            const overriddenMessage = {
+                ...message,
+                content: overrideSavedMessage,
+            };
 
-        game.runLoop(messages,userSubmittedMessage.requestedParameters);
+            this.doc.addMessage(overriddenMessage);;
+            messages.push(message);
+            
+            
+        } else {
+            this.doc.addMessage(message);
+            messages = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);  
+            messages.push(message);
+        }    
+        messages = messages.filter(msg => Boolean(msg.role));
+
+        this.game.runLoop(messages,userSubmittedMessage.requestedParameters);
 
         await this.getReply(messages, userSubmittedMessage.requestedParameters);
     }

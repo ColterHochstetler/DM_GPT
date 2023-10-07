@@ -322,7 +322,6 @@ export class Backend extends EventEmitter {
         console.log("getTextFileContent called with filename: ", filename);
         try {
             const response = await this.get(`${endpoint}/textfile?filename=${filename}`);
-            console.log('Server response:', response);  // Log the entire response
             return response.textContent;
         } catch (e) {
             console.error('Error fetching text file:', e);

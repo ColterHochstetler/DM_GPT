@@ -12,11 +12,14 @@ import { speechRecognition, supportsSpeechRecognition } from '../core/speech-rec
 import { useWhisper } from '@chengsokdara/use-whisper';
 import QuickSettings from './quick-settings';
 import { useOption } from '../core/options/use-option';
+import { useOnSubmit } from '../core/chat/message-submit-helper';
 
 const Container = styled.div`
-    background: #292933;
-    border-top: thin solid #393933;
+
+
     padding: 1rem 1rem 0 1rem;
+
+    border-radius: 12px;
 
     .inner {
         max-width: 50rem;
@@ -60,6 +63,7 @@ export default function MessageInput(props: MessageInputProps) {
     const context = useAppContext();
     const dispatch = useAppDispatch();
     const intl = useIntl();
+    const onSubmitHelper = useOnSubmit(context, false);
 
     const tab = useAppSelector(selectSettingsTab);
 
@@ -75,15 +79,9 @@ export default function MessageInput(props: MessageInputProps) {
     const onSubmit = useCallback(async () => {
         setSpeechError(null);
 
-        const id = await context.onNewMessage(message);
+        onSubmitHelper(message)
 
-        if (id) {
-            if (!window.location.pathname.includes(id)) {
-                navigate('/chat/' + id);
-            }
-            dispatch(setMessage(''));
-        }
-    }, [context, message, dispatch, navigate]);
+    }, [context, message, dispatch, navigate, onSubmitHelper]);
 
     const onSpeechError = useCallback((e: any) => {
         console.error('speech recognition error', e);
@@ -209,7 +207,7 @@ export default function MessageInput(props: MessageInputProps) {
                     <Button variant="subtle" size="xs" compact onClick={() => {
                         context.chat.cancelReply(context.currentChat.chat?.id, context.currentChat.leaf!.id);
                     }}>
-                        <FormattedMessage defaultMessage={"Cancel"} description="Label for the button that can be clicked while the AI is generating a response to cancel generation" />
+                        <FormattedMessage defaultMessage={"Stop"} description="Label for the button that can be clicked while the AI is generating a response to cancel generation" />
                     </Button>
                     <Loader size="xs" style={{ padding: '0 0.8rem 0 0.5rem' }} />
                 </>)}

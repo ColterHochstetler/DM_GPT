@@ -20,12 +20,24 @@ const SROnly = styled.span`
 `;
 
 const Container = styled.div`
+    &.by-user, &.by-assistant {
+        transition: background-color 0.3s ease; // Add this line
+    }
+
     &.by-user {
-        background: #22232b;
+        background: #22222270;
+        border-radius: 15px;
+        &:hover {
+            background: #222222CC;
+        }
     }
 
     &.by-assistant {
-        background: #292933;
+        background: #222222CC;
+        border-radius: 15px;
+        &:hover {
+            background: #222222EE;
+        }
     }
 
     &.by-assistant + &.by-assistant, &.by-user + &.by-user {
@@ -53,7 +65,7 @@ const Container = styled.div`
         max-width: 100%;
 
         * {
-            color: white;
+            color: #dddddd;
         }
 
         p, ol, ul, li, h1, h2, h3, h4, h5, h6, img, blockquote, &>pre {
@@ -124,7 +136,6 @@ const Container = styled.div`
         font-family: "Work Sans", sans-serif;
         font-size: 0.8rem;
         font-weight: 400;
-        opacity: 0.6;
         max-width: 50rem;
         margin-bottom: 0.0rem;
         margin-right: -0.5rem;
@@ -159,6 +170,15 @@ const Container = styled.div`
         }
     }
 
+    .metadata > *:not(.exclude-from-hover) {
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+      
+      &:hover .metadata > *:not(.exclude-from-hover) {
+        opacity: 1;
+    }
+
     .fa {
         margin-right: 0.5em;
         font-size: 85%;
@@ -189,6 +209,7 @@ const Editor = styled.div`
     margin-left: auto;
     margin-right: auto;
     margin-top: 0.5rem;
+    border-radius: 10px;
 
     .mantine-Button-root {
         margin-top: 1rem;
@@ -204,6 +225,7 @@ function InlineLoader() {
         }} />
     );
 }
+
 
 export default function MessageComponent(props: { message: Message, last: boolean, share?: boolean }) {
     const context = useAppContext();
@@ -225,7 +247,7 @@ export default function MessageComponent(props: { message: Message, last: boolea
                 }
                 break;
             case 'assistant':
-                return intl.formatMessage({ id: 'role-chatgpt', defaultMessage: 'ChatGPT', description: "Label that is shown above messages written by the AI (as opposed to the user)" });
+                return intl.formatMessage({ id: 'role-chatgpt', defaultMessage: 'DM_GPT', description: "Label that is shown above messages written by the AI (as opposed to the user)" });
             case 'system':
                 return intl.formatMessage({ id: 'role-system', defaultMessage: 'System', description: "Label that is shown above messages inserted into the conversation automatically by the system (as opposed to either the user or AI)" });
             default:
@@ -242,16 +264,18 @@ export default function MessageComponent(props: { message: Message, last: boolea
             <Container className={"message by-" + props.message.role}>
                 <div className="inner">
                     <div className="metadata">
-                        <span>
-                            <strong>
-                                {getRoleName(props.message.role, props.share)}{props.message.model === 'gpt-4' && ' (GPT 4)'}<SROnly>:</SROnly>
-                            </strong>
-                            {props.message.role === 'assistant' && props.last && !props.message.done && <InlineLoader />}
-                        </span>
-                        <TTSButton id={props.message.id}
-                            selector={'.content-' + props.message.id}
-                            complete={!!props.message.done}
-                            autoplay={props.last && context.chat.lastReplyID === props.message.id} />
+                        <div className="exclude-from-hover">
+                            <span>
+                                <strong style={{color: "#ccc"}}>
+                                    {getRoleName(props.message.role, props.share)}{props.message.model === 'gpt-4' && ' (GPT 4)'}<SROnly>:</SROnly>
+                                </strong>
+                                {props.message.role === 'assistant' && props.last && !props.message.done && <InlineLoader />}
+                            </span>
+                            <TTSButton id={props.message.id}
+                                selector={'.content-' + props.message.id}
+                                complete={!!props.message.done}
+                                autoplay={props.last && context.chat.lastReplyID === props.message.id} />
+                        </div>
                         <div style={{ flexGrow: 1 }} />
                         <CopyButton value={props.message.content}>
                             {({ copy, copied }) => (

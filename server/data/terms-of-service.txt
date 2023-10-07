@@ -1,0 +1,149 @@
+
+Acceptance of Terms
+
+1.  Method of Acceptance: Your explicit agreement to these terms will be indicated by clicking on a button labeled "I Accept" when attempting to play DM_GPT.
+
+2.  Non-Acceptance and Authorization: If you do not agree to the terms of this EULA, you are not authorized to use DM_GPT and must cease all access and use of it.
+
+3.  Age Requirement: By clicking "I Accept," you represent that you are of the age of majority in your jurisdiction or the jurisdiction in which PixiePlot Games is registered, whichever is applicable in your jurisdiction.
+
+4.  Amendments and Updates: We reserve the right, at our sole discretion, to modify or replace this EULA at any time. If a revision is material, you will be notified via an updated EULA presented to you when you attempt to play DM_GPT. You will be required to click "I Accept" on the updated EULA to continue using the game.
+
+5.  Other Governing Policies: Your use of DM_GPT is also governed by DM_GPT's Privacy Policy, which is incorporated into this EULA by reference.
+
+6.  User Responsibility: It is your responsibility to read, understand, and keep a copy of this EULA. We encourage you to keep a copy of this EULA for your records. Ensure that you read this document carefully before clicking "I Accept."
+
+7.  Applies to Source Code: If you access and run the source code of this app it will count as an agreement to the terms.
+
+----------------------------
+
+Prohibited Uses
+
+1.  General: By using DM_GPT, you agree to refrain from engaging in these prohibited activities. Failure to comply may result in immediate termination of your access to DM_GPT, revocation of any licenses granted, and further legal action.
+
+2.  Unauthorized Redistribution: You may not distribute or commercialize DM_GPT without the explicit permission of PixiePlot Games, as stated in Section 3.11.
+
+3.  Intellectual Property Violations: Failure to respect the intellectual property rights, including the use of technology facilitating communication between the player and the LLM in a manner not authorized by this EULA, will result in the termination of your license.
+
+4.  Exploits and Cheating: Engaging in cheating, data mining, exploiting bugs, or any form of unauthorized intervention in the game is prohibited.
+
+5.  Harmful Conduct: Activities such as hate speech, harassment, bullying, and collecting personally identifiable information from other users are strictly prohibited.
+
+6.  User-Generated Content Guidelines: User-Generated Content must adhere to guidelines prohibiting hate speech and the use of copyrighted material. Failure to adhere to these guidelines will result in appropriate action, as specified in Sections 5.25 and 5.26.
+
+7.  Improper Use of Third-Party Software: The use of the LLM in a manner not in accordance with its terms of service or without obtaining an API key from the LLM's provider is prohibited, as stated in Section 7.
+
+8.  Automation Software: The use of bots, automated scripts, or any other automation software to interact with DM_GPT is strictly prohibited, as mentioned in Section 4.16.
+
+----------------------------
+
+Intellectual Property Rights
+
+1.  Ownership: All intellectual property rights in and to DM_GPT, including but not limited to its software, text, and graphics, are owned solely by PixiePlot Games. Future ownership may extend to co-operative members, as determined by PixiePlot Games' organizational structure.
+
+2.  Scope of License: You are granted a non-transferable, non-exclusive, revocable license for personal use of DM_GPT . Users are allowed to create derivative works such as fan fiction, walkthroughs, and "Let's Play" videos.
+
+3.  User Contributions: User-generated content like posts and play behavior are the property of the individual users. However, any suggestions for software improvement provided by users may be used by PixiePlot Games for any purpose, including commercial uses. User-generated content must adhere to guidelines prohibiting hate speech and the use of copyrighted material.
+
+4.  Violations: Failure to adhere to these intellectual property guidelines will result in the termination of your license to use  DM_GPT. Further legal action may also be considered at the discretion of PixiePlot Games.
+
+5.  Third-Party Rights: Certain elements of DM_GPT, such as the Large Language Model (LLM), may be the property of third-party licensors. Any liabilities or warranties related to the LLM are covered under its respective license, for which a link is provided here: [Open AI User Licenses Agreement Link]
+
+6.  No Assurances or Warranties for Third-Party Elements:\
+    PixiePlot Games makes no assurances or warranties about what the Large Language Model (LLM) will produce. All liabilities associated with the LLM are the responsibility of its respective license holder.
+
+----------------------------
+
+License Grant 
+
+1.  Scope of License: PixiePlot Games grants you a non-transferable, non-exclusive, revocable license to access and use DM_GPT for personal, non-commercial purposes only.
+
+2.  Technical Limitations: You may access DM_GPT  from up to 4 devices simultaneously. The use of bots, automated scripts, or any other automation software to interact with DM_GPT is strictly prohibited.
+
+3.  Duration of License: The license is effective until terminated by either you or PixiePlot Games. Your rights under this license will be terminated automatically without notice from PixiePlot Games if you fail to comply with any term(s) of this EULA.
+
+4.  Reservation of Rights: All rights not expressly granted to you in this EULA are reserved by PixiePlot Games.
+
+--------------------------------------
+
+User-Generated Content & Contributions  
+
+1.  Definitions: For the purpose of this EULA, "User-Generated Content" refers to all text-based content, including but not limited to play-by-post interactions and prompts for the large language model acting as Dungeon Master, submitted or otherwise contributed by users of DM_GPT.
+
+2.  Ownership & Licensing: By submitting User-Generated Content to DM_GPT, you grant PixiePlot Games a worldwide, non-exclusive, royalty-free, perpetual, sublicensable license to use, reproduce, modify, adapt, publish, and distribute such content in any and all media or distribution methods. This license also extends to contributions that may influence future projects developed by PixiePlot Games.
+
+3.  Use of Contributions: All User-Generated Content may be used by PixiePlot Games for any purpose, including but not limited to development, production, and marketing of current or future versions of DM_GPT and other related projects.
+
+4.  No Compensation for Contributions: You acknowledge that you will not receive any form of compensation, monetary or otherwise, for your User-Generated Content.
+
+5.  No Confidentiality: Given that the playtesting process is public and non-confidential, any User-Generated Content you contribute will be considered non-confidential and non-proprietary and may be viewed by other users of DM_GPT or the public.
+
+6.  User Responsibility: You are solely responsible for your own User-Generated Content and the consequences of submitting them to DM_GPT. Your interactions must comply with our guidelines on Prohibited Uses, as specified in Section 4.4 of this EULA.
+
+---------------------
+
+User Data and Privacy
+
+1.  Data Collection: We collect various types of information from users, including email addresses, passwords, api keys, usage rates and times, as well as saved posts and prompts.
+
+2.  Data Usage: The collected data is used for game development, tracking progression, and analytics. Additionally, users can choose to share their experiences, including their saved posts and prompts.
+
+3.  Data Storage and Security: User data is stored on third-party servers. As we are in the early stages of development, we do not currently have specific security measures in place. Users should be aware that their data is not secured and proceed with caution.
+
+4.  Data Sharing: We do not share user data with third parties, except for the Large Language Model (LLM), which will receive all prompt and post data. This is necessary for the the LLM to act as the DM for you. The usage of the LLM is governed under its company's EULA.
+
+5.  User Rights: Users have the right to delete individual playthroughs and their accounts. Beyond this, no other data management options will be provided at this time.
+
+6.  Data Retention: We reserve the right to delete user data at any time, which may frequently occur throughout the development phase.
+
+7.  Cookies and Tracking: Cookies are used only for essential functions, such as user login.
+
+8.  Compliance with Laws: Playtesters from jurisdictions that do not find these data practices acceptable should not use the product and are not eligible for playtesting.
+
+9.  Changes to Data Practices: Changes to our data collection and usage practices will be announced via updates to this EULA.
+
+-----------------------------------------
+
+Third-Party Limited Liability Model (LLM)
+
+1.  Third-Party Software Acknowledgment: The game incorporates a third-party Limited Liability Model (LLM) that serves multiple functions, including acting as a virtual "dungeon master" and dynamically generating elements of the game world. This LLM is crucial to the core functionality of the game.
+
+2.  User Interaction and Requirements: Users will interact directly with a component of the LLM known as the "Storyteller," as well as experience background functionalities that enrich the game world. To use the LLM, users are required to obtain an API key from the LLM's provider and agree to their separate terms of service.
+
+3.  No Warranties for Third-Party Software: PixiePlot Games makes no warranties, express or implied, with respect to the performance, reliability, or functionality of the LLM. The LLM is provided "as-is."
+
+4.  Updates to Third-Party Software: Users are responsible for staying updated on any changes or updates to the LLM's terms of service or functionality. PixiePlot Games is not responsible for notifying users of such changes and holds no liability for any impact these changes may have.
+
+5.  Liability Shift: Any liabilities, issues, or malfunctions associated with the LLM are the sole responsibility of the third-party provider. For further details, users should refer to the LLM provider's own terms of service or license agreement.
+
+6.  User Responsibilities and Financial Transactions: Users are responsible for any fees associated with the use of the LLM, which are billed directly by the LLM's provider via the user's API key. PixiePlot Games holds no responsibility for these fees and has no involvement in the financial transactions between the LLM provider and the user.
+
+7.  Limitation on Claims: PixiePlot Games will not be held responsible for any damages, legal claims, or other issues that may arise from the use or malfunction of the LLM.
+
+8.  No Third-Party Beneficiaries: The third-party provider of the LLM is not a third-party beneficiary to this EULA and has no rights against PixiePlot Games or the user with respect to the use or malfunction of the LLM.
+
+----------------------------
+
+Termination
+
+1.  Termination by User: Users can terminate this agreement at any time by ceasing to use the game and deleting their accounts, if applicable. Consequences of termination may include loss of access to saved games or in-game purchases.
+
+2.  Termination by PixiePlot Games: PixiePlot Games reserves the right to terminate a user's license for any violation of this EULA, either immediately or at a later time. Upon termination, users will find their accounts inaccessible.
+
+3.  Effect of Termination: Upon termination, all data related to the terminated account will be deleted, except for data necessary for legal protections as determined by PixiePlot Games.
+
+4.  Survival: Certain sections of this EULA, as specified elsewhere in this document, will continue to apply even after termination.
+
+----------------------------
+
+Future Monetization
+
+1.  Introduction of Paid Features: PixiePlot Games reserves the right to introduce paid features or content at any time. This may include the availability of purchase options or premium subscription services to unlock additional features. Existing features become premium features. Existing users will need to pay the premium price for features previously free.
+
+2.  Subscription Services: If subscription services are introduced, further details will be provided at that time.
+
+3.  Changes in Pricing: PixiePlot Games reserves the right to alter the pricing of any existing or new paid features or services, with a notice period of at least two weeks to all users.
+
+4.  Refund Policy: The refund policy for any paid services or features will be determined at a later date.
+
+5.  Grandfather Clause: Existing users will not be grandfathered into any new pricing structure; all users will be subject to the new pricing model upon its implementation.
