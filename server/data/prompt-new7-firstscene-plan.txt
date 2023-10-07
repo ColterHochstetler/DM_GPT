@@ -9,10 +9,71 @@ CHARACTER SHEET
 SCENE TEASER
 {{firstSceneSeed}}
 
-Using the above information, craft a scene plan that fills out each section:
+Using the above information, to fills out the Scene Plan below. Using markdown and bullet points to organize it. Keep things open ended, suggesting interesting possibilities.
+ everything in ().
 
-1. Conflict/Mystery Enhancement: This section should refine the conflict or mystery in the SCENE TEASER to better leverage the information in the campaign. It should also adjust the intensity of the mystery to match the genre and tone and the player's request. It should not revolve around the player's current intentions or immediate actions. Focus on external elements for the player to discover.
-2. Heightening and Path to Resolution: a list of 3 ways the conflict or mystery could heighten in response to player actions. These should be varied, and be connected to the character or world. Each heightening should end with 2 teasers. These teasers outline the journey or investigation the player may need to undertake to resolve it.
-3. Scenario Suggestions: A list of 6 scenarios the player might encounter as they play through the scene. These scenarios should be open ended, maximizing player agency. They should align with the tone and genre, and cover a range of difficulties. They can be puzzles, allies arriving and bringing dramatic news, antagonists looking for the player to confront them, a new faction arriving to stir the pot, a spy sneaking in, etc. Get creative with it.
-4. Additional Plot Hooks: A list of concise plot hooks that the player can encounter. Each hook should contain two parts: the immediate scenario the player faces and the larger plot or mystery it hints at. This larger plot should escalate, making things more personal for the player than the hook implied. These plot hooks should build on the Scene Teaser, and feel organic.
+
+SCENE PLAN INSTRUCTION
+How to write this section: It should not revolve around the player's current intentions or immediate actions. Focus on external elements for the player to discover.
+# Conflict and/or Mysteries:
+- (Improved conflict/mystery 1)
+  - (Possible way to resolve 1)
+  - (Possible way to resolve 2)
+  - (Possible way to resolve 3)
+- (Improved conflict/mystery 2)
+
+# Possible Scenarios to encounter:
+How to write this section: A list of 4 scenarios the player might encounter as they play through the scene. These scenarios should be open ended, maximizing player agency. They should align with the tone and genre, and cover a range of difficulties. They can be puzzles, allies arriving and bringing dramatic news, antagonists looking for the player to confront them, a new faction arriving to stir the pot, a spy sneaking in, etc. Get creative with it.
+
+# Plot Hooks
+A list of concise plot hooks that the player can encounter. A plot hook should be optional, and have something to catch the interest of the player related to interesting parts of the world, the player or their past, or their goals. 
+Each Hook contains:
+- the hook summary
+- The larger mystery or conflict that this hook is a part of
+- A list of Characters Involved, and their personal goals and why they're involved who, scenario the player faces and the larger plot or mystery it hints at. This larger plot should escalate, making things more personal for the player than the hook implied. These plot hooks should build on the Scene Teaser, and feel organic.
+- A list Difficulties in discoveing the larger mystery/conflict. These are interesting challenges for the player to overcome, or secrets they might find to help make the larger plot clear. The goal is to make discovering the large plot difficult, with lots of interesting ways to do it, making it feel both earned and open ended.
+# Scene Setting
 5. Scene Setting: A description of the scene's location. This should contain several interesting things to interact with that are appropriate to the genre. It should also include 3 compelling descriptions that serve the conflict or mystery, or additional plot hooks."
+
+SCENE PLAN FORM:
+# Location
+- Where:
+- How the character got here:
+
+# Main Conflict and/or Mysteries:
+Description:
+
+# Plot Hooks:
+1. Hook summary:
+ - Larger Conflict:
+ - Characters Involved:
+   1. Name: Involvement: Goals:
+   2. Name: Involvement: Goals:
+   ...
+ - Difficulties in discovering the larger mystery/conflict:
+  1.
+  2. 
+  3. 
+ - Things in the scene related to the plot:
+  1. Thing: Relation:
+  1. Thing: Relation:
+  ...
+1. Immediate Scenario:
+ - Larger Conflict:
+  - Characters Involved:
+   1. Name: Involvement:
+   2. Name: Involvement:
+   ...
+ - Difficulties in discovering the larger mystery:
+  1.
+  2. 
+  3. 
+ - Things in the scene related to the plot:
+  1. Thing: Relation:
+  1. Thing: Relation:
+  ...
+...
+
+# Scene Description:
+- Mood and feel:
+- Sounds and smells:

@@ -29,13 +29,14 @@ const Banner = styled.div`
 `;
 
 const HeaderContainer = styled.div`
+    box-sizing: border-box;
     width: 100%;
     margin: 0 auto;
     display: flex;
     flex-shrink: 0;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 2rem;
+    gap: .1rem;
+    padding: .8rem .8rem;
     min-height: 2.618rem;
     background: rgba(0, 0, 0, 0.0);
     font-family: "Work Sans", sans-serif;
@@ -51,16 +52,11 @@ const HeaderContainer = styled.div`
         }
 
         font-family: "Work Sans", sans-serif;
-        font-size: 1rem;
+        font-size: 1.2rem;
         line-height: 1.3;
 
         animation: fadein 0.5s;
         animation-fill-mode: forwards;
-
-        strong {
-            font-weight: bold;
-            white-space: nowrap;
-        }
 
         span {
             display: block;
