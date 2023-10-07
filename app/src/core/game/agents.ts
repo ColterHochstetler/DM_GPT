@@ -74,8 +74,8 @@ export class SummaryAgentBase extends Agent<any> {
 
 
     async setParameters(parameters: Parameters): Promise<Parameters> {
-        parameters.maxTokens = 400;
-        parameters.temperature = 0.2;
+        parameters.maxTokens = 250;
+        parameters.temperature = 0.3;
         return parameters;
     }
 

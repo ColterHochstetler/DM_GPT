@@ -23,7 +23,7 @@ export class ReplyRequest extends EventEmitter {
                 private requestedParameters: Parameters,
                 private pluginOptions: OptionsManager) {
         super();
-        this.mutatedMessages = [...messages]; //CLEANNESS: is this redundant?
+        this.mutatedMessages = [...messages];
         this.mutatedMessages = messages.map(m => getOpenAIMessageFromMessage(m));
         this.mutatedParameters = { ...requestedParameters };
         delete this.mutatedParameters.apiKey;

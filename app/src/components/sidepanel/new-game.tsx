@@ -266,6 +266,8 @@ export default function NewGame() {
         try {
             //ADD setting up a new campaign an ID in redux. Maybe don't store it in the backend until process is done
             triggerNewChat();
+            context.setNarrativeMode(false);
+            console.log("++ calling start new game, narrative mode set to false");
             const storySeedPrompt = await getGenerateStorySeedsPrompt()
             await submitChatMessageStorySeeds(storySeedPrompt)
             dispatch(initializeSteps());
@@ -387,7 +389,8 @@ export default function NewGame() {
     };
 
     const handleLaunchClick = async () => {
-        
+        context.setNarrativeMode(true);
+        console.log("++ calling start new game, narrative mode set to true");
         const firstScenePlanPrompt: string = await generateFirstSceneIntro(context, currentCharacterSheet, currentCampaignInfo, stepsStatus[5].value)
         console.log("++ calling submitChatMessageFirstScenePlan: ", firstScenePlanPrompt);
         

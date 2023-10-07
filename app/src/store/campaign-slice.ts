@@ -11,6 +11,7 @@ type Campaign = {
 type CampaignState = {
     campaigns: Campaign[];          // Array of campaigns
     currentCampaignId: string | null; // ID of the currently selected campaign
+    isNarrativeMode: boolean;
 };
 
 const initialState: CampaignState = {
@@ -23,6 +24,7 @@ const initialState: CampaignState = {
     }
   ],
   currentCampaignId: 'defaultCampaignId',
+  isNarrativeMode: false,
 };
 
 export const selectCampaigns = (state: { campaign: CampaignState }) => state.campaign.campaigns;
@@ -52,7 +54,8 @@ export const selectCurrentFirstScenePlan = createSelector(
   }
 );
 
-  
+export const selectIsNarrativeMode = (state: { campaign: CampaignState }) => state.campaign.isNarrativeMode;
+
 
 
 const campaignSlice = createSlice({
@@ -95,12 +98,15 @@ const campaignSlice = createSlice({
           }
         }
       },  
+      setIsNarrativeMode: (state, action: PayloadAction<boolean>) => {
+        state.isNarrativeMode = action.payload;
+      },
       deleteCampaign: (state, action: PayloadAction<string>) => {
           state.campaigns = state.campaigns.filter(camp => camp.id !== action.payload);
       }
     }
   });
 
-export const { addCampaign, setCampaigns, setCurrentCampaignId, updateCampaignInfo, updateCharacterSheet, deleteCampaign, updateFirstScenePlan } = campaignSlice.actions;
+export const { addCampaign, setCampaigns, setCurrentCampaignId, updateCampaignInfo, updateCharacterSheet, deleteCampaign, updateFirstScenePlan, setIsNarrativeMode  } = campaignSlice.actions;
 export default campaignSlice.reducer;
   

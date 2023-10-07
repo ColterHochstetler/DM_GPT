@@ -133,9 +133,9 @@ export class ChatManager extends EventEmitter {
         }
     }
 
-    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, overrideSavedMessage?: string, customSystemMessage?: string) {
+    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, overrideSavedMessage?: string, isNarrativeMessage: boolean = false, customSystemMessage?: string) {
         const chat = this.doc.getYChat(userSubmittedMessage.chatID);
-
+        console.log("core/index.sendMessage called with narrativeMode: ", isNarrativeMessage);
         if (!chat) {
             throw new Error('Chat not found');
         }
@@ -181,9 +181,15 @@ export class ChatManager extends EventEmitter {
             messages = [...messages, ...previousMessages, message];
         }    
 
+
         messages = messages.filter(msg => Boolean(msg.role));
 
         this.game.runLoop(messages,userSubmittedMessage.requestedParameters);
+
+        if (isNarrativeMessage){
+            messages = await this.game.prepNarrativeMessages(messages);
+            userSubmittedMessage.requestedParameters.maxTokens = 300;
+        }
 
         await this.getReply(messages, userSubmittedMessage.requestedParameters);
     }

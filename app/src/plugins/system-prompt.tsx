@@ -43,17 +43,27 @@ export class SystemPromptPlugin extends Plugin<SystemPromptPluginOptions> {
     }
 
     async preprocessModelInput(messages: OpenAIMessage[], parameters: Parameters): Promise<{ messages: OpenAIMessage[]; parameters: Parameters; }> {
-        
-        const hasSystemRole = messages.some(message => message.role === 'system');
     
+        const hasSystemRole = messages.some(message => message.role === 'system');
+        
         if (hasSystemRole) {
-            console.log('System prompt already exists, skipping');
+            console.log('System prompt already exists, appending to it.');
+            
+            // Loop through messages to find and update the system message
+            for (let i = 0; i < messages.length; i++) {
+                if (messages[i].role === 'system') {
+                    messages[i].content += '\n' + (this.options?.systemPrompt || defaultSystemPrompt)
+                        .replace('{{ datetime }}', new Date().toLocaleString());
+                    break;  // Exit loop once we've found and updated the system message
+                }
+            }
+            
             return {
                 messages,
                 parameters,
             };
         }
-    
+        
         const output = [
             {
                 role: 'system',
@@ -62,10 +72,10 @@ export class SystemPromptPlugin extends Plugin<SystemPromptPluginOptions> {
             },
             ...messages,
         ];
-    
+        
         return {
             messages: output,
             parameters,
         };
-    }
+    }    
 }

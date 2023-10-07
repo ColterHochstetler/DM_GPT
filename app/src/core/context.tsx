@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { IntlShape, useIntl } from "react-intl";
 import { Backend, User } from "./backend";
 import { ChatManager } from "./";
-import { useAppDispatch } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import { openOpenAIApiKeyPanel } from "../store/settings-ui";
 import { Message, Parameters } from "./chat/types";
 import { useChat, UseChatResult } from "./chat/use-chat";
@@ -11,6 +11,7 @@ import { TTSContextProvider } from "./tts/use-tts";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { isProxySupported } from "./chat/openai";
 import { audioContext, resetAudioContext } from "./tts/audio-file-player";
+import { selectIsNarrativeMode, setIsNarrativeMode } from "../store/campaign-slice";
 
 export interface Context {
     authenticated: boolean;
@@ -23,9 +24,13 @@ export interface Context {
     isHome: boolean;
     isShare: boolean;
     generating: boolean;
+    campaignId: string; 
+    isNarrativeMode: boolean;
     onNewMessage: (useNextId?: boolean, message?: string, overrideSavedMessage?: string, overrideParameters?: Parameters) => Promise<string | false>;
     regenerateMessage: (message: Message) => Promise<boolean>;
     editMessage: (message: Message, content: string) => Promise<boolean>;
+    setCampaignId: (id: string) => void;
+    setNarrativeMode: (isNarrative: boolean) => void;
 }
 
 const AppContext = React.createContext<Context>({} as any);
@@ -51,6 +56,20 @@ export function useCreateAppContext(): Context {
     const currentChat = useChat(chatManager, id, isShare);
     const [authenticated, setAuthenticated] = useState(backend?.isAuthenticated || false);
     const [wasAuthenticated, setWasAuthenticated] = useState(backend?.isAuthenticated || false);
+
+    const [campaignId, setCampaignId] = useState<string>("default_campaign");
+    const [isNarrativeMode, setNarrativeMode] = useState<boolean>(false);
+    
+    const reduxIsNarrativeMode = useAppSelector(selectIsNarrativeMode); // Assuming useAppSelector is your useSelector hook
+    
+    const setAndPersistNarrativeMode = (isNarrative: boolean) => {
+        setNarrativeMode(isNarrative);
+        dispatch(setIsNarrativeMode(isNarrative));
+    };
+
+    useEffect(() => {
+        setNarrativeMode(reduxIsNarrativeMode);
+      }, [reduxIsNarrativeMode]);
 
     useEffect(() => {
         chatManager.on('y-update', update => backend?.receiveYUpdate(update))
@@ -128,7 +147,7 @@ export function useCreateAppContext(): Context {
             content: message.trim(),
             requestedParameters: mergedParameters,
             parentID: currentChat.leaf?.id,
-        }, overrideSavedMessage);
+        }, overrideSavedMessage, isNarrativeMode);
 
         return effectiveId;
     }, [dispatch, id, currentChat.leaf, isShare]);
@@ -226,10 +245,14 @@ export function useCreateAppContext(): Context {
         isHome,
         isShare,
         generating,
+        campaignId,
+        isNarrativeMode,
+        setCampaignId,
         onNewMessage,
         regenerateMessage,
         editMessage,
-    }), [authenticated, wasAuthenticated, generating, onNewMessage, regenerateMessage, editMessage, currentChat, id, isHome, isShare, intl]);
+        setNarrativeMode: setAndPersistNarrativeMode,
+    }), [authenticated, wasAuthenticated, generating, onNewMessage, regenerateMessage, editMessage, currentChat, id, isHome, isShare, intl, campaignId, isNarrativeMode, setAndPersistNarrativeMode]);
 
     return context;
 }
