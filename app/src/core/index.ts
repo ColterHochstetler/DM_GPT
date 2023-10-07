@@ -133,7 +133,7 @@ export class ChatManager extends EventEmitter {
         }
     }
 
-    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, overrideSavedMessage?: string) {
+    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, overrideSavedMessage?: string, customSystemMessage?: string) {
         const chat = this.doc.getYChat(userSubmittedMessage.chatID);
 
         if (!chat) {
@@ -151,22 +151,36 @@ export class ChatManager extends EventEmitter {
         };
 
         let messages: Message[] = [];
+        
+        if (customSystemMessage){
+            const systemMessage ={
+                id: uuidv4(),
+                parentID: userSubmittedMessage.parentID,
+                chatID: userSubmittedMessage.chatID,
+                timestamp: Date.now(),
+                role: 'system',
+                content: customSystemMessage,
+                done: true,
+            }
 
-        if (overrideSavedMessage) {
+            messages.push(systemMessage);
+        }
+
+        if (overrideSavedMessage) { //Can be replaced by custom system message? Think of remaining use cases
             const overriddenMessage = {
                 ...message,
                 content: overrideSavedMessage,
             };
 
-            this.doc.addMessage(overriddenMessage);;
+            this.doc.addMessage(overriddenMessage);
             messages.push(message);
-            
             
         } else {
             this.doc.addMessage(message);
-            messages = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);  
-            messages.push(message);
+            const previousMessages = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);  
+            messages = [...messages, ...previousMessages, message];
         }    
+
         messages = messages.filter(msg => Boolean(msg.role));
 
         this.game.runLoop(messages,userSubmittedMessage.requestedParameters);

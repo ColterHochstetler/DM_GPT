@@ -43,6 +43,17 @@ export class SystemPromptPlugin extends Plugin<SystemPromptPluginOptions> {
     }
 
     async preprocessModelInput(messages: OpenAIMessage[], parameters: Parameters): Promise<{ messages: OpenAIMessage[]; parameters: Parameters; }> {
+        
+        const hasSystemRole = messages.some(message => message.role === 'system');
+    
+        if (hasSystemRole) {
+            console.log('System prompt already exists, skipping');
+            return {
+                messages,
+                parameters,
+            };
+        }
+    
         const output = [
             {
                 role: 'system',
@@ -51,7 +62,7 @@ export class SystemPromptPlugin extends Plugin<SystemPromptPluginOptions> {
             },
             ...messages,
         ];
-
+    
         return {
             messages: output,
             parameters,
