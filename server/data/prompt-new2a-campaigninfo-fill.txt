@@ -28,4 +28,4 @@ Here's their character concept:
 
 {{characterSeed}}
 
-Fill out the form using that information provided.  Provide a short, intrguiging or exciting suggestions for each category that matches the tone, content, or desires the player has provided. Blend belove classic tropes with wild new twists. Only fill out the form, don't provide any affirmations or commentary. Don't use Markdown.
+Fill out the form using that information provided.  Provide a short, intrguiging or exciting suggestions for each category that matches the tone, content, or desires the player has provided. Blend belove classic tropes with wild new twists. Only fill out the form, don't provide any affirmations or commentary. Use markdown.

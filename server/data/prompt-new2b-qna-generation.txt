@@ -12,4 +12,14 @@ Then include this 6th question: 'What kind of tone should the first scene have? 
 
 Do not add any extra commentary beyond the questions.
 
-Each questions should start with a "Q:" and have 2 line breaks after the question.
+Output should look like this:
+
+# Questions
+
+Q: {{question 1}}
+
+A:
+
+Q: {{question 2}}
+
+A: 

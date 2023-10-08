@@ -270,7 +270,7 @@ export default function NewGame() {
             console.log("++ calling start new game, narrative mode set to false");
             const storySeedPrompt = await getGenerateStorySeedsPrompt()
             dispatch(updateSystemMessage(storySeedPrompt))
-            await submitChatMessageStorySeeds('Generate the teasers for the user.')
+            await submitChatMessageStorySeeds('Generate the teasers for the user.', storySeedPrompt)
             dispatch(initializeSteps());
     
         } catch (error) {
@@ -364,7 +364,8 @@ export default function NewGame() {
                     //prep for step 6, abilities. Data stored on redux index 5.
                     dispatch(updateCharacterSheet(value))
                     try {
-                        const abilitiesPrompt: string = await getAbilitiesPrompt(currentCharacterSheet, currentCampaignInfo);
+                        console.log ("++ currentCharacterSheet: ", value);
+                        const abilitiesPrompt: string = await getAbilitiesPrompt(value, currentCampaignInfo);
                         dispatch(updateSystemMessage(abilitiesPrompt))
                         await submitChatMessageAbilities("Begin!", abilitiesPrompt);
                     } catch (error) {
@@ -399,11 +400,12 @@ export default function NewGame() {
     };
 
     const handleLaunchClick = async () => {
-        context.setNarrativeMode(true);
+
         console.log("++ calling start new game, narrative mode set to true");
         const firstScenePlanPrompt: string = await generateFirstSceneIntro(context, currentCharacterSheet, currentCampaignInfo, stepsStatus[5].value)
         console.log("++ calling submitChatMessageFirstScenePlan: ", firstScenePlanPrompt);
         dispatch(updateSystemMessage(firstScenePlanPrompt))
+        context.setNarrativeMode(true);
         submitChatMessageFirstScenePlan("Begin! Make sure to end with with a list of 4 actions for the player to consider.", firstScenePlanPrompt);
         dispatch(resetToBeginning());
     }

@@ -6,6 +6,7 @@ import { updateCampaignInfo, selectCurrentCampaignInfo, updateCharacterSheet, se
 import { useAppSelector } from "../../store";
 import { v4 as uuidv4 } from 'uuid';
 
+
 export class Game { 
     summaryAgent: SummaryAgentBase; 
     summaryTokenThreshold: number = 800;
@@ -69,24 +70,32 @@ export class Game {
     async prepNarrativeMessages(messages: Message[]): Promise<Message[]> {
         let retrievedSummaries: SummaryMinimal[] = [];
         let recentSummaries: string = "";
+        let ttrpgSystem: string = "";
+
+        console.log('88 prepNarrativeMessages() called with messages: ', messages);
 
         try {
             retrievedSummaries = await backend.current?.getSummaries(this.campaignID, messages[messages.length - 1].chatID) ?? [];
             
             // Throw error if no summaries are found.
             if (retrievedSummaries.length === 0) {
-                throw new Error("No summaries found");
+                throw new Error("88 No summaries found");
             }
-            if (retrievedSummaries.length > 4) {
-                recentSummaries = retrievedSummaries.slice(-4).map(data => data.summary).join(' ');
+            if (retrievedSummaries.length > 8) {
+                recentSummaries = retrievedSummaries.slice(-8).map(data => data.summary).join(' \n\n ');
             } else {
-                recentSummaries = retrievedSummaries.map(data => data.summary).join(' ');
+                recentSummaries = retrievedSummaries.map(data => data.summary).join(' \n\n ');
             }
             recentSummaries = "RECENT SUMMARIES: \n\n" + recentSummaries;
 
         } catch (error) {
-            console.error("An error occurred while fetching summaries:", error);
-            // You can handle the error here if you want
+            console.error("88 An error occurred while fetching summaries:", error);
+        }
+
+        try {
+            ttrpgSystem = await backend.current?.getTextFileContent("ttrpg-basic-system") || "";
+        } catch (error) {
+            console.error("88 An error occurred while fetching ttrpg system:", error);
         }
     
         // Existing code for getting recent messages.
@@ -94,19 +103,28 @@ export class Game {
         let loopCounter = 0;
         for (let i = messages.length - 1; i >= 0 && loopCounter < 10; i--) {
             const message = messages[i];
+
+            console.log('88 prepNarrativeMessages() message: ', message);
     
             if (message.id === this.lastSummarizedMessageID) {
+                console.log('88 prepNarrativeMessages() breaking loop at message: ', i);
                 break;
             }
     
             recentMessages.push(message);
             loopCounter++;
         }
-        // Unreverse message order
-        recentMessages = recentMessages.reverse();
-        recentMessages[0].content = recentSummaries + '\n\n RECENT MESSAGES: \n\n' + recentMessages[0].content;
+        if (recentMessages.length > 0) {
+            recentMessages = recentMessages.reverse();
+        } else {
+            recentMessages = messages.slice(-1);
+        }
+
+        console.log('88 prepNarrativeMessages() recentMessages: ', recentMessages)
+
+        recentMessages[0].content = ttrpgSystem + '\n\n' + recentSummaries + '\n\n RECENT MESSAGES: \n\n' + recentMessages[0].content;
     
-        console.log('++prepNarrativeMessages() returning recentMessages: ', recentMessages);
+        console.log('88 prepNarrativeMessages() returning recentMessages: ', recentMessages);
         return recentMessages;
     }
     

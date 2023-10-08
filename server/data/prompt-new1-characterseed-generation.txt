@@ -12,4 +12,9 @@ Do not include anything else in your reply. Avoid any discussion of game mechani
 
 Do not assume the character's name or gender, just use the second person by saying 'you'. 
 
-Start your reply with "Character Suggestions:" as a markdown heading.
+Output should be in this format:
+
+# Character Suggestions
+
+1. **{{Character Name and/or moniker}}:** {{description}}
+2. **{{Character Name and/or moniker}}:** {{description}}

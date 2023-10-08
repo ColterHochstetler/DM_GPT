@@ -10,4 +10,18 @@ TEASER FORMAT
 The teaser should contain a title and description only.  The teasers should be varied, and contain an interesting conflict to or mystery to draw the player in. The teasers should build on the interests, fears, or other information above, giving the user something they'll immediately care about.  Don't ask the player what they will do.
 
 Write 4 teasers.  
-One teaser should be focused on the player's relationship (good or otherwise) with another character.  Another should be focused on a major event that their character is participating in.  The other two should be wild and creative. 
+One teaser should be focused on the player's relationship (good or otherwise) with another character.  Another should be focused on a major event that their character is participating in.  The other two should be wild and creative. Include the requested tone, but provide variations.
+
+Output should look like this:
+
+# Opening Scene Suggestions
+
+## {{Teaser 1 name}}
+
+- Tone: {{Teaser 1 tones}} 
+- {{Teaser 1 Description}}
+
+## {{Teaser 2 name}}
+
+- Tone: {{Teaser 2 tones}} 
+- {{Teaser 2 Description}}

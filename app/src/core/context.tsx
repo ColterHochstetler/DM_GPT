@@ -98,8 +98,6 @@ export function useCreateAppContext(): Context {
     const onNewMessage = useCallback(
         async (useNextId = false, message?: string, overrideSavedMessage?: string,  overrideParameters?: Parameters, overrideSystemMessage?: string) => {
         resetAudioContext();
-
-        console.log ('&& context.onNewMessage systemMessage: ', overrideSystemMessage);
         
         const effectiveId = useNextId ? nextID : id; // 
         
