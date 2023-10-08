@@ -6,7 +6,7 @@ Then we asked the user the following questions:
 
 {{qnaReply}}
 
-Insructions: 
+Instructions: 
 1. Revise the content of the form based on their answers. Pay special attention to the story ideas section. Make sure to fill out starting scene intensity.
 2. If needed, add an Miscellaneous section to capture any content meaningful to the player that doesn't fit the form's preexisting categories.  
 3. Give the possible characters names.

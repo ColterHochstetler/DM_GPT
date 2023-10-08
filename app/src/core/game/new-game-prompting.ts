@@ -55,7 +55,7 @@ export const fillCampaignInfoAndGetQnAPrompt = async (
     return ['', ''];
   }
 
-  const fillCampaignInfoPrompt = await replaceTextPlaceholders(campaignInfoFillRaw, [ ['{{storySeed}}',chosenStorySeed], ['{{characterSeed}}',chosenCharacterSeed] ])
+  const fillCampaignInfoPrompt = await replaceTextPlaceholders(campaignInfoFillRaw, [ ['{{storySeed}}',chosenStorySeed], ['{{characterSeed}}', chosenCharacterSeed] ])
 
   //Package campaignInfoFill into message type
   const parameters:Parameters = {
@@ -146,6 +146,8 @@ export const removeCharacterFromCampaignInfo = async (context: Context, campaign
     return '';
   }
 
+  const removeCharacterFromCampaignInfoPrompt = await replaceTextPlaceholders(removeCharacterFromCampaignInfoRaw, [['{{campaignInfo}}',campaignInfo]]);
+
   const parameters:Parameters = {
     temperature: 0.5,
     apiKey: context.chat.options.getOption<string>('openai', 'apiKey'),
@@ -159,7 +161,7 @@ export const removeCharacterFromCampaignInfo = async (context: Context, campaign
     chatID: uuidv4(),
     timestamp: Date.now(),
     role: 'user',
-    content: campaignInfo,
+    content: removeCharacterFromCampaignInfoPrompt,
     parameters: parameters
   }];
 
@@ -222,6 +224,8 @@ export const generateFirstSceneIntro = async (context: Context, characterSheet: 
   
   const firstScenePlanPrompt: string = await replaceTextPlaceholders(firstScenePlanRaw, [['{{characterSheet}}',characterSheet], ['{{campaignInfo}}',campaignInfo], ['{{firstSceneSeed}}',firstSceneSeed]]);
   
+  console.log('&& generateFirstScenePlan() firstScenePlanPrompt: ', firstScenePlanPrompt);
+  
   const parameters:Parameters = {
     temperature: 1.2,
     apiKey: context.chat.options.getOption<string>('openai', 'apiKey'),
@@ -240,9 +244,11 @@ export const generateFirstSceneIntro = async (context: Context, characterSheet: 
   }];
 
   console.log('generateFirstScenePlan() calling hiddenReplyAgent.sendAgentMessage()');
-  const firstScenePlanFilled: string = await hiddenReplyAgent.sendAgentMessage(parameters, message, 'campaign id to replace');
+  const firstScenePlanFilled: string = await hiddenReplyAgent.sendAgentMessage(parameters, message, 'Test campaignID');
 
-  const combinedPrompt: string = howToDm + '\n\n' + firstScenePlanFilled + '\n\n' + firstSceneIntroRaw;
+  const firstSceneIntroFilled: string = await replaceTextPlaceholders(firstSceneIntroRaw, [['{{characterSheet}}',characterSheet], ['{{campaignInfo}}',campaignInfo], ['{{firstScenePlan}}',firstScenePlanFilled]]);
+
+  const combinedPrompt: string = howToDm + '\n\n' + firstSceneIntroFilled;
 
   return combinedPrompt
 }

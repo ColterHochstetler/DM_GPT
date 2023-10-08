@@ -6,11 +6,13 @@ type Campaign = {
   campaignInfo: string;
   characterSheet: string;
   firstScenePlan: string;
+  systemMessage: string;
 };  
 
 type CampaignState = {
     campaigns: Campaign[];          // Array of campaigns
     currentCampaignId: string | null; // ID of the currently selected campaign
+    isNarrativeMode: boolean;
 };
 
 const initialState: CampaignState = {
@@ -20,9 +22,11 @@ const initialState: CampaignState = {
       campaignInfo: 'This is the default campaign',
       characterSheet: 'This is the default character sheet',
       firstScenePlan: 'This is the default first scene plan',
+      systemMessage: 'This is the default system message',
     }
   ],
   currentCampaignId: 'defaultCampaignId',
+  isNarrativeMode: false,
 };
 
 export const selectCampaigns = (state: { campaign: CampaignState }) => state.campaign.campaigns;
@@ -33,6 +37,14 @@ export const selectCurrentCampaignInfo = createSelector(
   (campaigns, currentCampaignId) => {
     const campaign = campaigns.find(camp => camp.id === currentCampaignId);
     return campaign ? campaign.campaignInfo : null;
+  }
+);
+
+export const selectCurrentCampaignSystemMessage = createSelector(
+  [selectCampaigns, selectCurrentCampaignId],
+  (campaigns, currentCampaignId) => {
+    const campaign = campaigns.find(camp => camp.id === currentCampaignId);
+    return campaign ? campaign.systemMessage : null;
   }
 );
 
@@ -52,7 +64,8 @@ export const selectCurrentFirstScenePlan = createSelector(
   }
 );
 
-  
+export const selectIsNarrativeMode = (state: { campaign: CampaignState }) => state.campaign.isNarrativeMode;
+
 
 
 const campaignSlice = createSlice({
@@ -95,12 +108,24 @@ const campaignSlice = createSlice({
           }
         }
       },  
+      setIsNarrativeMode: (state, action: PayloadAction<boolean>) => {
+        state.isNarrativeMode = action.payload;
+      },
       deleteCampaign: (state, action: PayloadAction<string>) => {
           state.campaigns = state.campaigns.filter(camp => camp.id !== action.payload);
-      }
+      },
+      updateSystemMessage: (state, action: PayloadAction<string>) => {
+        console.log('updateSystemMessage() called with action.payload: ', action.payload);
+        if (state.currentCampaignId !== null) {
+          const index = state.campaigns.findIndex(camp => camp.id === state.currentCampaignId);
+          if (index !== -1) {
+            state.campaigns[index].systemMessage = action.payload;
+          }
+        }
+      },
     }
   });
 
-export const { addCampaign, setCampaigns, setCurrentCampaignId, updateCampaignInfo, updateCharacterSheet, deleteCampaign, updateFirstScenePlan } = campaignSlice.actions;
+export const { addCampaign, setCampaigns, setCurrentCampaignId, updateCampaignInfo, updateCharacterSheet, deleteCampaign, updateFirstScenePlan, setIsNarrativeMode, updateSystemMessage  } = campaignSlice.actions;
 export default campaignSlice.reducer;
   

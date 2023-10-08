@@ -133,9 +133,9 @@ export class ChatManager extends EventEmitter {
         }
     }
 
-    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, overrideSavedMessage?: string) {
+    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, customSystemMessage: string, overrideSavedMessage?: string, isNarrativeMessage: boolean = true) {
         const chat = this.doc.getYChat(userSubmittedMessage.chatID);
-
+        console.log("core/index.sendMessage called with narrativeMode: ", isNarrativeMessage);
         if (!chat) {
             throw new Error('Chat not found');
         }
@@ -151,25 +151,49 @@ export class ChatManager extends EventEmitter {
         };
 
         let messages: Message[] = [];
+        
+        if (customSystemMessage){
+            console.log ("-- customSystemMessage found: ", customSystemMessage)
+            const systemMessage ={
+                id: uuidv4(),
+                parentID: userSubmittedMessage.parentID,
+                chatID: userSubmittedMessage.chatID,
+                timestamp: Date.now(),
+                role: 'system',
+                content: customSystemMessage,
+                done: true,
+            }
 
-        if (overrideSavedMessage) {
+            messages.push(systemMessage);
+        }
+
+        if (overrideSavedMessage) { //Can be replaced by custom system message? Think of remaining use cases
             const overriddenMessage = {
                 ...message,
                 content: overrideSavedMessage,
             };
 
-            this.doc.addMessage(overriddenMessage);;
+            this.doc.addMessage(overriddenMessage);
             messages.push(message);
-            
             
         } else {
             this.doc.addMessage(message);
-            messages = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);  
-            messages.push(message);
+            const previousMessages = this.doc.getMessagesPrecedingMessage(message.chatID, message.id);  
+            messages = [...messages, ...previousMessages, message];
         }    
+
+
         messages = messages.filter(msg => Boolean(msg.role));
 
-        this.game.runLoop(messages,userSubmittedMessage.requestedParameters);
+        this.game.runLoop(messages,userSubmittedMessage.requestedParameters, isNarrativeMessage);
+
+        if (isNarrativeMessage){
+            console.log ("-- core/index.sendMessage called with isNarrativeMessage: true, messages preprocessing:", messages)
+            messages = await this.game.prepNarrativeMessages(messages);
+            userSubmittedMessage.requestedParameters.maxTokens = 300;
+            console.log ("-- isNarrativeMessage: true, messages postprocessing:", messages)
+            console.log ("-- parameters:", userSubmittedMessage.requestedParameters)
+        }
 
         await this.getReply(messages, userSubmittedMessage.requestedParameters);
     }

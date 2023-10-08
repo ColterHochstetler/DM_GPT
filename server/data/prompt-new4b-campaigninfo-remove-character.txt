@@ -2,3 +2,5 @@ You are an expert at following instructions precisely. Delete the character sect
 
 CAMPAIGN INFO:
 {{campaignInfo}}
+
+Remember: repeate campaign info back to me, but delete the CHARACTER section.

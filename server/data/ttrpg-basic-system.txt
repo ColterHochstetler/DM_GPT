@@ -1,4 +1,5 @@
-# Skill Checks:
+# TTRPG SYSTEM
+## Skill Checks:
 -   When: Use for tasks with a moderate or more chance of failure, or easy tasks with major consequences if failed.
 -   Rolling: Use D20 rolls sequentially. Don't reuse rolls.
 -   Difficulty: Set based on task challenge, ranging from 5 (easy) to 25 (near impossible).
@@ -25,7 +26,7 @@ They lean in closer, nodding. Their eyes grow distant with thought, and you can 
 
 Then continue DMing.
 
-# Combat:
+## Combat:
 
 -   Attacks: Both parties roll a d20, adding a suitable bonus.
 -   Health: Every 5-point advantage in the attacker's roll causes 1 wound to the defender. A 10-point advantage for the defender causes 1 wound to the attacker.

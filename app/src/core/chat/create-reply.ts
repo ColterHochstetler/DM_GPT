@@ -23,7 +23,7 @@ export class ReplyRequest extends EventEmitter {
                 private requestedParameters: Parameters,
                 private pluginOptions: OptionsManager) {
         super();
-        this.mutatedMessages = [...messages]; //CLEANNESS: is this redundant?
+        this.mutatedMessages = [...messages];
         this.mutatedMessages = messages.map(m => getOpenAIMessageFromMessage(m));
         this.mutatedParameters = { ...requestedParameters };
         delete this.mutatedParameters.apiKey;
@@ -73,8 +73,6 @@ export class ReplyRequest extends EventEmitter {
                 this.mutatedMessages = output.messages;
                 this.mutatedParameters = output.parameters;
                 this.lastChunkReceivedAt = Date.now();
-
-                console.log("Mutated Messages in create-reply.ts:", this.mutatedMessages); 
             });
 
             const { emitter, cancel } = await createStreamingChatCompletion(this.mutatedMessages, {
@@ -143,6 +141,7 @@ export class ReplyRequest extends EventEmitter {
         this.yChat.onMessageDone(this.replyID);
 
         await pluginRunner("postprocess-model-output", this.pluginContext, async plugin => {
+            console.log('postprocess-model-output called with messages: ', this.mutatedMessages);
             const output = await plugin.postprocessModelOutput({
                 role: 'assistant',
                 content: this.content,
