@@ -19,50 +19,57 @@ export class Game {
     }
 
 
-    async runLoop(messages: Message[], parameters: Parameters) {
+    async runLoop(messages: Message[], parameters: Parameters, isNarrativeMode: boolean) {
         console.log("********Game.runLoop called********");
-        const retrievedTokenData = await backend.current?.getTokensSinceLastSummary(this.campaignID, messages[messages.length - 1].chatID)
-        
-        // Get the most recent messages since last summarized message
-        let recentMessages: Message[] = [];
-        this.lastSummarizedMessageID = retrievedTokenData?.lastSummarizedMessageID || '';
-        let loopCounter = 0;
 
-        for (let i = messages.length - 1; i >= 0 && loopCounter < 10; i--) {
-            const message = messages[i];
+        if (isNarrativeMode) {
+            console.log("Game.runLoop called with isNarrativeMode: true");
+            const retrievedTokenData = await backend.current?.getTokensSinceLastSummary(this.campaignID, messages[messages.length - 1].chatID)
+            
+            // Get the most recent messages since last summarized message
+            let recentMessages: Message[] = [];
+            this.lastSummarizedMessageID = retrievedTokenData?.lastSummarizedMessageID || '';
+            let loopCounter = 0;
 
-            if (message.id === this.lastSummarizedMessageID) {
-                break;
+            for (let i = messages.length - 1; i >= 0 && loopCounter < 10; i--) {
+                const message = messages[i];
+
+                if (message.id === this.lastSummarizedMessageID) {
+                    break;
+                }
+
+                recentMessages.push(message);
+                loopCounter++;
             }
 
-            recentMessages.push(message);
-            loopCounter++;
-        }
+            // Unreverse message order
+            recentMessages = recentMessages.reverse();
 
-        // Unreverse message order
-        recentMessages = recentMessages.reverse();
-        
-        //check if tokens exceed threshold or  are undefined, if so run summaryAgent.
-        const totalTokensSinceLastSummary = countTokensForMessages(recentMessages) + (retrievedTokenData?.tokenCount || 0);
+            
+            //check if tokens exceed threshold or  are undefined, if so run summaryAgent.
+            const totalTokensSinceLastSummary = countTokensForMessages(recentMessages) + (retrievedTokenData?.tokenCount || 0);
 
-        if (totalTokensSinceLastSummary === undefined || totalTokensSinceLastSummary > this.summaryTokenThreshold) {
-            const retrievedSummaries: SummaryMinimal[] = await backend.current?.getSummaries(this.campaignID, messages[messages.length - 1].chatID) ?? []; //COMPLETE: develop proper way of recieving undefined, like throwing an error and allowing retry.
+            if (totalTokensSinceLastSummary === undefined || totalTokensSinceLastSummary > this.summaryTokenThreshold) {
+                const retrievedSummaries: SummaryMinimal[] = await backend.current?.getSummaries(this.campaignID, messages[messages.length - 1].chatID) ?? []; //COMPLETE: develop proper way of recieving undefined, like throwing an error and allowing retry.
 
-            backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, this.campaignID, 0, messages[messages.length - 1].id);
-            console.log('Token threshold met, new save id: ', messages[messages.length - 1].id);
-            this.lastSummarizedMessageID = messages[messages.length - 1].id;
+                backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, this.campaignID, 0, messages[messages.length - 1].id);
+                console.log('Token threshold met, new save id: ', messages[messages.length - 1].id);
+                this.lastSummarizedMessageID = messages[messages.length - 1].id;
 
-            this.summaryAgent.sendAgentMessage(parameters, recentMessages, this.campaignID, retrievedSummaries);
+                this.summaryAgent.sendAgentMessage(parameters, recentMessages, this.campaignID, retrievedSummaries);
+            } else {
+                backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, this.campaignID, totalTokensSinceLastSummary, retrievedTokenData?.lastSummarizedMessageID);
+
+            }
         } else {
-            backend.current?.saveTokensSinceLastSummary(messages[messages.length - 1].chatID, this.campaignID, totalTokensSinceLastSummary, retrievedTokenData?.lastSummarizedMessageID);
-
+            console.log("Game.runLoop called with isNarrativeMode: false");
         }
-
     };
     
     async prepNarrativeMessages(messages: Message[]): Promise<Message[]> {
         let retrievedSummaries: SummaryMinimal[] = [];
-      
+        let recentSummaries: string = "";
+
         try {
             retrievedSummaries = await backend.current?.getSummaries(this.campaignID, messages[messages.length - 1].chatID) ?? [];
             
@@ -70,6 +77,13 @@ export class Game {
             if (retrievedSummaries.length === 0) {
                 throw new Error("No summaries found");
             }
+            if (retrievedSummaries.length > 4) {
+                recentSummaries = retrievedSummaries.slice(-4).map(data => data.summary).join(' ');
+            } else {
+                recentSummaries = retrievedSummaries.map(data => data.summary).join(' ');
+            }
+            recentSummaries = "RECENT SUMMARIES: \n\n" + recentSummaries;
+
         } catch (error) {
             console.error("An error occurred while fetching summaries:", error);
             // You can handle the error here if you want
@@ -90,21 +104,7 @@ export class Game {
         }
         // Unreverse message order
         recentMessages = recentMessages.reverse();
-        
-        const recentSummaries: string = retrievedSummaries.slice(-4).map(data => data.summary).join(' ');
-
-        // Only add "RECENT SUMMARIES: \n\n" if retrievedSummaries is not empty.
-        console.log('---recentSummaries: ', recentSummaries);
-        if (recentSummaries !== "" && messages.length > 0 && recentMessages.length > 0) {
-            const lastMessageIndex = messages.length - 1;
-            
-            // Make sure the indices exist
-            if (messages[lastMessageIndex] && recentMessages[lastMessageIndex]) {
-                recentMessages[lastMessageIndex].content = "RECENT SUMMARIES: \n\n" + recentSummaries + '\n\n' + messages[lastMessageIndex].content;
-            } else {
-                console.warn("Index does not exist in one of the arrays.");
-            }
-        }
+        recentMessages[0].content = recentSummaries + '\n\n RECENT MESSAGES: \n\n' + recentMessages[0].content;
     
         console.log('++prepNarrativeMessages() returning recentMessages: ', recentMessages);
         return recentMessages;

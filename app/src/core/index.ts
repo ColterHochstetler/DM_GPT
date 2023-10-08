@@ -184,11 +184,14 @@ export class ChatManager extends EventEmitter {
 
         messages = messages.filter(msg => Boolean(msg.role));
 
-        this.game.runLoop(messages,userSubmittedMessage.requestedParameters);
+        this.game.runLoop(messages,userSubmittedMessage.requestedParameters, isNarrativeMessage);
 
         if (isNarrativeMessage){
+            console.log ("-- core/index.sendMessage called with isNarrativeMessage: true, messages preprocessing:", messages)
             messages = await this.game.prepNarrativeMessages(messages);
             userSubmittedMessage.requestedParameters.maxTokens = 300;
+            console.log ("-- isNarrativeMessage: true, messages postprocessing:", messages)
+            console.log ("-- parameters:", userSubmittedMessage.requestedParameters)
         }
 
         await this.getReply(messages, userSubmittedMessage.requestedParameters);

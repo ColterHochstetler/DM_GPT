@@ -69,14 +69,10 @@ export class ReplyRequest extends EventEmitter {
             this.scheduleTimeout();
 
             await pluginRunner("preprocess-model-input", this.pluginContext, async plugin => {
-                console.log("Mutated Messages in create-reply.ts BEFORE preprocessModelInput:", this.mutatedMessages);
-                
                 const output = await plugin.preprocessModelInput(this.mutatedMessages, this.mutatedParameters);
                 this.mutatedMessages = output.messages;
                 this.mutatedParameters = output.parameters;
                 this.lastChunkReceivedAt = Date.now();
-
-                console.log("Mutated Messages in create-reply.ts AFTER preprocessModelInput:", this.mutatedMessages); 
             });
 
             const { emitter, cancel } = await createStreamingChatCompletion(this.mutatedMessages, {
@@ -145,6 +141,7 @@ export class ReplyRequest extends EventEmitter {
         this.yChat.onMessageDone(this.replyID);
 
         await pluginRunner("postprocess-model-output", this.pluginContext, async plugin => {
+            console.log('postprocess-model-output called with messages: ', this.mutatedMessages);
             const output = await plugin.postprocessModelOutput({
                 role: 'assistant',
                 content: this.content,

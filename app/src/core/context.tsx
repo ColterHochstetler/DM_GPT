@@ -57,7 +57,7 @@ export function useCreateAppContext(): Context {
     const [authenticated, setAuthenticated] = useState(backend?.isAuthenticated || false);
     const [wasAuthenticated, setWasAuthenticated] = useState(backend?.isAuthenticated || false);
 
-    const [campaignId, setCampaignId] = useState<string>("default_campaign");
+    const [campaignId, setCampaignId] = useState<string>("Test campaignID");
     const [isNarrativeMode, setNarrativeMode] = useState<boolean>(false);
     
     const reduxIsNarrativeMode = useAppSelector(selectIsNarrativeMode); // Assuming useAppSelector is your useSelector hook

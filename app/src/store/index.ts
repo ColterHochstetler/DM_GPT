@@ -50,9 +50,14 @@ const persistNewGameSliceConfig = {
   storage,
 };
 
+const persistCampaignConfig = {
+  key: 'campaign',
+  storage,
+};
+
 const store = configureStore({
   reducer: {
-    campaign: campaignReducer,
+    campaign: persistReducer<ReturnType<typeof campaignReducer>>(persistCampaignConfig, campaignReducer),
     message: persistReducer<ReturnType<typeof messageReducer>>(persistMessageConfig, messageReducer),
     ui: uiReducer,
     settingsUI: settingsUIReducer,

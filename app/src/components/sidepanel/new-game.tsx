@@ -173,7 +173,7 @@ export default function NewGame() {
             placeholder: 'Paste the Campaign Info here...',
             prefillValue: '',
             minChars: 300,
-            maxChars: 2200
+            maxChars: 2600
         },
         {
             title: '5. Character Details',
