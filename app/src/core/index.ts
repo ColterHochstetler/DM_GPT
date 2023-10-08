@@ -133,7 +133,7 @@ export class ChatManager extends EventEmitter {
         }
     }
 
-    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, overrideSavedMessage?: string, isNarrativeMessage: boolean = false, customSystemMessage?: string) {
+    public async sendMessage(userSubmittedMessage: UserSubmittedMessage, customSystemMessage: string, overrideSavedMessage?: string, isNarrativeMessage: boolean = false) {
         const chat = this.doc.getYChat(userSubmittedMessage.chatID);
         console.log("core/index.sendMessage called with narrativeMode: ", isNarrativeMessage);
         if (!chat) {
@@ -153,6 +153,7 @@ export class ChatManager extends EventEmitter {
         let messages: Message[] = [];
         
         if (customSystemMessage){
+            console.log ("-- customSystemMessage found: ", customSystemMessage)
             const systemMessage ={
                 id: uuidv4(),
                 parentID: userSubmittedMessage.parentID,

@@ -55,7 +55,7 @@ export const fillCampaignInfoAndGetQnAPrompt = async (
     return ['', ''];
   }
 
-  const fillCampaignInfoPrompt = await replaceTextPlaceholders(campaignInfoFillRaw, [ ['{{storySeed}}',chosenStorySeed], ['{{characterSeed}}',chosenCharacterSeed] ])
+  const fillCampaignInfoPrompt = await replaceTextPlaceholders(campaignInfoFillRaw, [ ['{{storySeed}}',chosenStorySeed], ['{{characterSeed}}', chosenCharacterSeed] ])
 
   //Package campaignInfoFill into message type
   const parameters:Parameters = {

@@ -11,7 +11,7 @@ import { TTSContextProvider } from "./tts/use-tts";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { isProxySupported } from "./chat/openai";
 import { audioContext, resetAudioContext } from "./tts/audio-file-player";
-import { selectIsNarrativeMode, setIsNarrativeMode } from "../store/campaign-slice";
+import { selectIsNarrativeMode, setIsNarrativeMode, selectCurrentCampaignSystemMessage } from "../store/campaign-slice";
 
 export interface Context {
     authenticated: boolean;
@@ -24,9 +24,9 @@ export interface Context {
     isHome: boolean;
     isShare: boolean;
     generating: boolean;
-    campaignId: string; 
+    campaignId: string;
     isNarrativeMode: boolean;
-    onNewMessage: (useNextId?: boolean, message?: string, overrideSavedMessage?: string, overrideParameters?: Parameters) => Promise<string | false>;
+    onNewMessage: (useNextId?: boolean, message?: string, overrideSavedMessage?: string, overrideParameters?: Parameters, overrideSystemMessage?: string) => Promise<string | false>;
     regenerateMessage: (message: Message) => Promise<boolean>;
     editMessage: (message: Message, content: string) => Promise<boolean>;
     setCampaignId: (id: string) => void;
@@ -56,6 +56,7 @@ export function useCreateAppContext(): Context {
     const currentChat = useChat(chatManager, id, isShare);
     const [authenticated, setAuthenticated] = useState(backend?.isAuthenticated || false);
     const [wasAuthenticated, setWasAuthenticated] = useState(backend?.isAuthenticated || false);
+    const systemMessage = useAppSelector(selectCurrentCampaignSystemMessage);
 
     const [campaignId, setCampaignId] = useState<string>("Test campaignID");
     const [isNarrativeMode, setNarrativeMode] = useState<boolean>(false);
@@ -95,9 +96,11 @@ export function useCreateAppContext(): Context {
     }, [updateAuth]);
 
     const onNewMessage = useCallback(
-        async (useNextId = false, message?: string, overrideSavedMessage?: string,  overrideParameters?: Parameters) => {
+        async (useNextId = false, message?: string, overrideSavedMessage?: string,  overrideParameters?: Parameters, overrideSystemMessage?: string) => {
         resetAudioContext();
 
+        console.log ('&& context.onNewMessage systemMessage: ', overrideSystemMessage);
+        
         const effectiveId = useNextId ? nextID : id; // 
         
         if (isShare) {
@@ -147,10 +150,10 @@ export function useCreateAppContext(): Context {
             content: message.trim(),
             requestedParameters: mergedParameters,
             parentID: currentChat.leaf?.id,
-        }, overrideSavedMessage, isNarrativeMode);
+        }, overrideSystemMessage || systemMessage || "No system message", overrideSavedMessage, isNarrativeMode);
 
         return effectiveId;
-    }, [dispatch, id, currentChat.leaf, isShare]);
+    }, [dispatch, id, currentChat.leaf, isShare, systemMessage]);
 
     const regenerateMessage = useCallback(async (message: Message) => {
         resetAudioContext();
@@ -206,25 +209,28 @@ export function useCreateAppContext(): Context {
 
         if (id && chatManager.has(id)) {
             await chatManager.sendMessage({
-                chatID: id,
-                content: content.trim(),
-                requestedParameters: {
-                    ...parameters,
-                    apiKey: openaiApiKey,
+                    chatID: id,
+                    content: content.trim(),
+                    requestedParameters: {
+                        ...parameters,
+                        apiKey: openaiApiKey,
+                    },
+                    parentID: message.parentID,
                 },
-                parentID: message.parentID,
-            });
+                systemMessage || "No system message found."
+            );
         } else {
             const id = await chatManager.createChat();
             await chatManager.sendMessage({
-                chatID: id,
-                content: content.trim(),
-                requestedParameters: {
-                    ...parameters,
-                    apiKey: openaiApiKey,
-                },
-                parentID: message.parentID,
-            });
+                    chatID: id,
+                    content: content.trim(),
+                    requestedParameters: {
+                        ...parameters,
+                        apiKey: openaiApiKey,
+                    },
+                    parentID: message.parentID,
+                }, 
+                systemMessage || "No system message found.");
         }
 
         return true;
@@ -252,7 +258,8 @@ export function useCreateAppContext(): Context {
         regenerateMessage,
         editMessage,
         setNarrativeMode: setAndPersistNarrativeMode,
-    }), [authenticated, wasAuthenticated, generating, onNewMessage, regenerateMessage, editMessage, currentChat, id, isHome, isShare, intl, campaignId, isNarrativeMode, setAndPersistNarrativeMode]);
+        systemMessage,
+    }), [authenticated, wasAuthenticated, generating, onNewMessage, regenerateMessage, editMessage, currentChat, id, isHome, isShare, intl, campaignId, isNarrativeMode, setAndPersistNarrativeMode, systemMessage]);
 
     return context;
 }

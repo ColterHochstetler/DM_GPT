@@ -11,7 +11,7 @@ import { useOnSubmit } from '../../core/chat/message-submit-helper';
 import { Parameters } from '../../core/chat/types';
 import { fillCampaignInfoAndGetQnAPrompt } from '../../core/game/new-game-prompting';
 import useNewChatTrigger from '../../core/chat/new-chat';
-import { updateCampaignInfo, selectCurrentCampaignInfo, updateCharacterSheet, selectCurrentCharacterSheet, updateFirstScenePlan, selectCurrentFirstScenePlan } from '../../store/campaign-slice';
+import { updateCampaignInfo, selectCurrentCampaignInfo, updateCharacterSheet, selectCurrentCharacterSheet, updateFirstScenePlan, selectCurrentFirstScenePlan, updateSystemMessage, selectCurrentCampaignSystemMessage } from '../../store/campaign-slice';
 
 type NewGameState = {
     loading: boolean;
@@ -269,7 +269,8 @@ export default function NewGame() {
             context.setNarrativeMode(false);
             console.log("++ calling start new game, narrative mode set to false");
             const storySeedPrompt = await getGenerateStorySeedsPrompt()
-            await submitChatMessageStorySeeds(storySeedPrompt)
+            dispatch(updateSystemMessage(storySeedPrompt))
+            await submitChatMessageStorySeeds('Generate the teasers for the user.')
             dispatch(initializeSteps());
     
         } catch (error) {
@@ -294,7 +295,9 @@ export default function NewGame() {
                     try {
                         triggerNewChat();
                         const characterSeedPrompt = await getGenerateCharacterSeedsPrompt(value); //using value might be frail, maybe direct it to the redux repo?
-                        submitChatMessageCharacterSeed(characterSeedPrompt)
+                        dispatch(updateSystemMessage(characterSeedPrompt))
+                        console.log("++ characterSeedPrompt: ", characterSeedPrompt);
+                        submitChatMessageCharacterSeed("Generate the consicse character descriptions for the user.", characterSeedPrompt)
                     } catch (error) {
                         console.log('new-game-slice call of step2Prep() failed, error: ', error);
                     }
@@ -308,7 +311,8 @@ export default function NewGame() {
                         console.log ("++ chosenStorySeed: ", chosenStorySeed);
                         const [fillCampaignInfoPrompt, qnaPrompt] = await fillCampaignInfoAndGetQnAPrompt(chosenStorySeed, chosenCharacterSeed, context);
                         dispatch(updateCampaignInfo(fillCampaignInfoPrompt))
-                        submitChatMessageQnA(qnaPrompt);
+                        dispatch(updateSystemMessage(qnaPrompt))
+                        submitChatMessageQnA("Begin!", qnaPrompt);
     
                     } catch (error) {
                         console.log('case 1 of NewGame switch falied, error: ', error);
@@ -321,7 +325,8 @@ export default function NewGame() {
                         const qnaReply = stepsStatus[2].value
                         console.log("++ qnaReply: ", qnaReply);
                         const campaignInfo = await getUpdateCampaignInfoPrompt(currentCampaignInfo, qnaReply);
-                        submitChatMessageUpdateCampaignInfo(campaignInfo);
+                        dispatch(updateSystemMessage(campaignInfo))
+                        submitChatMessageUpdateCampaignInfo("Begin!", campaignInfo);
                         
                     } catch (error) {
                         console.log('case 2 of NewGame switch failed, error: ', error);
@@ -341,12 +346,14 @@ export default function NewGame() {
                         console.log("++ characterSheetGenerationPrompt: ", characterSheetGenerationPrompt);
 
                         //Start generating the filled out character sheet
-                        submitChatMessageFillCharacterSheet(characterSheetGenerationPrompt);
+                        dispatch(updateSystemMessage(characterSheetGenerationPrompt))
+                        submitChatMessageFillCharacterSheet("Begin!", characterSheetGenerationPrompt);
 
                         //Remove the character info from campaignInfo to save tokens and make character sheet single source of truth
                         const campaignInfoWithoutCharacter = await removeCharacterFromCampaignInfo(context, currentCampaignInfo);
+                        console.log("++ campaignInfoWithoutCharacter: ", campaignInfoWithoutCharacter);
                         dispatch(updateCampaignInfo(campaignInfoWithoutCharacter));
-                        dispatch(updateCharacterSheet(campaignInfoWithoutCharacter))
+                        
                         
                     } catch (error) {
                         console.log('case 3 of NewGame switch failed, error: ', error);
@@ -355,9 +362,11 @@ export default function NewGame() {
 
                 case 4:
                     //prep for step 6, abilities. Data stored on redux index 5.
+                    dispatch(updateCharacterSheet(value))
                     try {
                         const abilitiesPrompt: string = await getAbilitiesPrompt(currentCharacterSheet, currentCampaignInfo);
-                        await submitChatMessageAbilities(abilitiesPrompt);
+                        dispatch(updateSystemMessage(abilitiesPrompt))
+                        await submitChatMessageAbilities("Begin!", abilitiesPrompt);
                     } catch (error) {
                         console.log('case 4 of NewGame switch failed, error: ', error);
                     }
@@ -370,7 +379,8 @@ export default function NewGame() {
                     dispatch(updateCharacterSheet(characterSheetWithAbilities))
                     try {
                         const firstSceneSeedPrompt: string = await getFirstSceneSeedPrompt(currentCharacterSheet, currentCampaignInfo);
-                        await submitChatMessageFirstSceneSeed(firstSceneSeedPrompt);
+                        dispatch(updateSystemMessage(firstSceneSeedPrompt))
+                        await submitChatMessageFirstSceneSeed("Begin!", firstSceneSeedPrompt);
                     } catch (error) {
                         console.log('case 5 of NewGame switch failed, error: ', error);
                     }
@@ -393,8 +403,8 @@ export default function NewGame() {
         console.log("++ calling start new game, narrative mode set to true");
         const firstScenePlanPrompt: string = await generateFirstSceneIntro(context, currentCharacterSheet, currentCampaignInfo, stepsStatus[5].value)
         console.log("++ calling submitChatMessageFirstScenePlan: ", firstScenePlanPrompt);
-        
-        submitChatMessageFirstScenePlan(firstScenePlanPrompt);
+        dispatch(updateSystemMessage(firstScenePlanPrompt))
+        submitChatMessageFirstScenePlan("Begin! Make sure to end with with a list of 4 actions for the player to consider.", firstScenePlanPrompt);
         dispatch(resetToBeginning());
     }
 

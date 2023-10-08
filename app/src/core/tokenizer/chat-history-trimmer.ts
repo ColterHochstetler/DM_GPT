@@ -94,6 +94,7 @@ export class ChatHistoryTrimmer {
     }
 
     private removeMessagesStrategy() {
+        console.log ('&& removeMessagesStrategy messages:', this.messages)
         const systemPromptIndex = this.messages.findIndex(m => m.role === 'system');
         const firstUserMessageIndex = this.messages.findIndex(m => m.role === 'user');
         const lastMessageIndex = this.messages.length - 1;

@@ -3,6 +3,8 @@ import ChatHistory from './chat-history';
 import NewGame from './new-game';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { setSelectedLeftTab, setSelectedRightTab } from '../../store/tabs-slice';
+import { CharacterSheet } from './character-sheet';
+import { SystemPromptViewer } from './system-prompt-viewer';
 
 export function LeftPanel() {
     const dispatch = useAppDispatch();
@@ -24,6 +26,9 @@ export function LeftPanel() {
             <ScrollArea.Autosize maxHeight="90vh">
                 <Tabs.Panel value="scenes" px="md" py="md">
                         <ChatHistory />
+                </Tabs.Panel>
+                <Tabs.Panel value="journal" px="md" py="md">
+                    <SystemPromptViewer/>
                 </Tabs.Panel>
             </ScrollArea.Autosize>
             </Tabs>
@@ -56,6 +61,9 @@ export function RightPanel() {
                 <ScrollArea.Autosize maxHeight="90vh">
                     <Tabs.Panel value="new" px="md" py="md">
                         <NewGame/>
+                    </Tabs.Panel>
+                    <Tabs.Panel value="character sheet" px="md" py="md">
+                        <CharacterSheet/>
                     </Tabs.Panel>
                 </ScrollArea.Autosize>
             </Tabs>

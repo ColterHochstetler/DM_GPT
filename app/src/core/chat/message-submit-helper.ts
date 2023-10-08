@@ -9,10 +9,11 @@ export const useOnSubmit = (context: Context, newChat: boolean, overrideSavedMes
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    return useCallback(async (messageString: string) => {
+    return useCallback(async (messageString: string, systemMessage?: string) => {
 
-        const id = await context.onNewMessage(newChat, messageString, overrideSavedMessage, overrideParameters);
+        const id = await context.onNewMessage(newChat, messageString, overrideSavedMessage, overrideParameters, systemMessage);
 
+        console.log ('&& onSubmitHelper systemMessage :', systemMessage)
         if (id) {
             if (!window.location.pathname.includes(id)) {
                 navigate('/chat/' + id);
