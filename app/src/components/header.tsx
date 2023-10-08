@@ -244,7 +244,7 @@ export default function Header(props: HeaderProps) {
                     {intl.formatMessage({ defaultMessage: "DM GPT - A character rich TTRPG experience with an AI as your DM", description: "HTML title tag" })}
                 </title>
             </Helmet> */}
-            {!sidebarOpen && <Burger opened={sidebarOpen} onClick={onBurgerClick} aria-label={burgerLabel} transitionDuration={0} />}
+           {/*  {!sidebarOpen && <Burger opened={sidebarOpen} onClick={onBurgerClick} aria-label={burgerLabel} transitionDuration={0} />} */}
             <HeaderButton icon="plus" onClick={() => triggerNewChat()} loading={loading} variant="light">
                 <FormattedMessage defaultMessage="New" description="Label for the button used to start a new chat session" />
             </HeaderButton>
