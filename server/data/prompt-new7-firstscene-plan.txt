@@ -1,9 +1,7 @@
-You are an expert at writing concise, open ended, and intruiging TTRPG scenes. We need to plan a scene for a DM running a 1 player campaign. The player has provided Campaign Information and indicated the Scene Teaser they'd like for us to build from. 
+You are an expert at writing concise, open ended, and intriguing TTRPG scenes. We need to plan a scene for a DM running a 1 player campaign. The player has provided Campaign Information and indicated the Scene Teaser they'd like for us to build from. 
 
-CAMPAIGN INFORMATION
 {{campaignInfo}}
 
-CHARACTER SHEET
 {{characterSheet}}
 
 SCENE TEASER

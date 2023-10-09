@@ -402,7 +402,7 @@ export default function NewGame() {
     const handleLaunchClick = async () => {
 
         console.log("++ calling start new game, narrative mode set to true");
-        const firstScenePlanPrompt: string = await generateFirstSceneIntro(context, currentCharacterSheet, currentCampaignInfo, stepsStatus[5].value)
+        const firstScenePlanPrompt: string = await generateFirstSceneIntro(context, currentCharacterSheet, currentCampaignInfo, stepsStatus[6].value)
         console.log("++ calling submitChatMessageFirstScenePlan: ", firstScenePlanPrompt);
         dispatch(updateSystemMessage(firstScenePlanPrompt))
         context.setNarrativeMode(true);
