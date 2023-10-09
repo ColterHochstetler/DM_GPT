@@ -7,6 +7,7 @@ type Campaign = {
   characterSheet: string;
   firstScenePlan: string;
   systemMessage: string;
+  journal: string;
 };  
 
 type CampaignState = {
@@ -23,6 +24,7 @@ const initialState: CampaignState = {
       characterSheet: 'This is the default character sheet',
       firstScenePlan: 'This is the default first scene plan',
       systemMessage: 'This is the default system message',
+      journal: 'Write your journal entries here',
     }
   ],
   currentCampaignId: 'defaultCampaignId',
@@ -64,9 +66,15 @@ export const selectCurrentFirstScenePlan = createSelector(
   }
 );
 
+export const selectCurrentJournal = createSelector(
+  [selectCampaigns, selectCurrentCampaignId],
+  (campaigns, currentCampaignId) => {
+    const campaign = campaigns.find(camp => camp.id === currentCampaignId);
+    return campaign ? campaign.journal : null;
+  }
+);
+
 export const selectIsNarrativeMode = (state: { campaign: CampaignState }) => state.campaign.isNarrativeMode;
-
-
 
 const campaignSlice = createSlice({
     name: 'campaign',
@@ -82,7 +90,6 @@ const campaignSlice = createSlice({
         state.currentCampaignId = action.payload;
       },
       updateCampaignInfo: (state, action: PayloadAction<string>) => {
-        console.log('updateCampaignInfo() called with action.payload: ', action.payload);
         if (state.currentCampaignId !== null) {
           const index = state.campaigns.findIndex(camp => camp.id === state.currentCampaignId);
           if (index !== -1) {
@@ -91,7 +98,6 @@ const campaignSlice = createSlice({
         }
       },
       updateCharacterSheet: (state, action: PayloadAction<string>) => {
-        console.log('updateCharacterSheet() called with action.payload: ', action.payload);
         if (state.currentCampaignId !== null) {
           const index = state.campaigns.findIndex(camp => camp.id === state.currentCampaignId);
           if (index !== -1) {
@@ -100,7 +106,6 @@ const campaignSlice = createSlice({
         }
       },
       updateFirstScenePlan: (state, action: PayloadAction<string>) => {
-        console.log('updateFirstScenePlan() called with action.payload: ', action.payload);
         if (state.currentCampaignId !== null) {
           const index = state.campaigns.findIndex(camp => camp.id === state.currentCampaignId);
           if (index !== -1) {
@@ -115,7 +120,6 @@ const campaignSlice = createSlice({
           state.campaigns = state.campaigns.filter(camp => camp.id !== action.payload);
       },
       updateSystemMessage: (state, action: PayloadAction<string>) => {
-        console.log('updateSystemMessage() called with action.payload: ', action.payload);
         if (state.currentCampaignId !== null) {
           const index = state.campaigns.findIndex(camp => camp.id === state.currentCampaignId);
           if (index !== -1) {
@@ -123,9 +127,17 @@ const campaignSlice = createSlice({
           }
         }
       },
+      updateJournal: (state, action: PayloadAction<string>) => {
+        if (state.currentCampaignId !== null) {
+          const index = state.campaigns.findIndex(camp => camp.id === state.currentCampaignId);
+          if (index !== -1) {
+            state.campaigns[index].journal = action.payload;
+          }
+        }
+      },
     }
   });
 
-export const { addCampaign, setCampaigns, setCurrentCampaignId, updateCampaignInfo, updateCharacterSheet, deleteCampaign, updateFirstScenePlan, setIsNarrativeMode, updateSystemMessage  } = campaignSlice.actions;
+export const { addCampaign, setCampaigns, setCurrentCampaignId, updateCampaignInfo, updateCharacterSheet, deleteCampaign, updateFirstScenePlan, setIsNarrativeMode, updateSystemMessage, updateJournal } = campaignSlice.actions;
 export default campaignSlice.reducer;
   

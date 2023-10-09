@@ -6,6 +6,7 @@ import { setSelectedLeftTab, setSelectedRightTab } from '../../store/tabs-slice'
 import { CharacterSheet } from './character-sheet';
 import { SystemPromptViewer } from './system-prompt-viewer';
 import { CampaignInfoPanel } from './campaign-Info-panel';
+import { JournalPanel } from './journal-panel';
 
 export function LeftPanel() {
     const dispatch = useAppDispatch();
@@ -21,15 +22,19 @@ export function LeftPanel() {
             }}>
             <Tabs.List grow px="20px,20px">
                 <Tabs.Tab value="scenes" color="cyan" fz="lg" lh="xl">Scenes</Tabs.Tab>
-                <Tabs.Tab value="journal" color="green" fz="lg" lh="xl">System</Tabs.Tab>
+                <Tabs.Tab value="system" color="green" fz="lg" lh="xl">System</Tabs.Tab>
+                <Tabs.Tab value="journal" color="red" fz="lg" lh="xl">Journal</Tabs.Tab>
                 <Tabs.Tab value="characters" color="grape" fz="lg" lh="xl">Characters</Tabs.Tab>
             </Tabs.List>
             <ScrollArea.Autosize maxHeight="90vh">
                 <Tabs.Panel value="scenes" px="md" py="md">
                         <ChatHistory />
                 </Tabs.Panel>
-                <Tabs.Panel value="journal" px="md" py="md">
+                <Tabs.Panel value="system" px="md" py="md">
                     <SystemPromptViewer/>
+                </Tabs.Panel>
+                <Tabs.Panel value="journal" px="md" py="md">
+                    <JournalPanel/>
                 </Tabs.Panel>
             </ScrollArea.Autosize>
             </Tabs>
