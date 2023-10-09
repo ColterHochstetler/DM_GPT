@@ -104,8 +104,6 @@ export class Game {
         for (let i = messages.length - 1; i >= 0 && loopCounter < 10; i--) {
             const message = messages[i];
 
-            console.log('88 prepNarrativeMessages() message: ', message);
-    
             if (message.id === this.lastSummarizedMessageID) {
                 console.log('88 prepNarrativeMessages() breaking loop at message: ', i);
                 break;

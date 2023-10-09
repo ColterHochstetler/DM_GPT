@@ -18,7 +18,7 @@ export function SystemPromptViewer(){
     return (
         <ScrollArea>
             <Textarea 
-                label="Character Sheet"
+                label="DEBUG: Dynamic System Prompt Viewer"
                 autosize 
                 minRows={10}
                 value={value}

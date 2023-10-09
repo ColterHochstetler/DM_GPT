@@ -75,10 +75,13 @@ export async function createChatCompletion(messages: OpenAIMessage[], parameters
         "messages": messages,
         "temperature": parameters.temperature
     };
+    console.log("77 arameters.maxTokens: ", parameters.maxTokens)
 
     if (parameters.maxTokens) {
         requestBody["max_tokens"] = parameters.maxTokens;
     }
+
+    console.log("77 requestBody: ", requestBody);
 
     const response = await fetch(endpoint + '/v1/chat/completions', {
         method: "POST",

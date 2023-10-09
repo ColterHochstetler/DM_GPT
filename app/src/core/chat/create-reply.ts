@@ -39,7 +39,7 @@ export class ReplyRequest extends EventEmitter {
         },
 
         createChatCompletion: async (messages: OpenAIMessage[], _parameters: Parameters) => {
-            console.log('createChatCompletion() called with messages: ', messages);
+            console.log('++ createChatCompletion() called with messages: ', messages);
             return await createChatCompletion(messages, {
                 ..._parameters,
                 apiKey: this.requestedParameters.apiKey,
@@ -65,6 +65,7 @@ export class ReplyRequest extends EventEmitter {
     }
 
     public async execute() {
+        console.log('++ ReplyRequest.execute() called with messages: ', this.messages, ' and parameters: ', this.requestedParameters); 
         try {
             this.scheduleTimeout();
 
@@ -141,7 +142,6 @@ export class ReplyRequest extends EventEmitter {
         this.yChat.onMessageDone(this.replyID);
 
         await pluginRunner("postprocess-model-output", this.pluginContext, async plugin => {
-            console.log('postprocess-model-output called with messages: ', this.mutatedMessages);
             const output = await plugin.postprocessModelOutput({
                 role: 'assistant',
                 content: this.content,
