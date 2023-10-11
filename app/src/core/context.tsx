@@ -143,6 +143,8 @@ export function useCreateAppContext(): Context {
             }
         }
 
+        console.log ('77 context systemMessage: ', systemMessage || 'No system message found.')
+
         chatManager.sendMessage({
             chatID: effectiveId,
             content: message.trim(),

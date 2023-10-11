@@ -152,22 +152,21 @@ export class ChatManager extends EventEmitter {
 
         let messages: Message[] = [];
         
-        if (customSystemMessage){
-            console.log ("-- customSystemMessage found: ", customSystemMessage)
-            const systemMessage ={
-                id: uuidv4(),
-                parentID: userSubmittedMessage.parentID,
-                chatID: userSubmittedMessage.chatID,
-                timestamp: Date.now(),
-                role: 'system',
-                content: customSystemMessage,
-                done: true,
-            }
-
-            messages.push(systemMessage);
+    
+        console.log ("-- customSystemMessage : ", customSystemMessage)
+        const systemMessage ={
+            id: uuidv4(),
+            parentID: userSubmittedMessage.parentID,
+            chatID: userSubmittedMessage.chatID,
+            timestamp: Date.now(),
+            role: 'system',
+            content: customSystemMessage,
+            done: true,
         }
+        messages.push(systemMessage);
 
-        if (overrideSavedMessage) { //Can be replaced by custom system message? Think of remaining use cases
+
+        if (overrideSavedMessage) { 
             const overriddenMessage = {
                 ...message,
                 content: overrideSavedMessage,
@@ -201,6 +200,7 @@ export class ChatManager extends EventEmitter {
     }
 
     private async getReply(messages: Message[], requestedParameters: Parameters) {
+        console.log("core/index.getReply called with messages: ", messages, " and requestedParameters: ", requestedParameters);
         const latestMessage = messages[messages.length - 1];
         const chatID = latestMessage.chatID;
         const parentID = latestMessage.id;

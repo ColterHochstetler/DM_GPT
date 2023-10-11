@@ -5,8 +5,28 @@
 SCENE PLAN
 {{firstScenePlan}}
 
+GUIDELINES:
 Craft an introduction to the ttrpg campaign based on the information above. 
 This opening should match the tone and genre. 
-Start with a vivid description of what makes the world interesting: it's pleasures, terrors, and conflicts.
-Then transition to an immersive introduction to the first scene. Set up the mood, conflicts, and opportunities of the scene in an open ended way.
-Use evocative sensory descriptions, and introduce at least 2 characters.
+Suggested actions should provide a range give players a variety of next possible steps.
+
+OUTPUT:
+Fill in each section below. The output should follow its formatting:
+
+## Welcome to {{name of the major location}}
+{{It's time to set the mood. Start with a vivid description of what makes the world interesting: it's pleasures, terrors, and conflicts, especially as they relate to the player character. Keep it short, appropriate to the genre.}}
+
+## The Challenge
+{{Describe the key challenge of the scene, and how it relates to the player character and their motives or fears.}}
+
+## The Scene
+
+{{Provide an immersive introduction about how the player got to their current location, why they're there, and what interesting sights, sounds, mysteries, and challenges lie before them}}
+
+**Possible Actions**
+1. {{suggestion 1}}
+2. {{suggestion 2}}
+3. {{suggestion 3}}
+4. {{suggestion 4}}
+
+Remember: you can type out any action you want. Use " " to speak.

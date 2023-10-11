@@ -70,7 +70,6 @@ export class Game {
     async prepNarrativeMessages(messages: Message[]): Promise<Message[]> {
         let retrievedSummaries: SummaryMinimal[] = [];
         let recentSummaries: string = "";
-        let ttrpgSystem: string = "";
 
         console.log('88 prepNarrativeMessages() called with messages: ', messages);
 
@@ -92,35 +91,35 @@ export class Game {
             console.error("88 An error occurred while fetching summaries:", error);
         }
 
-        try {
-            ttrpgSystem = await backend.current?.getTextFileContent("ttrpg-basic-system") || "";
-        } catch (error) {
-            console.error("88 An error occurred while fetching ttrpg system:", error);
-        }
+        //Keep the system message:
+        let recentMessages: Message[] = [];
+        const systemMessages = messages.filter(message => message.role === 'system');
+        recentMessages.push(...systemMessages);
     
         // Existing code for getting recent messages.
-        let recentMessages: Message[] = [];
         let loopCounter = 0;
+ 
         for (let i = messages.length - 1; i >= 0 && loopCounter < 10; i--) {
             const message = messages[i];
 
             if (message.id === this.lastSummarizedMessageID) {
                 console.log('88 prepNarrativeMessages() breaking loop at message: ', i);
                 break;
+            } if (message.role === 'system') {
+                break;
             }
-    
-            recentMessages.push(message);
+            // Insert each valid message right after the first system message
+            recentMessages.splice(1, 0, message);
             loopCounter++;
         }
-        if (recentMessages.length > 0) {
-            recentMessages = recentMessages.reverse();
-        } else {
-            recentMessages = messages.slice(-1);
+
+        if (recentMessages.length < 2) {
+            recentMessages.push(messages[messages.length - 1])
         }
 
         console.log('88 prepNarrativeMessages() recentMessages: ', recentMessages)
 
-        recentMessages[0].content = ttrpgSystem + '\n\n' + recentSummaries + '\n\n RECENT MESSAGES: \n\n' + recentMessages[0].content;
+        recentMessages[0].content = recentSummaries + '\n\n RECENT MESSAGES: \n\n' + recentMessages[0].content;
     
         console.log('88 prepNarrativeMessages() returning recentMessages: ', recentMessages);
         return recentMessages;
