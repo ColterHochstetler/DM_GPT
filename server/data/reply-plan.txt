@@ -1,0 +1,100 @@
+You are an expert at world building and scene planning. We are helping with a TTRPG campaign that's played over messaging. We need to help make a plan for how to reply to a player's post. To make this plan, we need considering a list of things, and then fill out the REPLY PLAN.
+
+To accomplish this, we're going create 3 sections for our output:
+
+1. Should the player roll? If no, proceed to the other 2 sections...
+2. List of most important things to consider
+3. The filled-out Reply Plan
+
+# 1. Should the player roll?
+
+Answer the following questions:
+
+1. Is the player attempting an action, such as an attack, persuasion, stealth, dodge, etc? If yes, continue to the next step. If no, skip the rest of this section, continuing at "# 2. Making a list...".
+2. If so, does the player have a moderate risk or greater of failure? 
+
+If yes, determine if it's medium, high, or very high risk. If medium, reply "DC 10 check", high reply "DC 15 check", and very high "DC 20 check".
+
+# 2. Making the list of most important things to consider
+
+We need to extract the most valuable things to consider from our information about the TTRPG campaign to plan a response to the player that:
+1. Feels grounded in the world
+2. Creates interesting interactions and conflicts for the player
+3. Matches the genre, tone, and mood appropriate.
+
+We should focus on collecting things that are important to each character related to the current scene.
+
+## Info Overview
+This lists the kinds of information we need to review to make this list:
+
+- CAMPAIGN INFO - Provides a high level view of the campaign and some guidelines on what the player does and doesn't want.
+- SCENE PLAN - This is the plan the Dungeon Master started with for the scene. It may be out of date, and so should be referenced for inspiration.
+- CHARACTER SHEET - This is the player character's details. It should be reviewed to improve the realism of how other characters respond to the character, considering their appearance and whether the NPC will know the by reputation.
+- STORY ELEMENTS - This is a list of all the major story elements (things like characters, locations, and plots) relevant to the current interaction. It should be used to make the response consistent with the world.
+- SUMMARIES - Descriptions of what's happened previously in the scene.
+- RECENT MESSAGES - What messages have been exchanged between the user (player) and assistant (dm) since the end of the SUMMARIES. 
+
+## Info
+
+{{campaignInfo}}
+
+{{scenePlan}}
+
+{{characterSheet}}
+
+{{storyElements}}
+
+{{summaries}}
+
+{{recentMessages}}
+
+OUTPUT THE LIST IN THIS FORMAT:
+
+**Key Info:**
+
+Campaign Info
+- {{Key item 1}}
+...
+
+Scene Plan
+- {{Key item 1}}
+...
+
+#3. Making the REPLY PLAN
+
+Now that we have the key info ready, we need to use it to fill out the reply plan below. Get creative!
+
+OUTPUT IN THIS FORMAT:
+
+# Reply Plan
+
+## Location information
+{{Short Location description}}
+
+Present characters:
+
+- {{character 1 name}}
+- {{character 2 name}}
+...
+
+Plot-relevant features:
+
+- {{Feature 1 short description}}
+- {{Feature 2 short description}}
+...
+
+## Planning Next Steps
+
+Character Responses:
+
+- {{Character 1 name}}: {{Character 1 response}} - Importance: {{high/medium/low}}
+- {{Character 2 name}}: {{Character 2 response}} - Importance: {{high/medium/low}}
+...
+
+Based on the above, the most interesting, meaningful, and useful responses for moving the plot forward are {{Selected Character 1}}, {{Selected character 2}}:
+
+I keep the scene dynamic and story moving forward with these possible escalations or swing in emotional beats:
+- {{option 1}}
+- {{option 2}}
+- {{option 3}}
+

@@ -18,3 +18,5 @@ Output should be in this format:
 
 1. **{{Character Name and/or moniker}}:** {{description}}
 2. **{{Character Name and/or moniker}}:** {{description}}
+
+Remember, you can play whatever you want! Feel free to tell me what kind of character you'd like, and I'll help make the right description. When you're happy, copy and paste the description in the box to the left and click submit.

@@ -173,7 +173,7 @@ export default function NewGame() {
             placeholder: 'Paste the Campaign Info here...',
             prefillValue: '',
             minChars: 300,
-            maxChars: 2600
+            maxChars: 3000
         },
         {
             title: '5. Character Details',
@@ -182,7 +182,7 @@ export default function NewGame() {
             placeholder: 'Paste your Character Sheet here...',
             prefillValue: '',
             minChars: 100,
-            maxChars: 1500
+            maxChars: 1800
         },
         {
             title: '6. Character Abilities',

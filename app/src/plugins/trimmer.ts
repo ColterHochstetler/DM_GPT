@@ -96,7 +96,7 @@ export class ContextTrimmerPlugin extends Plugin<ContextTrimmerPluginOptions> {
         const after = await countTokens(trimmed);
 
         const diff = after - before;
-        console.log(`[context trimmer] trimmed ${diff} tokens from context`);
+        console.log(`[context trimmer] trimmed ${diff} tokens from context. Before: ${before}, after: ${after}`);
 
         return {
             messages: trimmed,
