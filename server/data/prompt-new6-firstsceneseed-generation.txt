@@ -19,9 +19,9 @@ Output should look like this:
 ## {{Teaser 1 name}}
 
 - Tone: {{Teaser 1 tones}} 
-- {{Teaser 1 Description}}
+- {{Teaser}}
 
 ## {{Teaser 2 name}}
 
 - Tone: {{Teaser 2 tones}} 
-- {{Teaser 2 Description}}
+- {{Teaser}}

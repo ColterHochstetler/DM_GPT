@@ -142,7 +142,7 @@ export default function NewGame() {
         {
             title: '1. Story Seed',
             help: 'Focus on an interesting conflict or tone. Includes something important about the world/setting. Note any kind of key characters or relationships you want. You can reference popular media to help the DM, such as "Halo, escaping from Reach", "Inspired by Pride and Prejudice", or "Like Avatar: The Last airbender, but with more politics."',
-            description: 'In this step, the DM has suggested a legend you could use. Pick what you want, create your own, or collaborate with the DM to make one. When ready, copy and paste it below and click submit.',
+            description: 'We need a "story seed", a short description of the kind of world and conflicts you will face. Talk to the DM to create an exciting teaser, edit it, or write your own! When you have something that excites you, paste it below and click submit.',
             placeholder: 'Paste a story seed here...',
             prefillValue: '',
             minChars: 100,
@@ -233,7 +233,7 @@ export default function NewGame() {
     const areAllStepsCompleted = () => stepsStatus.every(step => step.status === 'completed');
 
     //prep submit helpers
-    const submitChatMessageStorySeeds = useOnSubmit(context, true, 'TIME TO START A NEW ADVENTURE! The DM is writing suggestions for adventures, called Story Seeds, but you can play whatever you like. Copy and Paste one, edit it, or write your own. You can talk with the DM to help craft an appropriate adventure story seed. When you are happy, follow the instructions to the right.'); //Add param heat or variety through prompt
+    const submitChatMessageStorySeeds = useOnSubmit(context, true, 'TIME TO START A NEW ADVENTURE! Follow the instructions to the right. Suggest some ideas, themes, characters, moves, tv shows, or books to get started!'); //Add param heat or variety through prompt
     const submitChatMessageCharacterSeed = useOnSubmit(context, true, 'CHARACTER BASICS: Who are you and what do you want to play? The DM is creating suggestions, but you can be whatever you want. Once you have a character concept you like, paste it into the box on the right and click submit.'); //false would let it keep the context of the previous messages, add if needed.
     const submitChatMessageQnA = useOnSubmit(context, false, 'TIME TO MAKE IT PERSONAL! The DM is asking you questions to help make a better experience for you. Follow the instructions on the right. PRO TIP: If your answers get too long, you can paste it to the DM and ask them to help you condense it.');
     const submitChatMessageUpdateCampaignInfo = useOnSubmit(context, false, 'LOCK IT IN! The DM is filling out the campaign info for you. Copy and paste it into the side bar, and edit as you please, or get the DM to help you make modifications. Follow the instructions to the right.');

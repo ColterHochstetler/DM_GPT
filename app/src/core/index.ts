@@ -27,9 +27,9 @@ export class ChatManager extends EventEmitter {
     private activeReplies = new Map<string, ReplyRequest>();
     private changedIDs = new Set<string>();
     public lastReplyID: string | null = null;
-    public game: Game = new Game();
+    private game: Game;
 
-    constructor() {
+    constructor(game: Game) {
         super();
 
         this.setMaxListeners(1000);
@@ -46,6 +46,8 @@ export class ChatManager extends EventEmitter {
                 this.applyYUpdate(message.data);
             }
         };
+
+        this.game = game;
 
         (window as any).chat = this;
     }

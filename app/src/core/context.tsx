@@ -12,6 +12,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { isProxySupported } from "./chat/openai";
 import { audioContext, resetAudioContext } from "./tts/audio-file-player";
 import { selectIsNarrativeMode, setIsNarrativeMode, selectCurrentCampaignSystemMessage } from "../store/campaign-slice";
+import { Game } from "./game/game";
 
 export interface Context {
     authenticated: boolean;
@@ -34,8 +35,8 @@ export interface Context {
 }
 
 const AppContext = React.createContext<Context>({} as any);
-
-const chatManager = new ChatManager();
+const game = new Game("Test capmaignID"); //COMPLETENESS need to figure out how and where the real campaignID is coming from, but we've at least got it into context.tsx
+const chatManager = new ChatManager(game);
 const backend = new Backend(chatManager);
 
 let intl: IntlShape;
