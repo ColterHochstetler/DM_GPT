@@ -183,17 +183,23 @@ export class ChatManager extends EventEmitter {
             messages = [...messages, ...previousMessages, message];
         }    
 
-        messages = messages.filter(msg => Boolean(msg.role));      
+        let messagesToPush = messages.filter(msg => Boolean(msg.role));      
+
 
         if (isNarrativeMessage){
             console.log ("-- core/index.sendMessage called with isNarrativeMessage: true, messages preprocessing:", messages)
-            messages = await this.game.prepNarrativeMessages(messages);
+            const { latestMessages, latestSummaries } = await this.game.getLatestMessagesandSummaries(messagesToPush, userSubmittedMessage.requestedParameters);
+
+            const replyPlan: string = await this.game.prepReplyPlan(latestMessages, latestSummaries);
+            messagesToPush = await this.game.prepNarrativeMessages(latestMessages, latestSummaries, replyPlan);
+            
             userSubmittedMessage.requestedParameters.maxTokens = 300;
         }
+        
+        console.log ("-- core/index calling prepReplyPlan.")
 
-        this.game.runLoop(messages,userSubmittedMessage.requestedParameters, isNarrativeMessage);
 
-        await this.getReply(messages, userSubmittedMessage.requestedParameters);
+        await this.getReply(messagesToPush, userSubmittedMessage.requestedParameters);
     }
 
     public async regenerate(message: Message, requestedParameters: Parameters) {

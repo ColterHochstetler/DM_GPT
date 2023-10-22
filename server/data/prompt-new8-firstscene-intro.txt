@@ -17,9 +17,13 @@ OUTPUT:
 ## Welcome to {{name of the major location}}
 {{It's time to set the mood. Start with a vivid description of what makes the world interesting: it's pleasures, terrors, and conflicts, especially as they relate to the player character. Keep it short, appropriate to the genre.}}
 
-{{Describe the key challenge of the scene, and how it relates to the player character and their motives or fears.}}
 
-{{Provide an immersive introduction about how the player got to their current location, why they're there, and what interesting sights, sounds, mysteries, and challenges lie before them}}
+{{Provide an immersive introduction about where the player is and why it matters. Include interesting sights, sounds, mysteries.}}
+
+{{Describe any people or factions that are present.}}
+
+{{Describe the key challenge or mystery for the player, and their motivations for tackling it.}}
+
 
 **Possible Actions**
 1. {{suggestion 1}}

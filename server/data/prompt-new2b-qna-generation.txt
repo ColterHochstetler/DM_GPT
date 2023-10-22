@@ -15,7 +15,9 @@ Do not add any extra commentary beyond the questions.
 Output should look like this:
 
 # Questions
-I'm trying to help fill out your background, and I've made some assumptions to get us started. Remember that all questions are optional, just delete the ones you don't feel like answering. And add any additional info you'd like, and tell me if you want to change some of my assumptions. Just make sure all that gets into the box to the right! As before, click submit when you're happy.
+I'm trying to help fill out your background, and I've made some assumptions to get us started. You'll be able to correct them later.
+
+Remember that all questions are optional, just delete the ones you don't feel like answering. And add any additional info you'd like, and tell me if you want to change some of my assumptions. Just make sure all that gets into the box to the right! As before, click submit when you're happy.
 
 Q: {{question 1}}
 

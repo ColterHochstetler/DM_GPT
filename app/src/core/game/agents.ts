@@ -2,6 +2,7 @@ import { backend } from "../backend";
 import { Message, Parameters, OpenAIMessage, getOpenAIMessageFromMessage, SummaryMinimal, SummaryDetailed} from "../chat/types"
 import { v4 as uuidv4 } from 'uuid';
 import { createChatCompletion } from "../chat/openai";
+import { countTokensForMessages } from "../tokenizer";
 
 //agents return something, but it changes every time!
 export abstract class Agent<T> {
@@ -73,11 +74,27 @@ export class SummaryAgentBase extends Agent<any> {
     }
 
 
-    async setParameters(parameters: Parameters): Promise<Parameters> {
-        parameters.maxTokens = 250;
-        parameters.temperature = 0.3;
-        return parameters;
+    setParameters(messages: Message[], parameters: Parameters): Parameters {
+        const TOKEN_THRESHOLD = 4000; //when to switch to the larger model
+        const SUMMARY_RATIO = 0.2;
+        const TEMPERATURE = 0.4;
+
+        const tokenCount = countTokensForMessages(messages);
+        const maxTokens = tokenCount * SUMMARY_RATIO; // max tokens for the llm reply
+
+        // Choose the model based on token count
+        const model = (maxTokens + tokenCount > TOKEN_THRESHOLD) ? 'gpt-3.5-turbo-16k' : 'gpt-3.5-turbo';
+
+        console.log('++++++++setParameters called with model:', model, ' maxTokens:', maxTokens,' tokenCount:', tokenCount);
+
+        return {
+            ...parameters,
+            maxTokens,
+            model,
+            temperature: TEMPERATURE
+        };
     }
+    
 
     async sendAgentMessage(
         parameters: Parameters,
@@ -86,7 +103,7 @@ export class SummaryAgentBase extends Agent<any> {
         summaries: SummaryMinimal[],
     ): Promise<any> {
         const preprocessedMessage = await this.preprocessMessage(messages, summaries);
-        const setParameters = await this.setParameters(parameters);
+        const setParameters = await this.setParameters(messages, parameters);
 
         try {
             // Call the doSend function

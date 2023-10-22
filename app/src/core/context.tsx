@@ -35,7 +35,7 @@ export interface Context {
 }
 
 const AppContext = React.createContext<Context>({} as any);
-const game = new Game("Test capmaignID"); //COMPLETENESS need to figure out how and where the real campaignID is coming from, but we've at least got it into context.tsx
+const game = new Game("Test campaignID"); //COMPLETENESS need to figure out how and where the real campaignID is coming from, but we've at least got it into context.tsx
 const chatManager = new ChatManager(game);
 const backend = new Backend(chatManager);
 
