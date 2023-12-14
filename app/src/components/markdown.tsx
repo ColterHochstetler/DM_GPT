@@ -26,7 +26,7 @@ const Code = styled.div`
 const Header = styled.div`
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
     background: #191919;
     height: 2.5rem;
     padding: 0.1rem 0.1rem 0 0.5rem;

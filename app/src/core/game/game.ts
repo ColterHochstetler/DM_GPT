@@ -35,7 +35,7 @@ export class Game {
 
     summaryAgent: SummaryAgentBase; 
     summaryTokenThreshold: number = 800;
-    summaryAgentModel: string = "gpt-3.5-turbo-16k";
+    summaryAgentModel: string = "gpt-3.5-turbo-1106";
 
 
 
@@ -111,7 +111,7 @@ export class Game {
 
         const replyParameters: Parameters = {
             temperature: 1,
-            model: 'gpt-3.5-turbo-16k'
+            model: 'gpt-3.5-turbo-1106'
         };
     
         const replyPlanMessage: Message = {

@@ -29,38 +29,16 @@ export const parameterOptions: OptionGroup = {
                 ),
                 options: [
                     {
-                        label: "GPT 3.5 Turbo (default)",
-                        value: "gpt-3.5-turbo",
+                        label: "GPT 3.5 Turbo 16k (default)",
+                        value: "gpt-3.5-turbo-1106",
                     },
                     {
-                        label: "GPT 3.5 Turbo 16k",
-                        value: "gpt-3.5-turbo-16k",
+                        label: "GPT 4 128k",
+                        value: "gpt-4-1106-preview",
                     },
                     {
-                        label: "GPT 4",
+                        label: "GPT 4 Legacy",
                         value: "gpt-4",
-                    },
-                    {
-                        label: "GPT 4 32k (requires invite)",
-                        value: "gpt-4-32k",
-                    },
-                    {
-                        label: "GPT 4 Snapshot (June 13, 2023)",
-                        value: "gpt-4-0613",
-                    },
-          
-                    {
-                        label: "GPT 4 32k Snapshot (June 13, 2023)",
-                        value: "gpt-4-32k-0613",
-                    },
-  
-                    {
-                        label: "GPT 3.5 Turbo Snapshot (June 13, 2023)",
-                        value: "gpt-3.5-turbo-0613",
-                    },
-                    {
-                        label: "GPT 3.5 Turbo 16k Snapshot (June 13, 2023)",
-                        value: "gpt-3.5-turbo-16k-0613",
                     },
                 ],
             }),

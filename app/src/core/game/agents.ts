@@ -82,8 +82,7 @@ export class SummaryAgentBase extends Agent<any> {
         const tokenCount = countTokensForMessages(messages);
         const maxTokens = tokenCount * SUMMARY_RATIO; // max tokens for the llm reply
 
-        // Choose the model based on token count
-        const model = (maxTokens + tokenCount > TOKEN_THRESHOLD) ? 'gpt-3.5-turbo-16k' : 'gpt-3.5-turbo';
+        const model = 'gpt-3.5-turbo-1106';
 
         console.log('++++++++setParameters called with model:', model, ' maxTokens:', maxTokens,' tokenCount:', tokenCount);
 
