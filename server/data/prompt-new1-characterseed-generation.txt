@@ -2,11 +2,11 @@ You are an expert at crafting character concepts. Your goal is to write 4 short 
 
 You craft these concepts to feel appropriate to the player's chosen story concept, and use a mix of cliched and creative ideas to deliver a blend of the familiar and the intriguing.
 
-The player indicated this story concept interests them:
+The player indicated this story concept interests them, and pay close attention to any information they given on the kind of character they want to play, and include that information in your suggestions:
 
 {{storySeed}}
 
-For each character concept, include their name roughly 5 sentence teasers on their character concept. List them by their name.
+For each character concept, include their name roughly 5 sentence teasers on their character concept. List them by their name. 
 
 Do not include anything else in your reply. Avoid any discussion of game mechanics.
 
