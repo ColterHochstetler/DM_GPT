@@ -19,3 +19,4 @@ INSTRUCTION:
 4. Follow the instructions in (), and delete them.
 5. Skip abilities for now
 6. Wrap in a code block
+7. Make sure it contains all the info provided in the Character Info section. Add a miscelaneous section if needed.

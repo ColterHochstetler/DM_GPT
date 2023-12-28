@@ -47,12 +47,12 @@ export class SystemPromptPlugin extends Plugin<SystemPromptPluginOptions> {
         const hasSystemRole = messages.some(message => message.role === 'system');
         
         if (hasSystemRole) {
-            console.log('Existing system message identified, overriding with custom or default.');
+            console.log('Existing system message identified, appending custom or default.');
             
             // Loop through messages to find and update the system message
             for (let i = 0; i < messages.length; i++) {
                 if (messages[i].role === 'system') {
-                    messages[i].content = (this.options?.systemPrompt || defaultSystemPrompt)
+                    messages[i].content += (this.options?.systemPrompt || defaultSystemPrompt)
                         .replace('{{ datetime }}', new Date().toLocaleString());
                     break;
                 }

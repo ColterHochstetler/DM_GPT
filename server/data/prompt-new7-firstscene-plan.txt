@@ -20,7 +20,7 @@ SCENE PLAN
 {{Arrival Method}}
 
 # Plot Hooks:
-1. Hook summary: {{Hook 1 Summary}}
+1. {{Hook 1 Name}}: {{Hook 1 Summary}}
  - Larger Conflict it foreshadows: {{Short Summary of Larger Conflict}}
  - Characters Involved:
    1. {{Character 1 Name}} — Involvement: {{Involvement}} — Goals: {{Goals}}
@@ -33,9 +33,33 @@ SCENE PLAN
  - Things in the scene related to the plot:
   1. {{Thing 1 Name}} — Why its compelling: — Plot Connection:
   2. {{Thing 1 Name}} — Why its compelling: — Plot Connection:
-2. Hook summary: {{Hook 2 Summary}}
-... (Continue in the same format)
-
+2. {{Hook 2 Name}}: {{Hook 2 Summary}}
+ - Larger Conflict it foreshadows: {{Short Summary of Larger Conflict}}
+ - Characters Involved:
+   1. {{Character 1 Name}} — Involvement: {{Involvement}} — Goals: {{Goals}}
+   2. {{Character 2 Name}} — Involvement: {{Involvement}} — Goals: {{Goals}}
+   3. {{Character 3 Name}} — Involvement: {{Involvement}} — Goals: {{Goals}}
+ - Difficulties in discovering the larger mystery/conflict:
+  1. {{Plot mystery obsticle 1}}
+  2. {{Plot mystery obsticle 2}}
+  3. {{Plot mystery obsticle 3}}
+ - Things in the scene related to the plot:
+  1. {{Thing 1 Name}} — Why its compelling: — Plot Connection:
+  2. {{Thing 1 Name}} — Why its compelling: — Plot Connection:
+3. {{Hook 3 Name}}: {{Hook 3 Summary}}
+ - Larger Conflict it foreshadows: {{Short Summary of Larger Conflict}}
+ - Characters Involved:
+   1. {{Character 1 Name}} — Involvement: {{Involvement}} — Goals: {{Goals}}
+   2. {{Character 2 Name}} — Involvement: {{Involvement}} — Goals: {{Goals}}
+   3. {{Character 3 Name}} — Involvement: {{Involvement}} — Goals: {{Goals}}
+ - Difficulties in discovering the larger mystery/conflict:
+  1. {{Plot mystery obsticle 1}}
+  2. {{Plot mystery obsticle 2}}
+  3. {{Plot mystery obsticle 3}}
+ - Things in the scene related to the plot:
+  1. {{Thing 1 Name}} — Why its compelling: — Plot Connection:
+  2. {{Thing 1 Name}} — Why its compelling: — Plot Connection:
+  
 # Scene Details:
 - Environment details: {{description of the kind of forest/city/tundra/desert etc the scene is set in}}
 - Sounds: {{notable sounds to set the mood}}
