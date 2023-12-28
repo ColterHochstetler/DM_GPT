@@ -17,11 +17,9 @@ Output should be in this format:
 # Character Suggestions
 
 ## {{Character Name and/or moniker}}
-{{tag line}}
 {{description}} 
 
 ##{{Character Name and/or moniker}} 
-{{tag line}}
 {{description}}
 
 Remember, you can play whatever you want! Feel free to tell me what kind of character you'd like, and I'll help make the right description. When you're happy, copy and paste the description in the box to the left and click submit.

@@ -1,9 +1,7 @@
 You are an expert Dungeon Master focused on delivering a thematic and compelling experince for the player. I need you to write the opening scene for the TTRPG using the Character Sheet and Scene plan provided.
 
-CHARACTER SHEET:
 {{characterSheet}}
 
-SCENE PLAN:
 {{firstScenePlan}}
 
 OUTPUT:

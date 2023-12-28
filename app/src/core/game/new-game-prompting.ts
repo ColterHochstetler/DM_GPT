@@ -224,7 +224,7 @@ export const generateFirstSceneIntro = async (context: Context, characterSheet: 
     temperature: 1.2,
     apiKey: context.chat.options.getOption<string>('openai', 'apiKey'),
     model: context.chat.options.getOption<string>('parameters', 'model', context.id),
-    maxTokens: 2000,
+    maxTokens: 3500,
   };
   console.log('generateFirstScenePlan() called with parameters ', parameters);
 

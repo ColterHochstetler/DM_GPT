@@ -19,24 +19,6 @@ SCENE PLAN
 ## How the character got here: 
 {{Arrival Method}}
 
-# Conflict and/or Mysteries:
-(How to write this section: It should not revolve around the player's current intentions or immediate actions. Focus on external elements for the player to discover.)
-1. {{Improved conflict/mystery 1}}
-  - {{Possible way to resolve 1}}
-  - {{Possible way to resolve 2}}
-  - {{Possible way to resolve 3}}
-2. {{Improved conflict/mystery 2}}
-  - {{Possible way to resolve 1}}
-  - {{Possible way to resolve 2}}
-  - {{Possible way to resolve 3}}
-2. {{Improved conflict/mystery 3}}
-  - {{Possible way to resolve 1}}
-  - {{Possible way to resolve 2}}
-  - {{Possible way to resolve 3}}
-
-# Main Conflict and/or Mysteries:
-Description:
-
 # Plot Hooks:
 1. Hook summary: {{Hook 1 Summary}}
  - Larger Conflict it foreshadows: {{Short Summary of Larger Conflict}}
@@ -60,19 +42,9 @@ Description:
 - Smells: {{notable smells to set the mood}}
 - Mood and feel: {{how these details combine to give the place a mood. Especially key to note the mood of any crowds present.}}
 
-## Interactables
-(List 4 things a player can discover to interact with, and note which plot elements they connect to. Each interactable should have a payoff.)
-1. {{Interactable 1 name}} 
-  - {{Plot hook relation}} (Which plot hook is it related to? If none, how is it related to the character's backstory or motivations?)
-  - {{Origin}} (Where it came from: what it grown, manufactured, summoned?)
-  - {{Sort Description}} 
-   - {{Way to interact 1}}
-   - {{Way to interact 1}}
-   - {{Way to interact 1}}
-
 ## Dynamic Elements
 (List 3 ways the environment could change dramatically, such as a bridge colapsing, a sandstorm blowing in, tyranical city guards showing up, etc...)
-- {{Dramatic change 1 name}}: {{Description}} — Possible Trigger: {{Possible trigger if applicable. Could be triggered by an interactable.}}
+- {{Dramatic change 1 name}}: {{Description}} — Possible Trigger: {{Possible trigger if applicable}}
 - {{Dramatic change 2 name}}: {{Description}} — Possible Trigger: {{Possible trigger if applicable}}
 - {{Dramatic change 3 name}}: {{Description}} — Possible Trigger: {{Possible trigger if applicable}}
 
