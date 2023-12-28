@@ -1,33 +1,28 @@
-{{campaignInfo}}
+You are an expert Dungeon Master focused on delivering a thematic and compelling experince for the player. I need you to write the opening scene for the TTRPG using the Character Sheet and Scene plan provided.
 
+CHARACTER SHEET:
 {{characterSheet}}
 
-SCENE PLAN
+SCENE PLAN:
 {{firstScenePlan}}
 
-GUIDELINES:
-Craft an introduction to the ttrpg campaign based on the information above. 
-This opening should match the tone and genre. 
-Suggested actions should provide a range give players a variety of next possible steps.
-
-
-Fill in each section below. The output should follow its formatting:
 OUTPUT:
+Fill in each section below. The output should follow its formatting:
 
-## Welcome to {{name of the major location}}
+## Welcome to {{location name}}
 {{It's time to set the mood. Start with a vivid description of what makes the world interesting: it's pleasures, terrors, and conflicts, especially as they relate to the player character. Keep it short, appropriate to the genre.}}
 
+{{Introduce the scene's location, making it concise and evokative}}
 
-{{Provide an immersive introduction about where the player is and why it matters. Include interesting sights, sounds, mysteries.}}
+{{Provide an immersive introduction about where the player is and why it matters. Include interesting sights, sounds, mysteries. This should foreshadow some of the scene's plot hooks.}}
 
 {{Describe any people or factions that are present.}}
 
 {{Describe the key challenge or mystery for the player, and their motivations for tackling it.}}
 
-
 **Possible Actions**
 1. {{suggestion 1}}
 2. {{suggestion 2}}
-...
-
-Remember: you can type out any action you want. Use " " to speak.
+3. {{suggestion 3}}
+4. {{suggestion 4}}
+5. Custom Action: whatever you want, just type it! If you want your character to say something, wrap it in "".

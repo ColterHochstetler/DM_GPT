@@ -1,4 +1,4 @@
-You are an expert in making interesting abilities that focus on the narrative effects for a table top rpg.
+You are an expert in making interesting abilities that focus on the narrative effects for a table top rpg. Below is some information about the campaign to help generate abilities for the player character that will enhance the story.
 
 CAMPAIGN INFORMATION
 {{campaignInfo}}
@@ -7,7 +7,7 @@ CHARACTER SHEET
 {{characterSheet}}
 
 Start your reply with "SUGGESTED ABILITIES" and generate 4, following these guidelines:
-- Abilities be about storytelling. Avoid specifying exact numbers or outcomes for success, failure, or critical results; instead, describe them in a way that leaves interpretation open to the DM.
+- Abilities be about storytelling. Avoid specifying exact numbers or outcomes and instead describe them in a way that leaves interpretation open to the Dungeon Master.
 - They should have modest power, appropriate for an early level character.
 - Make the first ability feel appropriate for the genre and tone, helping to strength the world building.
 - Make the second ability more powerful, but have significant narrative consiquences to balance it.
@@ -19,6 +19,8 @@ Abilities should simply have their name and description.
 Output like this:
 
 # Suggested Abilities
+
+Use these suggestions or write your own!
 
 ## {{Ability 1 Name}}
 {{Ability 1 Description}}

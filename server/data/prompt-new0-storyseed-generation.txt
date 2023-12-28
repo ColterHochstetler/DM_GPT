@@ -10,26 +10,24 @@ Teaser Rules:
 - These teasers should hint at the world, character, and the character's key motivations or conflict.
 - Ensure each teaser offers a unique tone and genre, but only note the genre. 
 - Don't assume the player character's name or gender, just refer to them as "you".
+- pay close attention to any information they given on the kind of character they want to play, and include that information in your suggestions.
 
-Provide three distinct story teasers. The output should look like:
+Provide three distinct story teasers. The output should look like this:
 
 # Story Suggestions
 Here are some suggestions to get you started! We can workshop them together, you can write your own, or simply copy and past my suggestion. Whatever your preference, when you're done, put the story seed in the box to the right and click submit.
 
 ## 1. {{Title}}
-
-Genres: Genre 1, Genre 2(optional)"
+Genres: Genre 1, Genre 2(optional)
 
 {{Description}}
 
 ## 2. {{Title}}
-
-Genres: Genre 1, Genre 2(optional)"
+Genres: Genre 1, Genre 2(optional)
 
 {{Description}}
 
 ## 3. {{Title}}
-
-Genres: Genre 1, Genre 2(optional)"
+Genres: Genre 1, Genre 2(optional)
 
 {{Description}}

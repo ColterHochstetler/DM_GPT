@@ -203,10 +203,10 @@ export const getFirstSceneSeedPrompt = async (characterSheet: string, campaignIn
 //    Launch Prep
 
 export const generateFirstSceneIntro = async (context: Context, characterSheet: string, campaignInfo: string, firstSceneSeed: string): Promise<string> => {
-  
-  const howToDm = await backend.current?.getTextFileContent('how-to-dm');
-  if (!howToDm) {
-    console.log('generateFirstScenePlan() failed to retrieve how-to-dm.txt');
+
+  const firstScenePlanRaw = await backend.current?.getTextFileContent('prompt-new7-firstscene-plan');
+  if (!firstScenePlanRaw) {
+    console.log('generateFirstScenePlan() failed to retrieve prompt-new7-firstscene-plan.txt');
     return '';
   }
 
@@ -216,21 +216,15 @@ export const generateFirstSceneIntro = async (context: Context, characterSheet: 
     return '';
   }
 
-  const firstScenePlanRaw = await backend.current?.getTextFileContent('prompt-new7-firstscene-plan');
-  if (!firstScenePlanRaw) {
-    console.log('generateFirstScenePlan() failed to retrieve prompt-new7-firstscene-plan.txt');
-    return '';
-  }
+  const firstScenePlanPrepared: string = await replaceTextPlaceholders(firstScenePlanRaw, [['{{characterSheet}}',characterSheet], ['{{campaignInfo}}',campaignInfo], ['{{firstSceneSeed}}',firstSceneSeed]]);
   
-  const firstScenePlanPrompt: string = await replaceTextPlaceholders(firstScenePlanRaw, [['{{characterSheet}}',characterSheet], ['{{campaignInfo}}',campaignInfo], ['{{firstSceneSeed}}',firstSceneSeed]]);
-  
-  console.log('&& generateFirstScenePlan() firstScenePlanPrompt: ', firstScenePlanPrompt);
+  console.log('&& generateFirstScenePlan() firstScenePlanPrompt: ', firstScenePlanPrepared);
   
   const parameters:Parameters = {
     temperature: 1.2,
     apiKey: context.chat.options.getOption<string>('openai', 'apiKey'),
     model: context.chat.options.getOption<string>('parameters', 'model', context.id),
-    maxTokens: 1100,
+    maxTokens: 2000,
   };
   console.log('generateFirstScenePlan() called with parameters ', parameters);
 
@@ -239,16 +233,13 @@ export const generateFirstSceneIntro = async (context: Context, characterSheet: 
     chatID: uuidv4(),
     timestamp: Date.now(),
     role: 'user',
-    content: firstScenePlanPrompt,
+    content: firstScenePlanPrepared,
     parameters: parameters
   }];
 
   console.log('generateFirstScenePlan() calling hiddenReplyAgent.sendAgentMessage()');
   const firstScenePlanFilled: string = await hiddenReplyAgent.sendAgentMessage(parameters, message, 'Test campaignID');
 
-  const firstSceneIntroFilled: string = await replaceTextPlaceholders(firstSceneIntroRaw, [['{{characterSheet}}',characterSheet], ['{{campaignInfo}}',campaignInfo], ['{{firstScenePlan}}',firstScenePlanFilled]]);
-
-  const combinedPrompt: string = howToDm + '\n\n' + firstSceneIntroFilled;
-
-  return combinedPrompt
+  console.log('generateFirstScenePlan() working on intro with firstScenePlanFilled: ', firstScenePlanFilled);
+  return await replaceTextPlaceholders(firstSceneIntroRaw, [['{{characterSheet}}',characterSheet], ['{{firstScenePlan}}',firstScenePlanFilled]]);
 }

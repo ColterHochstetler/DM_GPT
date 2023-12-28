@@ -103,7 +103,7 @@ function NewGameStep({ title, help, description, placeholder, prefillValue, minC
             </StepTitle>
             <Collapse in={stepStatus.status === 'active'}>
                 <StepDescription>{description}</StepDescription>
-                <ScrollArea.Autosize maxHeight="100%">
+                <ScrollArea.Autosize maxHeight="100%" placeholder="Enter text here">
                     <Textarea
                         size="sm"
                         placeholder={placeholder}
